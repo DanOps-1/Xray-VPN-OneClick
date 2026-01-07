@@ -82,33 +82,33 @@
 > **CRITICAL: Test-First Development (Constitution Principle IV)**
 > These tests MUST be written FIRST, user approved, and FAIL before implementation begins
 
-- [ ] T020 [P] [US1] Write integration test for CLI installation in tests/integration/cli-installation.test.ts
-- [ ] T021 [P] [US1] Write integration test for interactive menu display in tests/integration/interactive-menu.test.ts
-- [ ] T022 [P] [US1] Write unit test for menu navigation in tests/unit/commands/interactive.test.ts
+- [x] T020 [P] [US1] Write integration test for CLI installation in tests/integration/cli-installation.test.ts
+- [x] T021 [P] [US1] Write integration test for interactive menu display in tests/integration/interactive-menu.test.ts
+- [x] T022 [P] [US1] Write unit test for menu navigation in tests/unit/commands/interactive.test.ts
 
 **Constitution Compliance Checks for Tests:**
-- [ ] T023 [US1] Verify tests cover menu display (Principle III)
-- [ ] T024 [US1] Verify tests cover keyboard navigation (Principle II)
-- [ ] T025 [US1] Verify tests cover graceful exit (Principle III)
+- [x] T023 [US1] Verify tests cover menu display (Principle III)
+- [x] T024 [US1] Verify tests cover keyboard navigation (Principle II)
+- [x] T025 [US1] Verify tests cover graceful exit (Principle III)
 
 ### Implementation for User Story 1
 
-- [ ] T026 [US1] Create CLI entry point in src/cli.ts with shebang #!/usr/bin/env node
-- [ ] T027 [US1] Implement preflightChecks function in src/utils/preflight.ts (check systemd, Xray, config)
-- [ ] T028 [US1] Implement main menu display in src/commands/interactive.ts using @inquirer/prompts select
-- [ ] T029 [US1] Add menu navigation logic (handle user selection, enter submenu, return to parent)
-- [ ] T030 [US1] Implement menu stack for back navigation in src/commands/interactive.ts
-- [ ] T031 [US1] Add graceful exit handler (Ctrl+C confirmation) in src/commands/interactive.ts
-- [ ] T032 [US1] Add context display (service status, user count) in menu header
-- [ ] T033 [US1] Implement Commander.js setup for global options (--config, --service, --json, --help, --version)
+- [x] T026 [US1] Create CLI entry point in src/cli.ts with shebang #!/usr/bin/env node
+- [x] T027 [US1] Implement preflightChecks function in src/utils/preflight.ts (check systemd, Xray, config)
+- [x] T028 [US1] Implement main menu display in src/commands/interactive.ts using @inquirer/prompts select
+- [x] T029 [US1] Add menu navigation logic (handle user selection, enter submenu, return to parent)
+- [x] T030 [US1] Implement menu stack for back navigation in src/commands/interactive.ts
+- [x] T031 [US1] Add graceful exit handler (Ctrl+C confirmation) in src/commands/interactive.ts
+- [x] T032 [US1] Add context display (service status, user count) in menu header
+- [x] T033 [US1] Implement Commander.js setup for global options (--config, --service, --json, --help, --version)
 
 ### Constitution Compliance for User Story 1
 
-- [ ] T034 [US1] Security Review: Verify preflight checks don't leak sensitive info (Principle I)
-- [ ] T035 [US1] Simplicity Check: Verify menu is intuitive with < 3 levels depth (Principle II)
-- [ ] T036 [US1] Documentation: Add JSDoc comments to all public functions (Principle V)
+- [x] T034 [US1] Security Review: Verify preflight checks don't leak sensitive info (Principle I)
+- [x] T035 [US1] Simplicity Check: Verify menu is intuitive with < 3 levels depth (Principle II)
+- [x] T036 [US1] Documentation: Add JSDoc comments to all public functions (Principle V)
 
-**Checkpoint**: At this point, User Story 1 should be fully functional and testable independently
+**Checkpoint**: ✅ User Story 1 is fully functional and testable independently
 
 ---
 
