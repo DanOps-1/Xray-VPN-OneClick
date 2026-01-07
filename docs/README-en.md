@@ -51,7 +51,7 @@ The installation script will automatically:
 
 ### Method 2: Manual Installation
 
-See **[Complete Installation Guide](docs/installation-guide.md)** for detailed steps.
+See **[Complete Installation Guide](installation-guide.md)** for detailed steps.
 
 ---
 
@@ -74,7 +74,7 @@ The installation script generates a VLESS share link. In your client:
 2. Open client → "Import from Clipboard"
 3. Connect and start using
 
-Detailed guide: [Client Setup Guide](docs/client-setup.md)
+Detailed guide: [Client Setup Guide](client-setup.md)
 
 ---
 
@@ -151,11 +151,11 @@ sudo bash scripts/uninstall.sh
 
 ## 📖 Documentation
 
-- [Complete Installation Guide](docs/installation-guide.md) - Detailed installation and configuration steps
-- [Client Setup Guide](docs/client-setup.md) - Configuration methods for all platforms
-- [User Management Guide](docs/user-management.md) - Add, delete, and manage users
-- [FAQ](docs/installation-guide.md#common-issues) - Troubleshooting and solutions
-- [Performance Optimization](docs/installation-guide.md#performance-optimization) - Suggestions to improve performance
+- [Complete Installation Guide](installation-guide.md) - Detailed installation and configuration steps
+- [Client Setup Guide](client-setup.md) - Configuration methods for all platforms
+- [User Management Guide](user-management.md) - Add, delete, and manage users
+- [FAQ](installation-guide.md#common-issues) - Troubleshooting and solutions
+- [Performance Optimization](installation-guide.md#performance-optimization) - Suggestions to improve performance
 
 ---
 
@@ -274,8 +274,8 @@ This project is licensed under the [MIT License](../LICENSE).
 
 If you have questions or suggestions:
 - 📧 Submit an [Issue](https://github.com/DanOps-1/X-ray/issues)
-- 💡 Check the [FAQ](docs/installation-guide.md#common-issues)
-- 📖 Read the [Complete Documentation](docs/installation-guide.md)
+- 💡 Check the [FAQ](installation-guide.md#common-issues)
+- 📖 Read the [Complete Documentation](installation-guide.md)
 
 ---
 

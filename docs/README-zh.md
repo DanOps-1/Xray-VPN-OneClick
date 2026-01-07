@@ -178,7 +178,6 @@ sudo bash /home/kali/X-ray/scripts/uninstall.sh
 - [完整安装教程](installation-guide.md) - 手动安装的详细步骤说明
 - [客户端配置指南](client-setup.md) - 各平台客户端的详细配置方法
 - [用户管理指南](user-management.md) - 如何添加、删除和管理多个用户
-- [Docker 部署指南](docker-setup.md) - 使用 Docker 容器部署 Xray
 - [常见问题解答](installation-guide.md#常见问题) - 常见问题的排查和解决方案
 - [性能优化指南](installation-guide.md#性能优化) - 提升服务器性能的建议
 
@@ -269,7 +268,7 @@ services:
       - ./config:/etc/xray
 ```
 
-详细说明：[Docker 部署指南](docker-setup.md)
+详细说明：即将推出
 
 ---
 
