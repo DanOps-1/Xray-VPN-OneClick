@@ -30,6 +30,8 @@ This project provides fully automated Xray server configuration scripts and deta
 
 ### Method 1: One-Click Installation (Recommended)
 
+**Option A: Direct Download (For servers outside China)**
+
 ```bash
 # Download and run the automated installation script
 wget https://raw.githubusercontent.com/DanOps-1/X-ray/main/scripts/install.sh -O xray-install.sh
@@ -40,6 +42,38 @@ Or using curl:
 
 ```bash
 curl -O https://raw.githubusercontent.com/DanOps-1/X-ray/main/scripts/install.sh
+sudo bash install.sh
+```
+
+**Option B: Accelerated Download (For China or restricted networks)**
+
+If the above commands timeout, use these acceleration methods:
+
+```bash
+# Using GitHub proxy
+wget https://ghproxy.com/https://raw.githubusercontent.com/DanOps-1/X-ray/main/scripts/install.sh -O xray-install.sh
+sudo bash xray-install.sh
+```
+
+Or using jsDelivr CDN:
+
+```bash
+# jsDelivr CDN acceleration
+wget https://cdn.jsdelivr.net/gh/DanOps-1/X-ray@main/scripts/install.sh -O xray-install.sh
+sudo bash xray-install.sh
+```
+
+**Option C: Clone Repository (Recommended)**
+
+```bash
+# Direct clone
+git clone https://github.com/DanOps-1/X-ray.git
+cd X-ray/scripts
+sudo bash install.sh
+
+# If git clone also times out, use proxy
+git clone https://ghproxy.com/https://github.com/DanOps-1/X-ray.git
+cd X-ray/scripts
 sudo bash install.sh
 ```
 

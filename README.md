@@ -37,7 +37,7 @@
 
 ### 一键安装（推荐）
 
-使用以下命令一键安装 Xray 服务端：
+**方式一：直接下载（国外服务器）**
 
 ```bash
 wget https://raw.githubusercontent.com/DanOps-1/X-ray/main/scripts/install.sh -O xray-install.sh
@@ -48,6 +48,38 @@ sudo bash xray-install.sh
 
 ```bash
 curl -O https://raw.githubusercontent.com/DanOps-1/X-ray/main/scripts/install.sh
+sudo bash install.sh
+```
+
+**方式二：加速下载（国内服务器或网络受限）**
+
+如果上述命令连接超时，使用以下加速方法：
+
+```bash
+# 使用 GitHub 代理加速
+wget https://ghproxy.com/https://raw.githubusercontent.com/DanOps-1/X-ray/main/scripts/install.sh -O xray-install.sh
+sudo bash xray-install.sh
+```
+
+或使用 jsDelivr CDN：
+
+```bash
+# jsDelivr CDN 加速
+wget https://cdn.jsdelivr.net/gh/DanOps-1/X-ray@main/scripts/install.sh -O xray-install.sh
+sudo bash xray-install.sh
+```
+
+**方式三：克隆仓库（推荐）**
+
+```bash
+# 直接克隆
+git clone https://github.com/DanOps-1/X-ray.git
+cd X-ray/scripts
+sudo bash install.sh
+
+# 如果 git clone 也超时，使用代理
+git clone https://ghproxy.com/https://github.com/DanOps-1/X-ray.git
+cd X-ray/scripts
 sudo bash install.sh
 ```
 
