@@ -239,13 +239,34 @@ Issues and Pull Requests are welcome!
 
 ## 📄 License
 
-[MIT License](LICENSE)
+This project is licensed under the [MIT License](../LICENSE).
+
+**Important**: Please read the [NOTICE - Terms of Use and Disclaimer](../NOTICE) before using
 
 ---
 
 ## ⚠️ Disclaimer
 
-This project is for **educational and research purposes only**. You must comply with local laws and regulations when using proxy technology. Do not use this project for any illegal purposes. The author is not responsible for any consequences arising from the use of this project.
+**Important**: This project is for **educational and research purposes only**.
+
+### Usage Restrictions
+
+- ✅ **Allowed**: Personal learning, technical research, legitimate corporate intranet, authorized security testing
+- ❌ **Prohibited**: Any violation of local laws, accessing illegal content, unauthorized commercial use
+
+### Legal Liability
+
+1. Using proxy technology requires **compliance with local laws and regulations**
+2. In some countries/regions (such as mainland China), unauthorized VPN use may be **illegal**
+3. Users must **bear all legal consequences** themselves
+4. The author is **NOT responsible for any consequences** arising from the use of this project
+5. Users should **assess legal risks** independently
+
+### Detailed Information
+
+**Must read before use**: [NOTICE - Complete Terms of Use and Disclaimer](../NOTICE)
+
+**If you do not agree with the terms or cannot ensure legal use, do NOT use this project.**
 
 ---
 
