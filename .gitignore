@@ -1,0 +1,100 @@
+# Backup files
+*.bak
+*.backup
+*.old
+*~
+
+# Logs
+*.log
+logs/
+*.log.*
+
+# Temporary files
+*.tmp
+*.temp
+.tmp/
+temp/
+
+# System files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+desktop.ini
+
+# IDE and Editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*.swn
+*.kate-swp
+*~
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+.venv
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Sensitive information
+*.key
+*.pem
+*.cert
+*.crt
+secrets/
+.env
+.env.local
+config.json.secret
+
+# Build outputs
+dist/
+build/
+*.egg-info/
+
+# Archives
+*.zip
+*.tar.gz
+*.tgz
+*.rar
+*.7z
+
+# OS generated files
+.fuse_hidden*
+.directory
+.Trash-*
+.nfs*
+
+# Test files
+test/
+tests/
+*.test
+.pytest_cache/
+
+# Node modules (if any)
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Coverage reports
+htmlcov/
+.coverage
+.coverage.*
+coverage.xml
+*.cover
+
+# Xray specific
+geoip.dat
+geosite.dat
+access.log
+error.log
