@@ -65,9 +65,7 @@ async function main(): Promise<void> {
 
         if (preflightResult.suggestions.length > 0) {
           logger.hint('建议解决方案:');
-          preflightResult.suggestions.forEach((suggestion) =>
-            logger.info(`  • ${suggestion}`)
-          );
+          preflightResult.suggestions.forEach((suggestion) => logger.info(`  • ${suggestion}`));
         }
 
         await gracefulExit(ExitCode.SERVICE_ERROR);

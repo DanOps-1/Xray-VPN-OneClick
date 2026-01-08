@@ -56,7 +56,11 @@ export async function displayServiceStatus(options: ServiceCommandOptions = {}):
 
     // 状态指示器
     const statusIcon = status.healthy ? '🟢' : status.active ? '🟡' : '🔴';
-    const statusText = status.healthy ? chalk.green('运行中') : status.active ? chalk.yellow(status.subState) : chalk.red('已停止');
+    const statusText = status.healthy
+      ? chalk.green('运行中')
+      : status.active
+        ? chalk.yellow(status.subState)
+        : chalk.red('已停止');
 
     console.log(`${statusIcon} 状态: ${statusText}`);
     console.log(`   活动状态: ${chalk.cyan(status.activeState)}`);

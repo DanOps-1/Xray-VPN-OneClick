@@ -76,7 +76,16 @@ export interface ServiceOperationResult {
 /**
  * systemd 服务操作类型
  */
-export type ServiceOperation = 'start' | 'stop' | 'restart' | 'enable' | 'disable' | 'status' | 'is-active' | 'is-enabled' | 'show';
+export type ServiceOperation =
+  | 'start'
+  | 'stop'
+  | 'restart'
+  | 'enable'
+  | 'disable'
+  | 'status'
+  | 'is-active'
+  | 'is-enabled'
+  | 'show';
 
 /**
  * systemd show 命令输出的属性映射

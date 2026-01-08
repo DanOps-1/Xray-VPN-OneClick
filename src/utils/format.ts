@@ -180,7 +180,7 @@ export function formatDuration(ms: number): string {
 export function formatJSON(obj: unknown, spaces: number = 2): string {
   try {
     return JSON.stringify(obj, null, spaces);
-  } catch (error) {
+  } catch (_error) {
     return String(obj);
   }
 }

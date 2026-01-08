@@ -128,6 +128,7 @@ export function formatMenuHeader(context: MenuContext): string {
 /**
  * Get main menu options
  */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function getMainMenuOptions(): any[] {
   return [
     {
@@ -196,6 +197,7 @@ export function formatMenuOption(name: string, value: string): { name: string; v
 /**
  * Show a menu and get user selection
  */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export async function showMenu(options: any[], message: string = '请选择操作:'): Promise<string> {
   const answer = await select({
     message,

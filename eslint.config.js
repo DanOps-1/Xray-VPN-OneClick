@@ -10,8 +10,7 @@ export default [
       parser: tsparser,
       parserOptions: {
         ecmaVersion: 2020,
-        sourceType: 'module',
-        project: './tsconfig.json'
+        sourceType: 'module'
       },
       globals: {
         console: 'readonly',
@@ -20,7 +19,11 @@ export default [
         __dirname: 'readonly',
         __filename: 'readonly',
         module: 'readonly',
-        require: 'readonly'
+        require: 'readonly',
+        NodeJS: 'readonly',
+        setTimeout: 'readonly',
+        clearTimeout: 'readonly',
+        URL: 'readonly'
       }
     },
     plugins: {
@@ -29,8 +32,12 @@ export default [
     rules: {
       '@typescript-eslint/explicit-function-return-type': 'off',
       '@typescript-eslint/no-explicit-any': 'warn',
-      '@typescript-eslint/no-unused-vars': ['error', { argsIgnorePattern: '^_' }],
-      'no-console': 'off'
+      '@typescript-eslint/no-unused-vars': ['error', { argsIgnorePattern: '^_', varsIgnorePattern: '^_' }],
+      'no-console': 'off',
+      'no-unused-vars': ['error', { argsIgnorePattern: '^_', varsIgnorePattern: '^_' }],
+      'no-case-declarations': 'off',
+      'no-redeclare': 'off',
+      '@typescript-eslint/no-redeclare': 'error'
     }
   },
   {

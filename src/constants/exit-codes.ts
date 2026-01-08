@@ -45,7 +45,7 @@ export const ExitCode = {
 /**
  * 退出代码类型
  */
-export type ExitCode = (typeof ExitCode)[keyof typeof ExitCode];
+export type ExitCodeType = (typeof ExitCode)[keyof typeof ExitCode];
 
 /**
  * 退出代码到描述的映射
@@ -67,7 +67,7 @@ export const ExitCodeDescription: Record<number, string> = {
 /**
  * 根据错误类型获取退出代码
  */
-export function getExitCodeForError(error: Error): ExitCode {
+export function getExitCodeForError(error: Error): ExitCodeType {
   const errorName = error.name.toLowerCase();
   const errorMessage = error.message.toLowerCase();
 
@@ -100,7 +100,7 @@ export function getExitCodeForError(error: Error): ExitCode {
 /**
  * 优雅退出（清理资源后退出）
  */
-export async function gracefulExit(code: ExitCode, cleanup?: () => Promise<void>): Promise<never> {
+export async function gracefulExit(code: ExitCodeType, cleanup?: () => Promise<void>): Promise<never> {
   try {
     if (cleanup) {
       await cleanup();

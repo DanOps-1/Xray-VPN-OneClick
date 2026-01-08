@@ -104,3 +104,7 @@ geoip.dat
 geosite.dat
 access.log
 error.log
+
+# Development tools
+.claude/
+.specify/

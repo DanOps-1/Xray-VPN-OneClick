@@ -10,7 +10,7 @@
  * @module services/systemd-manager
  */
 
-import { spawn, ChildProcess } from 'child_process';
+import { spawn } from 'child_process';
 import { TIMEOUTS } from '../constants/timeouts';
 
 /**
@@ -155,7 +155,9 @@ export class SystemdManager {
     // Only allow alphanumeric, dash, underscore
     const validPattern = /^[a-zA-Z0-9_-]+$/;
     if (!validPattern.test(name)) {
-      throw new Error(`Invalid service name: ${name} (only alphanumeric, dash, and underscore allowed)`);
+      throw new Error(
+        `Invalid service name: ${name} (only alphanumeric, dash, and underscore allowed)`
+      );
     }
   }
 
@@ -167,13 +169,17 @@ export class SystemdManager {
    */
   validateAction(action: string): void {
     if (!SystemdManager.VALID_ACTIONS.includes(action)) {
-      throw new Error(`Invalid systemctl action: ${action} (must be one of: ${SystemdManager.VALID_ACTIONS.join(', ')})`);
+      throw new Error(
+        `Invalid systemctl action: ${action} (must be one of: ${SystemdManager.VALID_ACTIONS.join(', ')})`
+      );
     }
 
     // Extra paranoia: check for command injection attempts
     const dangerousChars = /[;&|`$()]/;
     if (dangerousChars.test(action)) {
-      throw new Error(`Invalid systemctl action: ${action} (potentially dangerous characters detected)`);
+      throw new Error(
+        `Invalid systemctl action: ${action} (potentially dangerous characters detected)`
+      );
     }
   }
 
@@ -233,12 +239,20 @@ export class SystemdManager {
     const lowerError = errorOutput.toLowerCase();
 
     // Service not found
-    if (lowerError.includes('not found') || lowerError.includes('does not exist') || lowerError.includes('could not be found')) {
+    if (
+      lowerError.includes('not found') ||
+      lowerError.includes('does not exist') ||
+      lowerError.includes('could not be found')
+    ) {
       return `服务 '${this.serviceName}' 不存在。请确认服务名称是否正确。`;
     }
 
     // Permission denied
-    if (lowerError.includes('permission denied') || lowerError.includes('access denied') || lowerError.includes('authentication required')) {
+    if (
+      lowerError.includes('permission denied') ||
+      lowerError.includes('access denied') ||
+      lowerError.includes('authentication required')
+    ) {
       return `权限不足: 无法执行 ${action} 操作。请使用 sudo 或以 root 用户运行。`;
     }
 
@@ -248,11 +262,17 @@ export class SystemdManager {
     }
 
     // Already running/stopped
-    if (action === 'start' && (lowerError.includes('already running') || lowerError.includes('already active'))) {
+    if (
+      action === 'start' &&
+      (lowerError.includes('already running') || lowerError.includes('already active'))
+    ) {
       return `服务 '${this.serviceName}' 已经在运行中。`;
     }
 
-    if (action === 'stop' && (lowerError.includes('already stopped') || lowerError.includes('inactive'))) {
+    if (
+      action === 'stop' &&
+      (lowerError.includes('already stopped') || lowerError.includes('inactive'))
+    ) {
       return `服务 '${this.serviceName}' 已经停止。`;
     }
 
