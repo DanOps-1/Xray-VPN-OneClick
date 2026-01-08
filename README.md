@@ -8,10 +8,11 @@
   <strong>最新协议 | 安全可靠 | 5分钟部署 | 全平台支持</strong>
 </p>
 
+[![npm version](https://img.shields.io/npm/v/xray-manager?style=for-the-badge&logo=npm&color=red)](https://www.npmjs.com/package/xray-manager)
+[![npm downloads](https://img.shields.io/npm/dm/xray-manager?style=for-the-badge&logo=npm&color=orange)](https://www.npmjs.com/package/xray-manager)
 [![GitHub Stars](https://img.shields.io/github/stars/DanOps-1/Xray-VPN-OneClick?style=for-the-badge&logo=github&color=yellow)](https://github.com/DanOps-1/Xray-VPN-OneClick/stargazers)
 [![License](https://img.shields.io/github/license/DanOps-1/Xray-VPN-OneClick?style=for-the-badge&color=blue)](https://github.com/DanOps-1/Xray-VPN-OneClick/blob/main/LICENSE)
 [![Last Commit](https://img.shields.io/github/last-commit/DanOps-1/Xray-VPN-OneClick?style=for-the-badge&color=green)](https://github.com/DanOps-1/Xray-VPN-OneClick/commits/main)
-[![Language](https://img.shields.io/github/languages/top/DanOps-1/Xray-VPN-OneClick?style=for-the-badge&color=orange)](https://github.com/DanOps-1/Xray-VPN-OneClick)
 
 [![Platform](https://img.shields.io/badge/Platform-Linux-blue?style=for-the-badge&logo=linux)](https://github.com/DanOps-1/Xray-VPN-OneClick)
 [![Protocol](https://img.shields.io/badge/Protocol-VLESS%2BReality-purple?style=for-the-badge)](https://github.com/XTLS/REALITY)
@@ -277,14 +278,32 @@ vless://xxxxxxxx@YOUR_IP:443?...
 
 #### 安装 CLI 工具
 
-```bash
-# 全局安装
-sudo npm install -g .
+**方式一：从 npm 安装（推荐）⭐**
 
-# 或者在项目目录中本地安装
-npm install
-npm link
+```bash
+# 全局安装（推荐）
+npm install -g xray-manager
+
+# 或使用 npx（无需安装）
+npx xray-manager
 ```
+
+**方式二：从源代码安装**
+
+```bash
+# 克隆仓库
+git clone https://github.com/DanOps-1/Xray-VPN-OneClick.git
+cd Xray-VPN-OneClick
+
+# 安装依赖并全局安装
+npm install
+sudo npm install -g .
+```
+
+**npm 包信息**
+- 📦 包名: `xray-manager`
+- 🔗 npm 主页: https://www.npmjs.com/package/xray-manager
+- 📥 每周下载: [![npm](https://img.shields.io/npm/dw/xray-manager)](https://www.npmjs.com/package/xray-manager)
 
 #### 启动交互式菜单
 

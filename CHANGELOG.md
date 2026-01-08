@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [1.0.0] - 2026-01-08
 
+🎉 **首次正式发布！现已发布到 npm registry**
+
+📦 **npm 安装**: `npm install -g xray-manager`
+🔗 **npm 主页**: https://www.npmjs.com/package/xray-manager
+🏷️ **GitHub Release**: https://github.com/DanOps-1/Xray-VPN-OneClick/releases/tag/v1.0.0
+
 ### Added - 交互式 CLI 管理工具 🎉
 
 #### ✨ 核心功能
