@@ -6,7 +6,7 @@
  * @module commands/interactive
  */
 
-import { select, confirm } from '@inquirer/prompts';
+import { select, confirm, Separator } from '@inquirer/prompts';
 import chalk from 'chalk';
 import logger from '../utils/logger';
 import { ExitCode } from '../constants/exit-codes';
@@ -15,6 +15,7 @@ import { UserManager } from '../services/user-manager';
 import { displayServiceStatus, startService, stopService, restartService } from './service';
 import { listUsers, addUser, deleteUser, showUserShare } from './user';
 import { menuIcons } from '../constants/ui-symbols';
+import { t, toggleLanguage } from '../config/i18n';
 
 /**
  * Menu options configuration
@@ -118,12 +119,19 @@ export async function getMenuContext(options: MenuOptions = {}): Promise<MenuCon
  * Format menu header with context
  */
 export function formatMenuHeader(context: MenuContext): string {
+  const trans = t();
   const status = context.serviceStatus || 'unknown';
   const userCount = context.userCount || 0;
 
+  // Translate status
+  let statusText = status;
+  if (status === 'active') statusText = trans.status.active;
+  else if (status === 'inactive') statusText = trans.status.inactive;
+  else statusText = trans.status.unknown;
+
   const statusColor = status === 'active' ? chalk.green : status === 'inactive' ? chalk.red : chalk.yellow;
 
-  return `${chalk.gray('服务状态:')} ${statusColor(status)}  ${chalk.gray('用户数:')} ${chalk.cyan(String(userCount))}`;
+  return `${chalk.gray(trans.status.serviceStatus + ':')} ${statusColor(statusText)}  ${chalk.gray(trans.status.userCount + ':')} ${chalk.cyan(String(userCount))}`;
 }
 
 /**
@@ -131,42 +139,48 @@ export function formatMenuHeader(context: MenuContext): string {
  */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function getMainMenuOptions(): any[] {
+  const trans = t();
+
   return [
     // Service Operations Group
     {
-      name: chalk.cyan(`${menuIcons.STATUS} 查看服务状态`),
+      name: chalk.cyan(`${menuIcons.STATUS} ${trans.menu.viewStatus}`),
       value: 'service-status',
     },
     {
-      name: chalk.green(`${menuIcons.START} 启动服务`),
+      name: chalk.green(`${menuIcons.START} ${trans.menu.startService}`),
       value: 'service-start',
     },
     {
-      name: chalk.red(`${menuIcons.STOP} 停止服务`),
+      name: chalk.red(`${menuIcons.STOP} ${trans.menu.stopService}`),
       value: 'service-stop',
     },
     {
-      name: chalk.yellow(`${menuIcons.RESTART} 重启服务`),
+      name: chalk.yellow(`${menuIcons.RESTART} ${trans.menu.restartService}`),
       value: 'service-restart',
     },
-    { type: 'separator' },
+    new Separator(),
     // Management Group
     {
-      name: chalk.blue(`${menuIcons.USER} 用户管理`),
+      name: chalk.blue(`${menuIcons.USER} ${trans.menu.userManagement}`),
       value: 'user',
     },
     {
-      name: chalk.magenta(`${menuIcons.CONFIG} 配置管理`),
+      name: chalk.magenta(`${menuIcons.CONFIG} ${trans.menu.configManagement}`),
       value: 'config',
     },
     {
-      name: chalk.gray(`${menuIcons.LOGS} 查看日志`),
+      name: chalk.gray(`${menuIcons.LOGS} ${trans.menu.viewLogs}`),
       value: 'logs',
     },
-    { type: 'separator' },
-    // Exit Group
+    new Separator(),
+    // Language & Exit Group
     {
-      name: chalk.red(`${menuIcons.EXIT} 退出`),
+      name: chalk.cyan(`🌐 ${trans.menu.switchLanguage}`),
+      value: 'switch-language',
+    },
+    {
+      name: chalk.red(`${menuIcons.EXIT} ${trans.menu.exit}`),
       value: 'exit',
     },
   ];
@@ -213,9 +227,10 @@ export function formatMenuOption(name: string, value: string): { name: string; v
  * Show a menu and get user selection
  */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export async function showMenu(options: any[], message: string = '请选择操作:'): Promise<string> {
+export async function showMenu(options: any[], message?: string): Promise<string> {
+  const trans = t();
   const answer = await select({
-    message,
+    message: message || trans.actions.selectAction,
     choices: options,
   });
 
@@ -227,6 +242,14 @@ export async function showMenu(options: any[], message: string = '请选择操�
  */
 export async function handleMenuSelection(selection: string, options: MenuOptions): Promise<boolean> {
   switch (selection) {
+    case 'switch-language':
+      logger.newline();
+      toggleLanguage();
+      const trans = t();
+      logger.success(trans.messages.languageSwitched);
+      await promptContinue();
+      return false; // Return to menu with new language
+
     case 'exit':
       return true; // Signal to exit
 
