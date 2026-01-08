@@ -81,7 +81,7 @@
 - [x] T019 [P] [US2] Fix unused '_error' variables in `src/utils/clipboard.ts` - Removed error parameter entirely
 - [x] T020 [P] [US2] Fix unused imports in test files under `tests/integration/` and `tests/unit/` - Removed unused imports
 - [x] T021 [US2] Run `npm test` to verify all 210 tests still pass after Batch 2 - All 210 tests pass
-- [ ] T022 [US2] Commit Batch 2 changes with message `fix(lint): remove unused variables and clean up catch blocks`
+- [x] T022 [US2] Commit Batch 2 changes with message `fix(lint): remove unused variables and clean up catch blocks` - Committed e697555
 
 ### Batch 3: Type Safety for User Story 2 (~31 issues)
 

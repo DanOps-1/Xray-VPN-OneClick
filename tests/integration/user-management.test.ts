@@ -5,7 +5,7 @@
  * Following TDD: These tests MUST FAIL before implementation
  */
 
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 
 describe('User Management Integration', () => {
   describe('Add User Workflow (T063)', () => {

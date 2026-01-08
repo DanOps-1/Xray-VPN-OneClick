@@ -104,7 +104,7 @@ export async function getMenuContext(options: MenuOptions = {}): Promise<MenuCon
       userCount: users.length,
       lastUpdated: new Date(),
     };
-  } catch (_error) {
+  } catch {
     // If service status fails, return unknown
     return {
       serviceStatus: 'unknown',

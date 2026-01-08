@@ -227,7 +227,6 @@ describe('SystemdManager - Command Validation', () => {
 
       try {
         const { SystemdManager } = await import('../../../src/services/systemd-manager');
-        const { TIMEOUTS } = await import('../../../src/constants/timeouts');
 
         const manager = new SystemdManager('xray');
 

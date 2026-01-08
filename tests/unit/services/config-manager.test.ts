@@ -32,7 +32,9 @@ describe('ConfigManager - Backup (T091)', () => {
     // Cleanup
     try {
       await rm(testConfigDir, { recursive: true, force: true });
-    } catch {}
+    } catch {
+      // Ignore cleanup errors
+    }
   });
 
   it('should create backup with timestamp filename', async () => {
@@ -142,7 +144,9 @@ describe('ConfigManager - Restore (T092)', () => {
   afterEach(async () => {
     try {
       await rm(testConfigDir, { recursive: true, force: true });
-    } catch {}
+    } catch {
+      // Ignore cleanup errors
+    }
   });
 
   it('should restore config from backup', async () => {

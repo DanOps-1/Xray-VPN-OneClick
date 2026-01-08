@@ -44,6 +44,7 @@ describe('UserManager - UUID Generation (T061)', () => {
       const { UserManager } = await import('../../../src/services/user-manager');
 
       // Verify crypto.randomUUID is available
+      // eslint-disable-next-line no-undef
       expect(typeof crypto.randomUUID).toBe('function');
 
       const manager = new UserManager();

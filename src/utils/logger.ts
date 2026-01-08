@@ -139,7 +139,7 @@ function formatMessage(level: LogLevel, message: string, includeIndicator: boole
  * @param colorFn - Chalk 颜色函数
  * @returns 着色后的消息
  */
-function applyColor(message: string, colorFn: (text: string) => string): string {
+function applyColor(message: string, colorFn: (_text: string) => string): string {
   const mode = getOutputMode();
 
   if (mode === OutputMode.RICH) {
