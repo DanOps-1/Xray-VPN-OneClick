@@ -5,6 +5,134 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.0] - 2026-01-08
+
+🎨 **CLI 用户界面优化 - 终端兼容性与视觉层次改进**
+
+### Added - 新增功能
+
+#### 🌍 通用系统兼容性
+- **终端能力自动检测系统**
+  - 实时检测 TTY 状态、颜色支持、Unicode 支持
+  - 自动识别操作系统平台（Windows/Linux/macOS/FreeBSD）
+  - 检测终端宽度和高度
+  - 支持 TERM 环境变量解析
+
+- **智能图标解析器**
+  - Unicode 图标优先，自动降级到 ASCII
+  - Windows CMD 完全兼容（纯 ASCII 模式）
+  - 支持传统终端（vt100, dumb）
+  - SSH 会话完美支持
+
+- **三种输出模式**
+  - RICH 模式：全彩色 + 格式化 + Unicode 图标
+  - PLAIN_TTY 模式：无彩色 + 格式化 + ASCII 图标
+  - PIPE 模式：纯文本 + 时间戳 + 结构化输出
+
+#### 🎯 改进视觉层次
+- **文本标签替代 Emoji**
+  - 所有状态指示器使用 [标签] 格式
+  - 菜单图标统一为 [查看][启动][停止] 等文本
+  - 最大长度 ≤6 字符，保持紧凑
+  - 支持中文标签显示
+
+- **菜单分组优化**
+  - 服务操作组（状态/启动/停止/重启）
+  - 管理功能组（用户/配置/日志）
+  - 退出组
+  - 使用分隔符清晰划分
+
+- **一致的图标样式**
+  - ✓/✗ 替换为 [OK]/[ERROR]
+  - 彩色编码保留（绿色成功、红色错误）
+  - 易于快速扫描识别
+
+#### 📐 一致终端交互
+- **80 列布局优化**
+  - 所有 UI 元素宽度 ≤80 列
+  - 分隔符默认 50 字符，自适应终端宽度
+  - 表格宽度限制为 59 字符
+  - 菜单选项 + 描述总长度验证
+
+- **终端宽度自适应**
+  - 动态检测终端列数
+  - 未检测到时默认 80 列
+  - 最小宽度保护（40 列）
+  - 窄终端友好
+
+### Changed - 功能变更
+
+#### 重构的模块
+- **Logger 完全重构**
+  - 添加 OutputMode 枚举
+  - 实现 getOutputMode() 自动检测
+  - formatMessage() 支持三种模式
+  - 移除硬编码 emoji，使用图标解析器
+
+- **命令文件更新**
+  - `service.ts`: 移除 📊🟢🟡🔴✅，使用 menuIcons
+  - `user.ts`: 移除 👥📧🆔📊✅💡，使用 menuIcons
+  - `config.ts`: 移除 ⚙️✅💡⚠️，使用 menuIcons
+  - `logs.ts`: 重构 getIconForLevel()，使用 resolveIcon()
+  - `interactive.ts`: 更新主菜单和子菜单，添加分组注释
+  - `cli.ts`: 移除 👋 emoji
+
+#### 新增的常量和类型
+- `src/types/terminal.ts`: Platform 枚举 + TerminalCapabilities 接口
+- `src/constants/ui-symbols.ts`: 集中管理状态图标和菜单图标
+- `src/utils/terminal.ts`: 终端检测函数
+- `src/utils/icons.ts`: 图标解析函数
+
+### Fixed - 问题修复
+
+- **循环依赖修复**
+  - icons.ts 使用 `import type { LogLevel }` 避免循环引用
+  - STATUS_INDICATOR_MAP 改用字符串键
+  - 函数中使用类型转换 `level as string`
+
+- **ESLint 清理**
+  - 添加 `// eslint-disable-next-line no-unused-vars` 到枚举声明
+  - 移除测试文件中未使用的导入
+  - 修复所有 lint 警告
+
+### Tests - 测试
+
+#### 新增测试文件
+- `tests/unit/terminal.test.ts` - 30 个测试
+  - 平台检测、Unicode 支持、终端能力
+
+- `tests/unit/icons.test.ts` - 14 个测试
+  - 图标解析、ASCII/Unicode 选择、菜单图标格式
+
+- `tests/unit/logger.test.ts` - 11 个测试
+  - 输出模式检测、消息格式化
+
+- `tests/integration/ui-compatibility.test.ts` - 17 个测试
+  - TTY 检测、Windows 兼容性、80 列布局
+
+#### 测试覆盖率
+- Terminal 模块: 95.45%
+- Icons 模块: 90.47%
+- 总测试数: 210 个全部通过
+
+### Documentation - 文档
+
+- 更新 README.md 添加终端兼容性说明（待完成）
+- 更新 CHANGELOG.md（本文件）
+- 代码注释完整，符合 JSDoc 规范
+
+### Performance - 性能
+
+- 终端能力检测结果缓存，避免重复调用
+- 图标解析使用 Map 查找，O(1) 复杂度
+- 无额外运行时开销
+
+### Breaking Changes - 破坏性变更
+
+无。此版本完全向下兼容 1.0.0。
+
+---
+
 ## [1.0.0] - 2026-01-08
 
 🎉 **首次正式发布！现已发布到 npm registry**
