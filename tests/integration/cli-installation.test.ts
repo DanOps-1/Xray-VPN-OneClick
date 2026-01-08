@@ -5,13 +5,30 @@
  * Following TDD: This test MUST FAIL before implementation
  */
 
-import { describe, it, expect, beforeAll, afterAll } from 'vitest';
-import { spawn } from 'child_process';
+import { describe, it, expect, beforeAll } from 'vitest';
+import { spawn, execSync } from 'child_process';
 import { join } from 'path';
+import { existsSync } from 'fs';
 
 const CLI_PATH = join(__dirname, '../../dist/cli.js');
 
 describe('CLI Installation', () => {
+  beforeAll(() => {
+    // Ensure the project is built before running tests
+    if (!existsSync(CLI_PATH)) {
+      console.log('Building project for CLI tests...');
+      try {
+        execSync('npm run build', {
+          cwd: join(__dirname, '../..'),
+          stdio: 'inherit'
+        });
+      } catch (error) {
+        console.error('Failed to build project:', error);
+        throw error;
+      }
+    }
+  });
+
   describe('Binary Existence', () => {
     it('should have xray-manager binary defined in package.json', async () => {
       const packageJson = await import('../../package.json');
@@ -60,12 +77,21 @@ describe('CLI Installation', () => {
       });
 
       let stdout = '';
+      let stderr = '';
 
       child.stdout.on('data', (data) => {
         stdout += data.toString();
       });
 
+      child.stderr.on('data', (data) => {
+        stderr += data.toString();
+      });
+
       child.on('close', (code) => {
+        if (code !== 0) {
+          console.error('CLI stderr:', stderr);
+          console.error('CLI stdout:', stdout);
+        }
         expect(code).toBe(0);
         expect(stdout).toMatch(/\d+\.\d+\.\d+/);
         done();
