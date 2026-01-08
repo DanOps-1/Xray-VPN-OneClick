@@ -74,17 +74,15 @@ build/
 .Trash-*
 .nfs*
 
-# Test files
-test/
-tests/
-*.test
+# Test files (Python)
 .pytest_cache/
 
-# Node modules (if any)
+# Node.js
 node_modules/
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+package-lock.json
 
 # Coverage reports
 htmlcov/
@@ -92,9 +90,21 @@ htmlcov/
 .coverage.*
 coverage.xml
 *.cover
+coverage/
+.nyc_output/
+
+# TypeScript
+*.tsbuildinfo
+
+# Vitest
+.vitest/
 
 # Xray specific
 geoip.dat
 geosite.dat
 access.log
 error.log
+
+# Development tools
+.claude/
+.specify/
