@@ -73,10 +73,21 @@ jobs:
   build:
     name: Build Project
     runs-on: ubuntu-latest
-    needs: [lint, test]
+    # Build can run parallel with tests - only depends on lint passing
+    needs: [lint]
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+
+      - name: Cache TypeScript build
+        uses: actions/cache@v4
+        with:
+          path: |
+            dist/
+            .tsbuildinfo
+          key: build-${{ runner.os }}-${{ hashFiles('src/**/*.ts', 'tsconfig.json') }}
+          restore-keys: |
+            build-${{ runner.os }}-
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
