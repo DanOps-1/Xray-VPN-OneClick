@@ -5,6 +5,58 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+🔧 **CI/CD Pipeline Polish & Code Quality Improvements**
+
+### Changed - 改进
+
+#### 🎯 代码质量
+- **Lint 问题完全修复**
+  - 修复所有 90 个 ESLint 问题（53 错误 + 37 警告 → 0）
+  - 移除未使用的 eslint-disable 指令
+  - 清理未使用的变量和 catch 块
+  - 将 `any` 类型替换为适当的 TypeScript 类型
+  - 为公共 API 枚举和测试 mock 添加适当的 eslint-disable
+  - 所有 210 个测试在整个修复过程中持续通过
+
+#### ⚡ CI/CD 优化
+- **移除 CI 临时解决方案**
+  - 移除 lint 步骤的 `continue-on-error: true` 标志
+  - 移除 format 步骤的 `continue-on-error: true` 标志
+  - Lint 失败现在会正确阻止 CI 通过
+  - 代码质量标准已强制执行
+
+- **CI 性能优化**
+  - Build job 现在与 test 并行运行（仅依赖 lint）
+  - 添加 TypeScript 构建缓存（`dist/` 和 `.tsbuildinfo`）
+  - CI 架构优化，为后续运行提供更好的性能
+
+- **自动化发布**
+  - 配置 NPM_TOKEN 用于自动 npm 发布
+  - 推送版本标签即可自动发布到 npm
+
+#### 📊 测试覆盖率可见性
+- **Codecov 集成**
+  - 添加 Codecov badge 到 README.md
+  - 配置 CODECOV_TOKEN 用于覆盖率报告上传
+  - 覆盖率报告在 CI 中自动生成和上传
+  - Codecov dashboard 现已可用
+
+### Fixed - 修复
+- 修复 `src/types/terminal.ts` 中的未使用枚举成员（Platform）
+- 修复 `src/utils/logger.ts` 中的未使用枚举成员（LogLevel, OutputMode）
+- 修复 `src/commands/interactive.ts` 中的未使用 catch 参数
+- 修复 `src/services/config-manager.ts` 中的 `any` 类型
+- 修复多个测试文件中的未使用导入
+- 修复空 catch 块警告
+
+### Documentation - 文档
+- 更新 CLAUDE.md 项目指南
+- 添加完整的 Feature 004 规范和实施文档
+- 创建 60 个任务的详细任务列表
+- 添加快速入门指南和研究文档
+
 ## [1.1.0] - 2026-01-08
 
 🎨 **CLI 用户界面优化 - 终端兼容性与视觉层次改进**
