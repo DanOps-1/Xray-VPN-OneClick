@@ -5,6 +5,7 @@
  * Following TDD: These tests MUST FAIL before implementation
  */
 
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import { existsSync } from 'fs';
 import { readFile, writeFile, mkdir, rm } from 'fs/promises';

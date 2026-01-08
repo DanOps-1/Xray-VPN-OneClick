@@ -5,6 +5,7 @@
  * Following TDD: This test MUST FAIL before implementation
  */
 
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 
 // Mock dependencies before importing the module under test

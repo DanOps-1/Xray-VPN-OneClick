@@ -203,11 +203,12 @@ export class ConfigManager {
    * @param path - Dot-separated path to config item (e.g., "log.loglevel")
    * @param value - New value
    */
-  async modifyConfigItem(path: string, value: any): Promise<void> {
+  async modifyConfigItem(path: string, value: unknown): Promise<void> {
     const config = await this.readConfig();
 
     // Split path and navigate to parent object
     const parts = path.split('.');
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     let current: any = config;
 
     for (let i = 0; i < parts.length - 1; i++) {

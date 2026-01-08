@@ -5,6 +5,7 @@
  * Following TDD: These tests MUST FAIL before implementation
  */
 
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { describe, it, expect, vi } from 'vitest';
 
 describe('User Management Integration', () => {

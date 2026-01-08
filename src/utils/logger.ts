@@ -10,7 +10,7 @@ import { resolveIcon, resolveSpecialIcon, getStatusIndicator } from './icons';
 /**
  * 日志级别
  */
-/* eslint-disable @typescript-eslint/no-unused-vars, no-unused-vars */
+/* eslint-disable no-unused-vars */
 export enum LogLevel {
   DEBUG = 'debug',
   INFO = 'info',
@@ -18,12 +18,12 @@ export enum LogLevel {
   WARN = 'warn',
   ERROR = 'error',
 }
-/* eslint-enable @typescript-eslint/no-unused-vars, no-unused-vars */
+/* eslint-enable no-unused-vars */
 
 /**
  * 输出模式
  */
-/* eslint-disable @typescript-eslint/no-unused-vars, no-unused-vars */
+/* eslint-disable no-unused-vars */
 export enum OutputMode {
   /** 完整模式：颜色 + 格式化 */
   RICH = 'rich',
@@ -32,7 +32,7 @@ export enum OutputMode {
   /** 管道模式：纯文本 + 时间戳 */
   PIPE = 'pipe',
 }
-/* eslint-enable @typescript-eslint/no-unused-vars, no-unused-vars */
+/* eslint-enable no-unused-vars */
 
 /**
  * 日志选项

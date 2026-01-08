@@ -5,6 +5,7 @@
  * Following TDD: These tests MUST FAIL before implementation
  */
 
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { describe, it, expect } from 'vitest';
 
 describe('Service Lifecycle Integration', () => {
