@@ -107,3 +107,4 @@ error.log
 # Development tools
 .claude/
 .specify/
+.npmrc
