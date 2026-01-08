@@ -6,7 +6,7 @@
 /**
  * Operating system platform enumeration
  */
-// eslint-disable-next-line no-unused-vars
+ 
 export enum Platform {
   WIN32 = 'win32',
   LINUX = 'linux',

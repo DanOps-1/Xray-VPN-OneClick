@@ -10,7 +10,7 @@ import { resolveIcon, resolveSpecialIcon, getStatusIndicator } from './icons';
 /**
  * 日志级别
  */
-// eslint-disable-next-line no-unused-vars
+ 
 export enum LogLevel {
   DEBUG = 'debug',
   INFO = 'info',
@@ -22,7 +22,7 @@ export enum LogLevel {
 /**
  * 输出模式
  */
-// eslint-disable-next-line no-unused-vars
+ 
 export enum OutputMode {
   /** 完整模式：颜色 + 格式化 */
   RICH = 'rich',
