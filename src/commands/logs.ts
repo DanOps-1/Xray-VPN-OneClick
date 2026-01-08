@@ -10,6 +10,10 @@ import { LogManager, LogEntry } from '../services/log-manager';
 import logger from '../utils/logger';
 import chalk from 'chalk';
 import { select, input } from '@inquirer/prompts';
+import { detectTerminalCapabilities } from '../utils/terminal';
+import { resolveIcon } from '../utils/icons';
+import { LogLevel } from '../utils/logger';
+import { menuIcons } from '../constants/ui-symbols';
 
 /**
  * Logs command options
@@ -61,29 +65,30 @@ function getColorForLevel(level: string): (_text: string) => string {
 }
 
 /**
- * Get emoji for log level
+ * Get icon for log level using terminal capability detection
  *
  * @param level - Log level
- * @returns Emoji string
+ * @returns Icon string (Unicode or ASCII based on terminal capabilities)
  */
-function getEmojiForLevel(level: string): string {
+function getIconForLevel(level: string): string {
+  const capabilities = detectTerminalCapabilities();
+
+  // Map systemd log levels to LogLevel enum
   switch (level.toLowerCase()) {
     case 'emergency':
     case 'alert':
-      return '🚨';
     case 'critical':
     case 'error':
-      return '❌';
+      return resolveIcon(LogLevel.ERROR, capabilities);
     case 'warning':
-      return '⚠️';
+      return resolveIcon(LogLevel.WARN, capabilities);
     case 'notice':
-      return '📢';
     case 'info':
-      return 'ℹ️';
+      return resolveIcon(LogLevel.INFO, capabilities);
     case 'debug':
-      return '🐛';
+      return resolveIcon(LogLevel.DEBUG, capabilities);
     default:
-      return '📄';
+      return resolveIcon(LogLevel.INFO, capabilities);
   }
 }
 
@@ -95,7 +100,7 @@ function getEmojiForLevel(level: string): string {
  */
 function formatLogEntry(entry: LogEntry): string {
   const colorFn = getColorForLevel(entry.level);
-  const emoji = getEmojiForLevel(entry.level);
+  const icon = getIconForLevel(entry.level);
 
   const timestamp = entry.timestamp.toLocaleString('zh-CN', {
     year: 'numeric',
@@ -108,7 +113,7 @@ function formatLogEntry(entry: LogEntry): string {
 
   const level = entry.level.toUpperCase().padEnd(9);
 
-  return `${chalk.gray(timestamp)} ${emoji} ${colorFn(level)} ${entry.message}`;
+  return `${chalk.gray(timestamp)} ${icon} ${colorFn(level)} ${entry.message}`;
 }
 
 /**
@@ -141,7 +146,7 @@ export async function viewLogs(options: LogsCommandOptions = {}): Promise<void> 
 
     logger.newline();
     logger.separator();
-    console.log(chalk.bold.cyan(`📝 服务日志 (${serviceName})`));
+    console.log(chalk.bold.cyan(`${menuIcons.LOGS} 服务日志 (${serviceName})`));
 
     if (options.level) {
       console.log(chalk.gray(`   过滤器: 级别 ≥ ${options.level}`));
@@ -191,7 +196,7 @@ export async function followLogs(options: LogsCommandOptions = {}): Promise<void
 
     logger.newline();
     logger.separator();
-    console.log(chalk.bold.cyan(`📝 实时日志 (${serviceName})`));
+    console.log(chalk.bold.cyan(`${menuIcons.LOGS} 实时日志 (${serviceName})`));
 
     if (options.level) {
       console.log(chalk.gray(`   过滤器: 级别 ≥ ${options.level}`));

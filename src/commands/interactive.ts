@@ -14,6 +14,7 @@ import { SystemdManager } from '../services/systemd-manager';
 import { UserManager } from '../services/user-manager';
 import { displayServiceStatus, startService, stopService, restartService } from './service';
 import { listUsers, addUser, deleteUser, showUserShare } from './user';
+import { menuIcons } from '../constants/ui-symbols';
 
 /**
  * Menu options configuration
@@ -131,38 +132,41 @@ export function formatMenuHeader(context: MenuContext): string {
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function getMainMenuOptions(): any[] {
   return [
+    // Service Operations Group
     {
-      name: chalk.cyan('📊 查看服务状态'),
+      name: chalk.cyan(`${menuIcons.STATUS} 查看服务状态`),
       value: 'service-status',
     },
     {
-      name: chalk.green('🚀 启动服务'),
+      name: chalk.green(`${menuIcons.START} 启动服务`),
       value: 'service-start',
     },
     {
-      name: chalk.red('🛑 停止服务'),
+      name: chalk.red(`${menuIcons.STOP} 停止服务`),
       value: 'service-stop',
     },
     {
-      name: chalk.yellow('🔄 重启服务'),
+      name: chalk.yellow(`${menuIcons.RESTART} 重启服务`),
       value: 'service-restart',
     },
     { type: 'separator' },
+    // Management Group
     {
-      name: chalk.blue('👥 用户管理'),
+      name: chalk.blue(`${menuIcons.USER} 用户管理`),
       value: 'user',
     },
     {
-      name: chalk.magenta('⚙️  配置管理'),
+      name: chalk.magenta(`${menuIcons.CONFIG} 配置管理`),
       value: 'config',
     },
     {
-      name: chalk.gray('📝 查看日志'),
+      name: chalk.gray(`${menuIcons.LOGS} 查看日志`),
       value: 'logs',
     },
     { type: 'separator' },
+    // Exit Group
     {
-      name: chalk.red('❌ 退出'),
+      name: chalk.red(`${menuIcons.EXIT} 退出`),
       value: 'exit',
     },
   ];
@@ -177,16 +181,27 @@ export function getMenuDepth(): number {
 }
 
 /**
- * Format a menu option
+ * Format a menu option with appropriate icon
  */
 export function formatMenuOption(name: string, value: string): { name: string; value: string } {
-  // Add icon based on value type
+  // Add icon based on value type using menuIcons
   let icon = '•';
 
-  if (value.includes('service')) icon = '⚙️';
-  else if (value.includes('user')) icon = '👤';
-  else if (value.includes('config')) icon = '🔧';
-  else if (value.includes('log')) icon = '📄';
+  if (value.includes('service') || value.includes('status')) {
+    icon = menuIcons.STATUS;
+  } else if (value.includes('user')) {
+    icon = menuIcons.USER;
+  } else if (value.includes('config')) {
+    icon = menuIcons.CONFIG;
+  } else if (value.includes('log')) {
+    icon = menuIcons.LOGS;
+  } else if (value.includes('start')) {
+    icon = menuIcons.START;
+  } else if (value.includes('stop')) {
+    icon = menuIcons.STOP;
+  } else if (value.includes('restart')) {
+    icon = menuIcons.RESTART;
+  }
 
   return {
     name: `${icon} ${name}`,
@@ -230,7 +245,7 @@ export async function handleMenuSelection(selection: string, options: MenuOption
     case 'service-stop':
       logger.newline();
       const confirmStop = await confirm({
-        message: chalk.yellow('⚠️  确定要停止服务吗？这将中断所有连接。'),
+        message: chalk.yellow('确定要停止服务吗？这将中断所有连接。'),
         default: false,
       });
 
@@ -245,7 +260,7 @@ export async function handleMenuSelection(selection: string, options: MenuOption
     case 'service-restart':
       logger.newline();
       const confirmRestart = await confirm({
-        message: chalk.yellow('⚠️  确定要重启服务吗？'),
+        message: chalk.yellow('确定要重启服务吗？'),
         default: true,
       });
 
@@ -284,17 +299,17 @@ async function handleUserManagementMenu(options: MenuOptions): Promise<boolean> 
   while (true) {
     logger.newline();
     logger.separator();
-    console.log(chalk.bold.cyan('👥 用户管理'));
+    console.log(chalk.bold.cyan(`${menuIcons.USER} 用户管理`));
     logger.separator();
     logger.newline();
 
     const userMenuOptions = [
-      { name: chalk.cyan('📋 查看用户列表'), value: 'user-list' },
-      { name: chalk.green('➕ 添加用户'), value: 'user-add' },
-      { name: chalk.red('➖ 删除用户'), value: 'user-delete' },
-      { name: chalk.blue('📤 显示分享链接'), value: 'user-share' },
+      { name: chalk.cyan('[列表] 查看用户列表'), value: 'user-list' },
+      { name: chalk.green('[添加] 添加用户'), value: 'user-add' },
+      { name: chalk.red('[删除] 删除用户'), value: 'user-delete' },
+      { name: chalk.blue('[分享] 显示分享链接'), value: 'user-share' },
       { type: 'separator' },
-      { name: chalk.gray('⬅️  返回主菜单'), value: 'back' },
+      { name: chalk.gray('[返回] 返回主菜单'), value: 'back' },
     ];
 
     const selection = await showMenu(userMenuOptions, chalk.bold('请选择操作:'));
@@ -350,7 +365,7 @@ async function promptContinue(): Promise<void> {
 export async function handleSigInt(): Promise<boolean> {
   logger.newline();
   const shouldExit = await confirm({
-    message: chalk.yellow('⚠️  确定要退出吗?'),
+    message: chalk.yellow('确定要退出吗?'),
     default: false,
   });
 

@@ -13,6 +13,7 @@ import logger from '../utils/logger';
 import chalk from 'chalk';
 import ora from 'ora';
 import { confirm, input } from '@inquirer/prompts';
+import { menuIcons } from '../constants/ui-symbols';
 
 /**
  * User command options
@@ -45,7 +46,7 @@ export async function listUsers(options: UserCommandOptions = {}): Promise<void>
 
     logger.newline();
     logger.separator();
-    console.log(chalk.bold.cyan(`👥 用户列表 (共 ${users.length} 个用户)`));
+    console.log(chalk.bold.cyan(`${menuIcons.USER} 用户列表 (共 ${users.length} 个用户)`));
     logger.separator();
     logger.newline();
 
@@ -58,7 +59,7 @@ export async function listUsers(options: UserCommandOptions = {}): Promise<void>
     // Display users in table format
     for (const user of users) {
       const maskedId = maskSensitiveValue(user.id);
-      console.log(chalk.cyan(`  📧 ${user.email}`));
+      console.log(chalk.cyan(`  邮箱: ${user.email}`));
       console.log(chalk.gray(`     UUID: ${maskedId}`));
       console.log(chalk.gray(`     等级: ${user.level}`));
       if (user.flow) {
@@ -103,12 +104,12 @@ export async function addUser(options: UserCommandOptions = {}): Promise<void> {
 
     const user = await manager.addUser({ email, level });
 
-    spinner.succeed(chalk.green('✅ 用户添加成功！'));
+    spinner.succeed(chalk.green('用户添加成功！'));
 
     logger.newline();
-    console.log(chalk.cyan('  📧 邮箱: ') + chalk.white(user.email));
-    console.log(chalk.cyan('  🆔 UUID: ') + chalk.white(user.id));
-    console.log(chalk.cyan('  📊 等级: ') + chalk.white(user.level));
+    console.log(chalk.cyan('  邮箱: ') + chalk.white(user.email));
+    console.log(chalk.cyan('  UUID: ') + chalk.white(user.id));
+    console.log(chalk.cyan('  等级: ') + chalk.white(user.level));
     logger.newline();
 
     logger.success('服务已自动重启');
@@ -169,7 +170,7 @@ export async function deleteUser(options: UserCommandOptions = {}): Promise<void
 
     await manager.deleteUser(targetId);
 
-    spinner.succeed(chalk.green('✅ 用户删除成功！'));
+    spinner.succeed(chalk.green('用户删除成功！'));
     logger.success('服务已自动重启');
   } catch (error) {
     logger.error((error as Error).message);
@@ -237,9 +238,9 @@ export async function showUserShare(options: UserCommandOptions = {}): Promise<v
     // Try to copy to clipboard
     const copied = await copyToClipboard(shareInfo.shareLink);
     if (copied) {
-      logger.success('✅ 链接已复制到剪贴板');
+      logger.success('链接已复制到剪贴板');
     } else {
-      logger.info('💡 可以手动复制上方链接');
+      logger.hint('可以手动复制上方链接');
     }
   } catch (error) {
     logger.error((error as Error).message);

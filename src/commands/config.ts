@@ -13,6 +13,7 @@ import chalk from 'chalk';
 import ora from 'ora';
 import { confirm, input, select } from '@inquirer/prompts';
 import { basename } from 'path';
+import { menuIcons } from '../constants/ui-symbols';
 
 /**
  * Config command options
@@ -45,7 +46,7 @@ export async function viewConfig(options: ConfigCommandOptions = {}): Promise<vo
 
     logger.newline();
     logger.separator();
-    console.log(chalk.bold.cyan('⚙️  当前配置'));
+    console.log(chalk.bold.cyan(`${menuIcons.CONFIG} 当前配置`));
     logger.separator();
     logger.newline();
 
@@ -95,7 +96,7 @@ export async function backupConfig(options: ConfigCommandOptions = {}): Promise<
 
     const backupPath = await manager.backupConfig();
 
-    spinner.succeed(chalk.green('✅ 配置备份成功！'));
+    spinner.succeed(chalk.green('配置备份成功！'));
 
     logger.newline();
     console.log(chalk.cyan('  备份文件: ') + chalk.white(backupPath));
@@ -195,7 +196,7 @@ export async function restoreConfig(options: ConfigCommandOptions = {}): Promise
 
     // Confirm restoration
     const confirmed = await confirm({
-      message: chalk.yellow(`⚠️  确定要从备份恢复配置吗？当前配置将被覆盖（会先自动备份）。`),
+      message: chalk.yellow(`确定要从备份恢复配置吗？当前配置将被覆盖（会先自动备份）。`),
       default: false,
     });
 
@@ -208,7 +209,7 @@ export async function restoreConfig(options: ConfigCommandOptions = {}): Promise
 
     await manager.restoreConfig(targetBackup);
 
-    spinner.succeed(chalk.green('✅ 配置恢复成功！'));
+    spinner.succeed(chalk.green('配置恢复成功！'));
 
     logger.newline();
 
@@ -221,9 +222,9 @@ export async function restoreConfig(options: ConfigCommandOptions = {}): Promise
     if (shouldRestart) {
       const restartSpinner = ora('正在重启服务...').start();
       await systemdManager.restart();
-      restartSpinner.succeed(chalk.green('✅ 服务重启成功！'));
+      restartSpinner.succeed(chalk.green('服务重启成功！'));
     } else {
-      logger.info('💡 请记得手动重启服务以应用新配置');
+      logger.hint('请记得手动重启服务以应用新配置');
     }
   } catch (error) {
     logger.error((error as Error).message);
@@ -242,7 +243,7 @@ export async function modifyConfig(options: ConfigCommandOptions = {}): Promise<
     const systemdManager = new SystemdManager(options.serviceName || 'xray');
 
     logger.newline();
-    console.log(chalk.bold('⚙️  配置修改'));
+    console.log(chalk.bold(`${menuIcons.CONFIG} 配置修改`));
     logger.newline();
 
     // Common config items
@@ -300,7 +301,7 @@ export async function modifyConfig(options: ConfigCommandOptions = {}): Promise<
 
     // Confirm modification
     const confirmed = await confirm({
-      message: chalk.yellow(`⚠️  确定要修改配置项 "${path}" 吗？`),
+      message: chalk.yellow(`确定要修改配置项 "${path}" 吗？`),
       default: false,
     });
 
@@ -317,7 +318,7 @@ export async function modifyConfig(options: ConfigCommandOptions = {}): Promise<
     // Modify
     await manager.modifyConfigItem(path, newValue);
 
-    spinner.succeed(chalk.green('✅ 配置修改成功！'));
+    spinner.succeed(chalk.green('配置修改成功！'));
 
     logger.newline();
 
@@ -330,9 +331,9 @@ export async function modifyConfig(options: ConfigCommandOptions = {}): Promise<
     if (shouldRestart) {
       const restartSpinner = ora('正在重启服务...').start();
       await systemdManager.restart();
-      restartSpinner.succeed(chalk.green('✅ 服务重启成功！'));
+      restartSpinner.succeed(chalk.green('服务重启成功！'));
     } else {
-      logger.info('💡 请记得手动重启服务以应用新配置');
+      logger.hint('请记得手动重启服务以应用新配置');
     }
   } catch (error) {
     logger.error((error as Error).message);

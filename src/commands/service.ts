@@ -10,6 +10,7 @@ import { SystemdManager } from '../services/systemd-manager';
 import logger from '../utils/logger';
 import chalk from 'chalk';
 import ora from 'ora';
+import { menuIcons } from '../constants/ui-symbols';
 
 /**
  * Service command options
@@ -50,12 +51,12 @@ export async function displayServiceStatus(options: ServiceCommandOptions = {}):
     // 格式化显示
     logger.newline();
     logger.separator();
-    console.log(chalk.bold.cyan(`📊 服务状态: ${serviceName}`));
+    console.log(chalk.bold.cyan(`${menuIcons.STATUS} 服务状态: ${serviceName}`));
     logger.separator();
     logger.newline();
 
     // 状态指示器
-    const statusIcon = status.healthy ? '🟢' : status.active ? '🟡' : '🔴';
+    const statusIcon = status.healthy ? '[正常]' : status.active ? '[活动]' : '[停止]';
     const statusText = status.healthy
       ? chalk.green('运行中')
       : status.active
@@ -110,13 +111,13 @@ export async function startService(options: ServiceCommandOptions = {}): Promise
     const result = await manager.start();
 
     if (result.success) {
-      spinner.succeed(chalk.green(`✅ ${serviceName} 服务启动成功！`));
+      spinner.succeed(chalk.green(`${serviceName} 服务启动成功！`));
 
       if (options.verbose) {
         console.log(chalk.gray(`   耗时: ${result.duration}ms`));
       }
     } else {
-      spinner.fail(chalk.red(`❌ ${serviceName} 服务启动失败`));
+      spinner.fail(chalk.red(`${serviceName} 服务启动失败`));
       if (result.stderr) {
         logger.error(result.stderr);
       }
@@ -143,13 +144,13 @@ export async function stopService(options: ServiceCommandOptions = {}): Promise<
     const result = await manager.stop();
 
     if (result.success) {
-      spinner.succeed(chalk.green(`✅ ${serviceName} 服务已停止`));
+      spinner.succeed(chalk.green(`${serviceName} 服务已停止`));
 
       if (options.verbose) {
         console.log(chalk.gray(`   耗时: ${result.duration}ms`));
       }
     } else {
-      spinner.fail(chalk.red(`❌ ${serviceName} 服务停止失败`));
+      spinner.fail(chalk.red(`${serviceName} 服务停止失败`));
       if (result.stderr) {
         logger.error(result.stderr);
       }
@@ -180,7 +181,7 @@ export async function restartService(options: ServiceCommandOptions = {}): Promi
     const result = await manager.restart();
 
     if (result.success) {
-      spinner.succeed(chalk.green(`✅ ${serviceName} 服务重启成功！`));
+      spinner.succeed(chalk.green(`${serviceName} 服务重启成功！`));
 
       if (result.downtime) {
         const downtimeSeconds = (result.downtime / 1000).toFixed(2);
@@ -191,7 +192,7 @@ export async function restartService(options: ServiceCommandOptions = {}): Promi
         console.log(chalk.gray(`   总耗时: ${result.duration}ms`));
       }
     } else {
-      spinner.fail(chalk.red(`❌ ${serviceName} 服务重启失败`));
+      spinner.fail(chalk.red(`${serviceName} 服务重启失败`));
       if (result.stderr) {
         logger.error(result.stderr);
       }

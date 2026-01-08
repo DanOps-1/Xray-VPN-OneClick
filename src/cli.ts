@@ -103,7 +103,7 @@ async function main(): Promise<void> {
 // Handle SIGINT (Ctrl+C)
 process.on('SIGINT', async () => {
   logger.newline();
-  logger.info('👋 程序已中断');
+  logger.info('[退出] 程序已中断');
   await gracefulExit(ExitCode.SIGINT);
 });
 
