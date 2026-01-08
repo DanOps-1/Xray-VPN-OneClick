@@ -5,7 +5,7 @@
  * Following TDD: This test MUST FAIL before implementation
  */
 
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { describe, it, expect, afterEach } from 'vitest';
 import { spawn, ChildProcess } from 'child_process';
 import { join } from 'path';
 

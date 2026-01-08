@@ -5,7 +5,7 @@
  * Following TDD: These tests MUST FAIL before implementation
  */
 
-import { describe, it, expect, beforeAll, afterAll } from 'vitest';
+import { describe, it, expect } from 'vitest';
 
 describe('Service Lifecycle Integration', () => {
   describe('Service Start/Stop/Restart (T039)', () => {

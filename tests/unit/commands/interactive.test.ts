@@ -5,7 +5,7 @@
  * Following TDD: This test MUST FAIL before implementation
  */
 
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
 
 // Mock dependencies before importing the module under test
 vi.mock('@inquirer/prompts', () => ({

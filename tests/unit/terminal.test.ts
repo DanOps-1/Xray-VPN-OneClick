@@ -10,7 +10,6 @@ import { Platform } from '../../src/types/terminal';
 describe('Terminal Capabilities', () => {
   const originalPlatform = process.platform;
   const originalEnv = process.env;
-  const originalStdout = process.stdout;
 
   beforeEach(() => {
     // Reset environment before each test

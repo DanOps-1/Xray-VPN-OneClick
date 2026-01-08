@@ -143,7 +143,7 @@ export function isValidUrl(url: string): boolean {
  * 验证器接口
  */
 export interface Validator {
-  validate(value: string): boolean;
+  validate(_value: string): boolean;
   errorMessage: string;
 }
 

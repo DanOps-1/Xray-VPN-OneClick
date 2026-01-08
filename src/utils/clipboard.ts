@@ -18,7 +18,7 @@ export async function copyToClipboard(text: string): Promise<boolean> {
   try {
     await clipboardy.write(text);
     return true;
-  } catch (_error) {
+  } catch {
     // Clipboard may not be available in non-interactive environments
     return false;
   }
@@ -32,7 +32,7 @@ export async function copyToClipboard(text: string): Promise<boolean> {
 export async function readFromClipboard(): Promise<string> {
   try {
     return await clipboardy.read();
-  } catch (_error) {
+  } catch {
     return '';
   }
 }

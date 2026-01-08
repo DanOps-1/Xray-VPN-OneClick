@@ -315,7 +315,7 @@ export class LogManager {
    */
   async followLogs(
     options: LogQueryOptions = {},
-    onLog?: (entry: LogEntry) => void
+    onLog?: (_entry: LogEntry) => void
   ): Promise<LogFollowProcess> {
     if (!this.isJournalctlAvailable()) {
       throw new Error(

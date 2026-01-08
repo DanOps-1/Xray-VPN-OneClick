@@ -5,8 +5,7 @@
  * Following TDD: These tests MUST FAIL before implementation
  */
 
-import { describe, it, expect, beforeEach } from 'vitest';
-import { spawn } from 'child_process';
+import { describe, it, expect } from 'vitest';
 
 describe('LogManager - Log Viewing Integration (T111)', () => {
   it('should retrieve recent logs successfully', async () => {
