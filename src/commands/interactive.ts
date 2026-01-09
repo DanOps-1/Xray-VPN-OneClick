@@ -176,7 +176,7 @@ export function getMainMenuOptions(): any[] {
     new Separator(),
     // Language & Exit Group
     {
-      name: chalk.cyan(`🌐 ${trans.menu.switchLanguage}`),
+      name: chalk.cyan(`${menuIcons.LANGUAGE} ${trans.menu.switchLanguage}`),
       value: 'switch-language',
     },
     {

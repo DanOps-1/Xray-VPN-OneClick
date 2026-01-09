@@ -33,6 +33,7 @@ export const menuIcons = {
   USER: '[用户]',
   CONFIG: '[配置]',
   LOGS: '[日志]',
+  LANGUAGE: '[语言]',
   EXIT: '[退出]',
 } as const;
 
