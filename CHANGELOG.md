@@ -5,6 +5,24 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.3.0] - 2026-01-09
+
+### Added - 新增功能
+
+🎨 **Interactive UI Overhaul (Feature 006 & 007)**
+
+- **Dashboard**: A persistent status dashboard showing service state, system load, memory usage, and user count.
+- **Breadcrumb Navigation**: Clear path indicators (e.g., `Home > User Management`) replace the old menu stacking.
+- **Responsive Tables**: User lists now use responsive tables that adapt to terminal width, showing more details on wider screens.
+- **Unified Theme**: Standardized color palette (Cyan/Blue/Green/Red/Gray) and single-line border styles for a modern look.
+- **Screen Management**: Full-screen redraws to prevent scrollback clutter, giving a true "app-like" feel.
+
+### Changed - 改进
+
+- **Menu Design**: Main menu and submenus now use a cleaner layout with semantic colors.
+- **User Listing**: `listUsers` command now uses the new `renderUserTable` component.
+- **Status Indicators**: Replaced heavy colored text strings with subtle indicator dots (●).
+
 ## [1.2.0] - 2026-01-09
 
 ### Added - 新增功能
