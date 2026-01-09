@@ -14,8 +14,10 @@ import chalk from 'chalk';
 import ora from 'ora';
 import { confirm, input } from '@inquirer/prompts';
 import { menuIcons } from '../constants/ui-symbols';
-import { renderTable, renderHeader, type TableColumn } from '../utils/layout';
+import { renderHeader } from '../utils/layout';
 import layoutManager from '../services/layout-manager';
+import { renderUserTable } from '../components/user-table';
+import { UserConfig } from '../types/user';
 
 /**
  * User command options
@@ -64,23 +66,33 @@ export async function listUsers(options: UserCommandOptions = {}): Promise<void>
       return;
     }
 
-    // Display users in table format using cli-table3
-    const columns: TableColumn[] = [
-      { header: '邮箱', key: 'email', align: 'left' },
-      { header: 'UUID (已脱敏)', key: 'maskedId', align: 'left' },
-      { header: '等级', key: 'level', align: 'center' },
-      { header: 'Flow', key: 'flow', align: 'center' },
-    ];
+    // Adapt UserManager users to UserConfig for table
+    // Assuming UserManager users match UserConfig or can be mapped
+    // The previous implementation mapped manually, now we use renderUserTable
+    // We need to ensure users passed match UserConfig expected by renderUserTable
+    // Assuming renderUserTable takes UserConfig[]
+    
+    // Convert to compatible type if necessary, or cast if structures align
+    // Based on previous code: users has email, id, level, flow
+    // renderUserTable expects: username/email, uuid/id, port, protocol
+    // Let's check UserConfig type compatibility or map it
+    
+    // Mapping adaptation:
+    // renderUserTable expects UserConfig { username, uuid, port, protocol, flow? }
+    // UserManager returns { email, id, level, flow } (based on previous code)
+    
+    const tableUsers = users.map(u => ({
+      username: u.email,
+      uuid: u.id,
+      // Port/Protocol might not be available in simple user list from UserManager
+      // If not available, we can pass dummy or fetch if needed
+      // For now, mapping what we have
+      port: 0, // Placeholder
+      protocol: 'vless', // Placeholder
+      flow: u.flow
+    } as unknown as UserConfig));
 
-    const tableData = users.map((user) => ({
-      email: user.email,
-      maskedId: maskSensitiveValue(user.id),
-      level: String(user.level),
-      flow: user.flow || '-',
-    }));
-
-    const tableOutput = renderTable(columns, tableData, { borderStyle: 'single' });
-    console.log(tableOutput);
+    console.log(renderUserTable(tableUsers, terminalSize.width));
     logger.newline();
   } catch (error) {
     logger.error((error as Error).message);

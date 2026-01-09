@@ -203,6 +203,18 @@ export class LayoutManager {
   }
 
   /**
+   * Calculate usable content size excluding reserved header space
+   * @param reservedRows - Number of rows reserved for header/dashboard
+   */
+  public getContentSize(reservedRows: number = 0): { width: number; height: number } {
+    const size = this.detectTerminalSize();
+    return {
+      width: size.width,
+      height: Math.max(0, size.height - reservedRows),
+    };
+  }
+
+  /**
    * Validate terminal size meets minimum requirements
    */
   public validateTerminalSize(size: TerminalSize): {

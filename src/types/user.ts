@@ -30,6 +30,18 @@ export interface User {
 }
 
 /**
+ * 用户配置（用于显示）
+ */
+export interface UserConfig {
+  username: string;
+  uuid: string;
+  port?: number;
+  protocol?: string;
+  flow?: string;
+  status?: string;
+}
+
+/**
  * 用户创建参数
  */
 export interface CreateUserParams {

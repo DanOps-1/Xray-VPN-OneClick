@@ -10,15 +10,15 @@ import { select, confirm, Separator } from '@inquirer/prompts';
 import chalk from 'chalk';
 import logger from '../utils/logger';
 import { ExitCode } from '../constants/exit-codes';
-import { SystemdManager } from '../services/systemd-manager';
-import { UserManager } from '../services/user-manager';
 import { displayServiceStatus, startService, stopService, restartService } from './service';
 import { listUsers, addUser, deleteUser, showUserShare } from './user';
 import { menuIcons } from '../constants/ui-symbols';
 import { t, toggleLanguage } from '../config/i18n';
 import layoutManager from '../services/layout-manager';
-import { renderHeader } from '../utils/layout';
-import { LayoutMode } from '../types/layout';
+import { ScreenManager } from '../services/screen-manager';
+import { DashboardWidget } from '../components/dashboard-widget';
+import { NavigationManager } from '../services/navigation-manager';
+import { THEME } from '../constants/theme';
 
 /**
  * Menu options configuration
@@ -37,105 +37,10 @@ export interface MenuOptions {
   verbose?: boolean;
 }
 
-/**
- * Menu context information
- */
-export interface MenuContext {
-  /** Service status */
-  serviceStatus?: string;
-
-  /** Number of users */
-  userCount?: number;
-
-  /** Last updated timestamp */
-  lastUpdated?: Date;
-}
-
-/**
- * Menu stack for navigation
- */
-export class MenuStack {
-  private stack: string[] = [];
-
-  push(menu: string): void {
-    this.stack.push(menu);
-  }
-
-  pop(): string {
-    if (this.stack.length === 0) {
-      throw new Error('Cannot pop from empty menu stack');
-    }
-    return this.stack.pop()!;
-  }
-
-  current(): string | undefined {
-    return this.stack[this.stack.length - 1];
-  }
-
-  depth(): number {
-    return this.stack.length;
-  }
-
-  canGoBack(): boolean {
-    return this.stack.length > 0;
-  }
-
-  clear(): void {
-    this.stack = [];
-  }
-}
-
-// Global menu stack instance
-const menuStack = new MenuStack();
-
-/**
- * Get menu context (service status, user count)
- */
-export async function getMenuContext(options: MenuOptions = {}): Promise<MenuContext> {
-  const serviceName = options.serviceName || 'xray';
-
-  try {
-    const systemdManager = new SystemdManager(serviceName);
-    const userManager = new UserManager(options.configPath, serviceName);
-
-    const [status, users] = await Promise.all([
-      systemdManager.getStatus(),
-      userManager.listUsers(),
-    ]);
-
-    return {
-      serviceStatus: status.healthy ? 'active' : status.active ? status.subState : 'inactive',
-      userCount: users.length,
-      lastUpdated: new Date(),
-    };
-  } catch {
-    // If service status fails, return unknown
-    return {
-      serviceStatus: 'unknown',
-      userCount: 0,
-      lastUpdated: new Date(),
-    };
-  }
-}
-
-/**
- * Format menu header with context
- */
-export function formatMenuHeader(context: MenuContext): string {
-  const trans = t();
-  const status = context.serviceStatus || 'unknown';
-  const userCount = context.userCount || 0;
-
-  // Translate status
-  let statusText = status;
-  if (status === 'active') statusText = trans.status.active;
-  else if (status === 'inactive') statusText = trans.status.inactive;
-  else statusText = trans.status.unknown;
-
-  const statusColor = status === 'active' ? chalk.green : status === 'inactive' ? chalk.red : chalk.yellow;
-
-  return `${chalk.gray(trans.status.serviceStatus + ':')} ${statusColor(statusText)}  ${chalk.gray(trans.status.userCount + ':')} ${chalk.cyan(String(userCount))}`;
-}
+// Global instances
+const screenManager = new ScreenManager();
+const navigationManager = new NavigationManager();
+let dashboardWidget: DashboardWidget;
 
 /**
  * Get main menu options
@@ -144,86 +49,50 @@ export function formatMenuHeader(context: MenuContext): string {
 export function getMainMenuOptions(): any[] {
   const trans = t();
 
+  // Unified color theme: Icons use accents, text uses neutral/primary
   return [
     // Service Operations Group
     {
-      name: chalk.cyan(`${menuIcons.STATUS} ${trans.menu.viewStatus}`),
+      name: `${THEME.primary(menuIcons.STATUS)} ${THEME.neutral(trans.menu.viewStatus)}`,
       value: 'service-status',
     },
     {
-      name: chalk.green(`${menuIcons.START} ${trans.menu.startService}`),
+      name: `${THEME.success(menuIcons.START)} ${THEME.neutral(trans.menu.startService)}`,
       value: 'service-start',
     },
     {
-      name: chalk.red(`${menuIcons.STOP} ${trans.menu.stopService}`),
+      name: `${THEME.error(menuIcons.STOP)} ${THEME.neutral(trans.menu.stopService)}`,
       value: 'service-stop',
     },
     {
-      name: chalk.yellow(`${menuIcons.RESTART} ${trans.menu.restartService}`),
+      name: `${THEME.warning(menuIcons.RESTART)} ${THEME.neutral(trans.menu.restartService)}`,
       value: 'service-restart',
     },
     new Separator(),
     // Management Group
     {
-      name: chalk.blue(`${menuIcons.USER} ${trans.menu.userManagement}`),
+      name: `${THEME.secondary(menuIcons.USER)} ${THEME.neutral(trans.menu.userManagement)}`,
       value: 'user',
     },
     {
-      name: chalk.magenta(`${menuIcons.CONFIG} ${trans.menu.configManagement}`),
+      name: `${THEME.secondary(menuIcons.CONFIG)} ${THEME.neutral(trans.menu.configManagement)}`,
       value: 'config',
     },
     {
-      name: chalk.gray(`${menuIcons.LOGS} ${trans.menu.viewLogs}`),
+      name: `${THEME.neutral(menuIcons.LOGS)} ${THEME.neutral(trans.menu.viewLogs)}`,
       value: 'logs',
     },
     new Separator(),
     // Language & Exit Group
     {
-      name: chalk.cyan(`${menuIcons.LANGUAGE} ${trans.menu.switchLanguage}`),
+      name: `${THEME.primary(menuIcons.LANGUAGE)} ${THEME.neutral(trans.menu.switchLanguage)}`,
       value: 'switch-language',
     },
     {
-      name: chalk.red(`${menuIcons.EXIT} ${trans.menu.exit}`),
+      name: `${THEME.error(menuIcons.EXIT)} ${THEME.neutral(trans.menu.exit)}`,
       value: 'exit',
     },
   ];
-}
-
-/**
- * Get menu depth (for Constitution compliance - max 3 levels)
- */
-export function getMenuDepth(): number {
-  // Main menu (1) -> Submenu (2) -> Action (3)
-  return 3;
-}
-
-/**
- * Format a menu option with appropriate icon
- */
-export function formatMenuOption(name: string, value: string): { name: string; value: string } {
-  // Add icon based on value type using menuIcons
-  let icon = '•';
-
-  if (value.includes('service') || value.includes('status')) {
-    icon = menuIcons.STATUS;
-  } else if (value.includes('user')) {
-    icon = menuIcons.USER;
-  } else if (value.includes('config')) {
-    icon = menuIcons.CONFIG;
-  } else if (value.includes('log')) {
-    icon = menuIcons.LOGS;
-  } else if (value.includes('start')) {
-    icon = menuIcons.START;
-  } else if (value.includes('stop')) {
-    icon = menuIcons.STOP;
-  } else if (value.includes('restart')) {
-    icon = menuIcons.RESTART;
-  }
-
-  return {
-    name: `${icon} ${name}`,
-    value,
-  };
 }
 
 /**
@@ -246,7 +115,6 @@ export async function showMenu(options: any[], message?: string): Promise<string
 export async function handleMenuSelection(selection: string, options: MenuOptions): Promise<boolean> {
   switch (selection) {
     case 'switch-language':
-      logger.newline();
       toggleLanguage();
       const trans = t();
       logger.success(trans.messages.languageSwitched);
@@ -257,50 +125,52 @@ export async function handleMenuSelection(selection: string, options: MenuOption
       return true; // Signal to exit
 
     case 'service-status':
-      logger.newline();
       await displayServiceStatus(options);
       await promptContinue();
       return false;
 
     case 'service-start':
-      logger.newline();
       await startService(options);
+      await dashboardWidget.refresh(); // Refresh dashboard after action
       await promptContinue();
       return false;
 
     case 'service-stop':
-      logger.newline();
       const confirmStop = await confirm({
-        message: chalk.yellow('确定要停止服务吗？这将中断所有连接。'),
+        message: THEME.warning('确定要停止服务吗？这将中断所有连接。'),
         default: false,
       });
 
       if (confirmStop) {
         await stopService(options);
+        await dashboardWidget.refresh(); // Refresh dashboard after action
       } else {
         logger.info('已取消停止操作');
+        await promptContinue();
       }
-      await promptContinue();
       return false;
 
     case 'service-restart':
-      logger.newline();
       const confirmRestart = await confirm({
-        message: chalk.yellow('确定要重启服务吗？'),
+        message: THEME.warning('确定要重启服务吗？'),
         default: true,
       });
 
       if (confirmRestart) {
         await restartService(options);
+        await dashboardWidget.refresh(); // Refresh dashboard after action
       } else {
         logger.info('已取消重启操作');
+        await promptContinue();
       }
-      await promptContinue();
       return false;
 
     case 'user':
       // Show user management submenu
-      return await handleUserManagementMenu(options);
+      navigationManager.push('User Management');
+      const result = await handleUserManagementMenu(options);
+      navigationManager.pop();
+      return result;
 
     case 'config':
       logger.info('配置管理功能即将推出...');
@@ -323,19 +193,23 @@ export async function handleMenuSelection(selection: string, options: MenuOption
  */
 async function handleUserManagementMenu(options: MenuOptions): Promise<boolean> {
   while (true) {
-    logger.newline();
-    logger.separator();
-    console.log(chalk.bold.cyan(`${menuIcons.USER} 用户管理`));
+    // Render Frame
+    screenManager.clear();
+    await dashboardWidget.refresh();
+    screenManager.renderHeader(dashboardWidget, navigationManager.getBreadcrumb());
+    
+    // Submenu Header - Use theme colors
+    console.log(THEME.secondary(`${menuIcons.USER} 用户管理`));
     logger.separator();
     logger.newline();
 
     const userMenuOptions = [
-      { name: chalk.cyan('[列表] 查看用户列表'), value: 'user-list' },
-      { name: chalk.green('[添加] 添加用户'), value: 'user-add' },
-      { name: chalk.red('[删除] 删除用户'), value: 'user-delete' },
-      { name: chalk.blue('[分享] 显示分享链接'), value: 'user-share' },
+      { name: `${THEME.primary('[列表]')} ${THEME.neutral('查看用户列表')}`, value: 'user-list' },
+      { name: `${THEME.success('[添加]')} ${THEME.neutral('添加用户')}`, value: 'user-add' },
+      { name: `${THEME.error('[删除]')} ${THEME.neutral('删除用户')}`, value: 'user-delete' },
+      { name: `${THEME.secondary('[分享]')} ${THEME.neutral('显示分享链接')}`, value: 'user-share' },
       { type: 'separator' },
-      { name: chalk.gray('[返回] 返回主菜单'), value: 'back' },
+      { name: `${THEME.neutral('[返回]')} ${THEME.neutral('返回主菜单')}`, value: 'back' },
     ];
 
     const selection = await showMenu(userMenuOptions, chalk.bold('请选择操作:'));
@@ -345,27 +219,33 @@ async function handleUserManagementMenu(options: MenuOptions): Promise<boolean> 
         return false; // Return to main menu
 
       case 'user-list':
-        logger.newline();
+        navigationManager.push('List Users');
         await listUsers(options);
         await promptContinue();
+        navigationManager.pop();
         break;
 
       case 'user-add':
-        logger.newline();
+        navigationManager.push('Add User');
         await addUser(options);
+        await dashboardWidget.refresh();
         await promptContinue();
+        navigationManager.pop();
         break;
 
       case 'user-delete':
-        logger.newline();
+        navigationManager.push('Delete User');
         await deleteUser(options);
+        await dashboardWidget.refresh();
         await promptContinue();
+        navigationManager.pop();
         break;
 
       case 'user-share':
-        logger.newline();
+        navigationManager.push('Share Link');
         await showUserShare(options);
         await promptContinue();
+        navigationManager.pop();
         break;
 
       default:
@@ -391,7 +271,7 @@ async function promptContinue(): Promise<void> {
 export async function handleSigInt(): Promise<boolean> {
   logger.newline();
   const shouldExit = await confirm({
-    message: chalk.yellow('确定要退出吗?'),
+    message: THEME.warning('确定要退出吗?'),
     default: false,
   });
 
@@ -408,18 +288,8 @@ export async function startInteractiveMenu(options: MenuOptions): Promise<void> 
   const terminalSize = layoutManager.detectTerminalSize();
   const validation = layoutManager.validateTerminalSize(terminalSize);
 
-  // Get layout mode
-  const layoutMode = layoutManager.calculateLayoutMode(terminalSize.width);
-
-  // Determine title based on layout mode
-  let titleText = 'Xray Manager - 交互式管理工具';
-  if (layoutMode === LayoutMode.COMPACT) {
-    titleText = 'Xray Manager'; // Shorter title for compact terminals
-  }
-
-  // Display title with responsive header
-  const headerText = renderHeader(titleText, terminalSize.width, 'center');
-  console.log(chalk.bold.cyan(headerText));
+  // Initialize Dashboard Widget
+  dashboardWidget = new DashboardWidget(options.serviceName, options.configPath);
 
   // Warn if terminal is too small
   if (!validation.isValid) {
@@ -450,21 +320,19 @@ export async function startInteractiveMenu(options: MenuOptions): Promise<void> 
   process.on('SIGINT', sigintHandler);
 
   try {
-    // Get menu context
-    const context = await getMenuContext(options);
-
     // Main menu loop
     let shouldExit = false;
 
     while (!shouldExit) {
-      logger.newline();
-      logger.separator();
+      // 1. Clear Screen
+      screenManager.clear();
 
-      // Display context
-      const header = formatMenuHeader(context);
-      console.log(header);
+      // 2. Refresh Dashboard Data
+      await dashboardWidget.refresh();
 
-      logger.separator();
+      // 3. Render Header (Dashboard + Breadcrumb)
+      screenManager.renderHeader(dashboardWidget, navigationManager.getBreadcrumb());
+
       logger.newline();
 
       // Get menu options
@@ -475,18 +343,10 @@ export async function startInteractiveMenu(options: MenuOptions): Promise<void> 
 
       // Handle selection
       shouldExit = await handleMenuSelection(selection, options);
-
-      // Update context after each action
-      if (!shouldExit) {
-        const updatedContext = await getMenuContext(options);
-        Object.assign(context, updatedContext);
-      }
     }
 
     logger.success(trans.messages.thankYou || '感谢使用 Xray Manager!');
   } finally {
-    // Cleanup
     process.removeListener('SIGINT', sigintHandler);
-    menuStack.clear();
   }
 }
