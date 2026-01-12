@@ -37,6 +37,16 @@ The new interactive interface (v1.3+) features:
 - **Navigation**: Breadcrumb bar (e.g., `Home > User Management`) to keep track of your location.
 - **User Tables**: Adaptive tables that show more details on wider screens and summarize large user lists.
 
+### Terminal Requirements
+
+For the best experience with the responsive UI (v1.2.0+):
+
+- **Minimum**: 60x20 (compact mode)
+- **Recommended**: 80x24 (standard mode, full features)
+- **Wide Screen**: 120+ columns (multi-column layout, enhanced information density)
+
+The interface automatically adapts to your terminal size.
+
 ## Development
 
 ```bash
