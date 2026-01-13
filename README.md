@@ -17,7 +17,7 @@
 
 [![Platform](https://img.shields.io/badge/Platform-Linux-blue?style=for-the-badge&logo=linux)](https://github.com/DanOps-1/Xray-VPN-OneClick)
 [![Protocol](https://img.shields.io/badge/Protocol-VLESS%2BReality-purple?style=for-the-badge)](https://github.com/XTLS/REALITY)
-[![Docker](https://img.shields.io/badge/Docker-Supported-2496ED?style=for-the-badge&logo=docker&logoColor=white)](https://www.docker.com/)
+[![Docker](https://img.shields.io/badge/Docker-External-6c757d?style=for-the-badge&logo=docker&logoColor=white)](https://www.docker.com/)
 
 [**中文**](README.md) | [**English**](docs/README-en.md)
 
@@ -659,12 +659,15 @@ sudo dpkg-reconfigure --priority=low unattended-upgrades
 
 ---
 
-## 🐳 Docker 部署
+## 🐳 Docker 部署（外部镜像）
+
+本仓库暂不提供 Dockerfile 或 docker-compose 文件，以下命令仅为外部镜像示例。
+实际参数与镜像维护状态请以镜像文档为准。
 
 ### 使用 Docker 部署
 
 ```bash
-# 拉取镜像（开发中）
+# 拉取外部镜像（示例）
 docker pull danops/xray-reality
 
 # 运行容器
@@ -691,7 +694,7 @@ services:
       - ./config:/etc/xray
 ```
 
-详细说明：即将推出
+详细说明：请参考镜像维护方文档
 
 ---
 

@@ -6,7 +6,6 @@
 
 - `config.json` - 基础 VLESS + Reality 配置模板
 - `config-multiple-users.json` - 多用户配置示例
-- `config-with-fallback.json` - 带回落的配置示例
 
 ## 使用方法
 

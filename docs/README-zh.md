@@ -22,7 +22,7 @@
 - 📚 **详细文档** - 完整的中英文安装、配置和故障排查指南
 - 🛠️ **管理工具** - 提供用户管理、服务更新、配置备份等便捷工具
 - 🌍 **多语言** - 支持中英文文档和脚本输出
-- 🐳 **Docker 支持** - 提供 Docker 容器化部署方案
+- 🐳 **Docker 支持（外部镜像）** - 本仓库不提供 Dockerfile，仅提供外部镜像示例
 
 ---
 
@@ -143,32 +143,32 @@ sudo journalctl -u xray -n 100
 
 ```bash
 # 添加新用户
-sudo bash /home/kali/X-ray/scripts/add-user.sh user@example.com
+sudo bash scripts/add-user.sh user@example.com
 
 # 删除用户
-sudo bash /home/kali/X-ray/scripts/del-user.sh user@example.com
+sudo bash scripts/del-user.sh user@example.com
 
 # 列出所有用户
-sudo bash /home/kali/X-ray/scripts/show-config.sh users
+sudo bash scripts/show-config.sh users
 
 # 显示用户的分享链接
-sudo bash /home/kali/X-ray/scripts/show-config.sh link user@example.com
+sudo bash scripts/show-config.sh link user@example.com
 ```
 
 ### 系统维护
 
 ```bash
 # 更新 Xray 到最新版本
-sudo bash /home/kali/X-ray/scripts/update.sh
+sudo bash scripts/update.sh
 
 # 备份当前配置
-sudo bash /home/kali/X-ray/scripts/backup.sh
+sudo bash scripts/backup.sh
 
 # 恢复配置
-sudo bash /home/kali/X-ray/scripts/restore.sh <备份文件>
+sudo bash scripts/restore.sh <备份文件>
 
 # 卸载 Xray
-sudo bash /home/kali/X-ray/scripts/uninstall.sh
+sudo bash scripts/uninstall.sh
 ```
 
 ---
@@ -236,12 +236,15 @@ sudo dpkg-reconfigure --priority=low unattended-upgrades
 
 ---
 
-## 🐳 Docker 部署
+## 🐳 Docker 部署（外部镜像）
+
+本仓库暂不提供 Dockerfile 或 docker-compose 文件，以下命令仅为外部镜像示例。
+实际参数与镜像维护状态请以镜像文档为准。
 
 ### 使用 Docker 部署
 
 ```bash
-# 拉取镜像（开发中）
+# 拉取外部镜像（示例）
 docker pull danops/xray-reality
 
 # 运行容器
@@ -268,7 +271,7 @@ services:
       - ./config:/etc/xray
 ```
 
-详细说明：即将推出
+详细说明：请参考镜像维护方文档
 
 ---
 

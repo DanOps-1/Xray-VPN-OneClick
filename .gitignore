@@ -108,4 +108,5 @@ error.log
 .claude/
 .gemini/
 .specify/
+.serena/
 .npmrc

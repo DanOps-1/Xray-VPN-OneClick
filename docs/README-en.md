@@ -15,7 +15,7 @@
 
 [![Platform](https://img.shields.io/badge/Platform-Linux-blue?style=for-the-badge&logo=linux)](https://github.com/DanOps-1/Xray-VPN-OneClick)
 [![Protocol](https://img.shields.io/badge/Protocol-VLESS%2BReality-purple?style=for-the-badge)](https://github.com/XTLS/REALITY)
-[![Docker](https://img.shields.io/badge/Docker-Supported-2496ED?style=for-the-badge&logo=docker&logoColor=white)](https://www.docker.com/)
+[![Docker](https://img.shields.io/badge/Docker-External-6c757d?style=for-the-badge&logo=docker&logoColor=white)](https://www.docker.com/)
 
 [**中文**](../README.md) | [**English**](README-en.md)
 
@@ -476,12 +476,15 @@ This project has been tested on the following cloud platforms:
 
 ---
 
-## 🐳 Docker Deployment
+## 🐳 Docker Deployment (External Image)
+
+This repository does not ship a Dockerfile or docker-compose file yet. The commands below are external image examples.
+Please refer to the image maintainer's documentation for the latest usage.
 
 ### Using Docker
 
 ```bash
-# Pull image (in development)
+# Pull external image (example)
 docker pull danops/xray-reality
 
 # Run container
@@ -508,7 +511,7 @@ services:
       - ./config:/etc/xray
 ```
 
-Detailed instructions: Coming soon
+Detailed instructions: refer to the image maintainer's documentation
 
 ---
 
