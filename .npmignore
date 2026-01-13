@@ -1,0 +1,29 @@
+# Development artifacts
+node_modules/
+coverage/
+*.log
+*.log.*
+
+# Source and tests (package ships compiled dist only)
+src/
+tests/
+examples/
+
+# Tooling/config
+.eslintrc*
+prettier.config.*
+.eslintignore
+.prettierignore
+.vscode/
+.idea/
+.specify/
+.github/
+
+# Environment/secrets
+.env*
+
+# Misc
+*.swp
+*.tmp
+.DS_Store
+Thumbs.db

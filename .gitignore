@@ -54,6 +54,7 @@ pip-delete-this-directory.txt
 secrets/
 .env
 .env.local
+.env.*
 config.json.secret
 
 # Build outputs

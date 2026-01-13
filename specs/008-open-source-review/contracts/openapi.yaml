@@ -1,0 +1,234 @@
+openapi: 3.0.3
+info:
+  title: Open Source Review API
+  version: 1.0.0
+  description: API contract for generating open-source review reports with evidence-backed recommendations.
+servers:
+  - url: https://localhost
+paths:
+  /reviews:
+    post:
+      summary: Create a review report for a local repository
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateReviewRequest'
+      responses:
+        '201':
+          description: Review report created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReviewReport'
+        '400':
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /reviews/{review_id}:
+    get:
+      summary: Get a full review report
+      parameters:
+        - $ref: '#/components/parameters/ReviewId'
+      responses:
+        '200':
+          description: Review report
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReviewReport'
+        '404':
+          description: Review not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /reviews/{review_id}/summary:
+    get:
+      summary: Get the one-page summary for a review report
+      parameters:
+        - $ref: '#/components/parameters/ReviewId'
+      responses:
+        '200':
+          description: Review summary
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Summary'
+        '404':
+          description: Review not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /reviews/{review_id}/recommendations:
+    get:
+      summary: List recommendations for a review report
+      parameters:
+        - $ref: '#/components/parameters/ReviewId'
+        - name: priority
+          in: query
+          required: false
+          schema:
+            type: string
+            enum: [high, medium, low]
+        - name: time_horizon
+          in: query
+          required: false
+          schema:
+            type: string
+            enum: [quick, long-term]
+      responses:
+        '200':
+          description: Recommendations list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Recommendation'
+        '404':
+          description: Review not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+components:
+  parameters:
+    ReviewId:
+      name: review_id
+      in: path
+      required: true
+      schema:
+        type: string
+  schemas:
+    CreateReviewRequest:
+      type: object
+      required: [repo_path]
+      properties:
+        repo_path:
+          type: string
+          description: Absolute path to the repository
+        output_formats:
+          type: array
+          items:
+            type: string
+            enum: [markdown, json]
+          default: [markdown, json]
+        include_summary:
+          type: boolean
+          default: true
+    ReviewReport:
+      type: object
+      required: [id, repo_path, generated_at, summary, areas, recommendations]
+      properties:
+        id:
+          type: string
+        repo_path:
+          type: string
+        generated_at:
+          type: string
+          format: date-time
+        summary:
+          $ref: '#/components/schemas/Summary'
+        areas:
+          type: array
+          items:
+            $ref: '#/components/schemas/AssessmentArea'
+        recommendations:
+          type: array
+          items:
+            $ref: '#/components/schemas/Recommendation'
+    Summary:
+      type: object
+      required: [headline, high_priority_count, quick_wins_count, risk_notes]
+      properties:
+        headline:
+          type: string
+        high_priority_count:
+          type: integer
+        quick_wins_count:
+          type: integer
+        risk_notes:
+          type: array
+          items:
+            type: string
+    AssessmentArea:
+      type: object
+      required: [id, name, status, findings, recommendations]
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        status:
+          type: string
+          enum: [good, needs-improvement, missing]
+        findings:
+          type: array
+          items:
+            $ref: '#/components/schemas/Finding'
+        recommendations:
+          type: array
+          items:
+            $ref: '#/components/schemas/Recommendation'
+    Finding:
+      type: object
+      required: [id, area_id, title, details, evidence]
+      properties:
+        id:
+          type: string
+        area_id:
+          type: string
+        title:
+          type: string
+        details:
+          type: string
+        evidence:
+          type: array
+          items:
+            $ref: '#/components/schemas/EvidenceReference'
+    Recommendation:
+      type: object
+      required: [id, area_id, title, details, priority, time_horizon, risk_if_ignored, evidence]
+      properties:
+        id:
+          type: string
+        area_id:
+          type: string
+        title:
+          type: string
+        details:
+          type: string
+        priority:
+          type: string
+          enum: [high, medium, low]
+        time_horizon:
+          type: string
+          enum: [quick, long-term]
+        risk_if_ignored:
+          type: string
+        evidence:
+          type: array
+          items:
+            $ref: '#/components/schemas/EvidenceReference'
+    EvidenceReference:
+      type: object
+      required: [type, target]
+      properties:
+        type:
+          type: string
+          enum: [file, path, missing]
+        target:
+          type: string
+        notes:
+          type: string
+    Error:
+      type: object
+      required: [message]
+      properties:
+        message:
+          type: string

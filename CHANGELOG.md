@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Added - 新增功能
+
+- 新增 `review` 命令：对本地仓库生成开源成熟度评审报告（Markdown/JSON 输出）
+
 ## [1.2.0] - 2026-01-09
 
 ### Added - 新增功能

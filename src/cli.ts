@@ -14,6 +14,7 @@ import logger from './utils/logger';
 import { ExitCode, gracefulExit } from './constants/exit-codes';
 import { preflightChecks } from './utils/preflight';
 import { startInteractiveMenu } from './commands/interactive';
+import { registerReviewCommand } from './commands/review';
 
 // Read package.json for version
 const packageJson = require('../package.json');
@@ -38,6 +39,8 @@ async function main(): Promise<void> {
     .option('--json', '以 JSON 格式输出')
     .option('--no-color', '禁用彩色输出')
     .option('--verbose', '详细输出模式');
+
+  registerReviewCommand(program);
 
   // Parse arguments
   program.parse(process.argv);
