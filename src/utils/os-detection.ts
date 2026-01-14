@@ -3,7 +3,6 @@
  * Feature: 009-cross-platform-support
  */
 
-import { execSync } from 'child_process';
 import { existsSync, readFileSync } from 'fs';
 import {
   OperatingSystem,
@@ -11,7 +10,6 @@ import {
   PackageManager,
 } from '../types/platform.js';
 import {
-  SUPPORTED_DISTROS,
   getDistroConfig,
   isDistroSupported,
 } from '../constants/supported-distros.js';

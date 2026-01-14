@@ -3,6 +3,7 @@
  * Feature: 009-cross-platform-support
  */
 
+/* eslint-disable no-unused-vars */
 export enum OsFamily {
   DEBIAN = 'debian',
   RHEL = 'rhel',
