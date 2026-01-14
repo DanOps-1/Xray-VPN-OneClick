@@ -139,7 +139,7 @@
 <td width="50%">
 
 #### Minimum Requirements
-- **OS**: Linux (Debian/Ubuntu/CentOS/Kali)
+- **OS**: Linux (see supported distros below)
 - **RAM**: 512 MB
 - **Storage**: 100 MB available
 - **Network**: Public IP address
@@ -156,6 +156,18 @@
 </td>
 </tr>
 </table>
+
+#### Supported Operating Systems
+
+| Distribution | Min Version | Package Manager | Status |
+|--------------|-------------|-----------------|--------|
+| Ubuntu | 22.04 | apt | ✅ Fully Supported |
+| Debian | 11 | apt | ✅ Fully Supported |
+| Kali Linux | 2023+ | apt | ✅ Fully Supported |
+| CentOS Stream | 9 | dnf | ✅ Fully Supported |
+| AlmaLinux | 9 | dnf | ✅ Fully Supported |
+| Rocky Linux | 9 | dnf | ✅ Fully Supported |
+| Fedora | 39 | dnf | ✅ Fully Supported |
 
 ### One-Click Installation (Recommended)
 

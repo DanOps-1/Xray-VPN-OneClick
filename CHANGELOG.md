@@ -11,6 +11,79 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - 新增 `review` 命令：对本地仓库生成开源成熟度评审报告（Markdown/JSON 输出）
 
+## [1.4.0] - 2026-01-14
+
+🌐 **Feature 009: Cross-Platform Linux Support - 跨平台 Linux 支持**
+
+### Added - 新增功能
+
+#### 🐧 多发行版支持 (Multi-Distribution Support)
+- **Debian 系列**
+  - Ubuntu 22.04+ (apt)
+  - Debian 11+ (apt)
+  - Kali Linux 2023+ (apt)
+
+- **RHEL 系列**
+  - CentOS Stream 9+ (dnf)
+  - AlmaLinux 9+ (dnf)
+  - Rocky Linux 9+ (dnf)
+  - Fedora 39+ (dnf)
+
+#### 🔧 操作系统检测 (OS Detection)
+- **TypeScript 模块**
+  - `src/utils/os-detection.ts` - 解析 `/etc/os-release` 检测发行版
+  - `src/utils/firewall.ts` - 防火墙类型检测 (iptables/firewalld)
+  - `src/utils/network.ts` - 网络接口检测和 NAT 判断
+  - `src/services/platform-detector.ts` - 平台检测服务
+  - `src/types/platform.ts` - 平台相关类型定义
+  - `src/constants/supported-distros.ts` - 支持的发行版配置
+
+- **Bash 脚本库**
+  - `scripts/lib/detect-os.sh` - OS 检测函数
+  - `scripts/lib/detect-env.sh` - 环境检测 (shell/容器/SELinux)
+  - `scripts/lib/package-manager.sh` - 包管理器抽象 (apt/dnf)
+  - `scripts/lib/firewall-config.sh` - 防火墙配置
+  - `scripts/lib/network-detect.sh` - 网络接口检测
+
+#### 🛡️ 防火墙支持 (Firewall Support)
+- **iptables** - Debian/Ubuntu 默认
+- **firewalld** - RHEL/CentOS/Fedora 默认
+- 自动检测并配置端口规则
+- SELinux 端口策略配置
+
+#### 📦 包管理器抽象 (Package Manager Abstraction)
+- `pkg_install` - 统一安装命令
+- `pkg_update` - 统一更新命令
+- `pkg_remove` - 统一卸载命令
+- 自动选择 apt 或 dnf
+
+### Changed - 改进
+
+- **README 更新**
+  - 中文 README 添加支持的操作系统表格
+  - 英文 README 添加 Supported Operating Systems 部分
+  - 更新系统要求说明
+
+- **安装脚本增强**
+  - `scripts/install.sh` 集成跨平台检测
+  - 自动选择正确的包管理器
+  - 自动配置对应的防火墙
+
+### Technical Details - 技术细节
+
+- **类型系统**
+  - `OsFamily` 枚举: DEBIAN, RHEL
+  - `PackageManager` 枚举: APT, DNF
+  - `FirewallType` 枚举: IPTABLES, FIREWALLD, NONE
+  - `ContainerType` 枚举: DOCKER, LXC, OPENVZ, NONE
+  - `SelinuxStatus` 枚举: ENFORCING, PERMISSIVE, DISABLED
+
+- **测试覆盖**
+  - 9 个单元测试覆盖 OS 检测功能
+  - 测试 fixtures 包含各发行版的 os-release 样本
+
+---
+
 ## [1.2.0] - 2026-01-09
 
 ### Added - 新增功能
