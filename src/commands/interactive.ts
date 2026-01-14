@@ -12,6 +12,7 @@ import logger from '../utils/logger';
 import { ExitCode } from '../constants/exit-codes';
 import { displayServiceStatus, startService, stopService, restartService } from './service';
 import { listUsers, addUser, deleteUser, showUserShare } from './user';
+import { setQuota, showQuota, resetQuota, listQuotas, reenableUser } from './quota';
 import { menuIcons } from '../constants/ui-symbols';
 import { t, toggleLanguage } from '../config/i18n';
 import layoutManager from '../services/layout-manager';
@@ -73,6 +74,10 @@ export function getMainMenuOptions(): any[] {
     {
       name: `${THEME.secondary(menuIcons.USER)} ${THEME.neutral(trans.menu.userManagement)}`,
       value: 'user',
+    },
+    {
+      name: `${THEME.secondary(menuIcons.QUOTA)} ${THEME.neutral('流量配额管理')}`,
+      value: 'quota',
     },
     {
       name: `${THEME.secondary(menuIcons.CONFIG)} ${THEME.neutral(trans.menu.configManagement)}`,
@@ -172,6 +177,13 @@ export async function handleMenuSelection(selection: string, options: MenuOption
       navigationManager.pop();
       return result;
 
+    case 'quota':
+      // Show quota management submenu
+      navigationManager.push('Quota Management');
+      const quotaResult = await handleQuotaManagementMenu(options);
+      navigationManager.pop();
+      return quotaResult;
+
     case 'config':
       logger.info('配置管理功能即将推出...');
       await promptContinue();
@@ -244,6 +256,82 @@ async function handleUserManagementMenu(options: MenuOptions): Promise<boolean> 
       case 'user-share':
         navigationManager.push('Share Link');
         await showUserShare(options);
+        await promptContinue();
+        navigationManager.pop();
+        break;
+
+      default:
+        logger.warn(`未知选项: ${selection}`);
+        break;
+    }
+  }
+}
+
+/**
+ * Handle quota management submenu
+ */
+async function handleQuotaManagementMenu(options: MenuOptions): Promise<boolean> {
+  while (true) {
+    // Render Frame
+    screenManager.clear();
+    await dashboardWidget.refresh();
+    screenManager.renderHeader(dashboardWidget, navigationManager.getBreadcrumb());
+
+    // Submenu Header - Use theme colors
+    console.log(THEME.secondary(`${menuIcons.QUOTA} 流量配额管理`));
+    logger.separator();
+    logger.newline();
+
+    const quotaMenuOptions = [
+      { name: `${THEME.primary('[列表]')} ${THEME.neutral('查看配额列表')}`, value: 'quota-list' },
+      { name: `${THEME.success('[设置]')} ${THEME.neutral('设置用户配额')}`, value: 'quota-set' },
+      { name: `${THEME.secondary('[详情]')} ${THEME.neutral('查看配额详情')}`, value: 'quota-show' },
+      { name: `${THEME.warning('[重置]')} ${THEME.neutral('重置已用流量')}`, value: 'quota-reset' },
+      { name: `${THEME.success('[启用]')} ${THEME.neutral('重新启用用户')}`, value: 'quota-reenable' },
+      { type: 'separator' },
+      { name: `${THEME.neutral('[返回]')} ${THEME.neutral('返回主菜单')}`, value: 'back' },
+    ];
+
+    const selection = await showMenu(quotaMenuOptions, chalk.bold('请选择操作:'));
+
+    switch (selection) {
+      case 'back':
+        return false; // Return to main menu
+
+      case 'quota-list':
+        navigationManager.push('List Quotas');
+        await listQuotas(options);
+        await promptContinue();
+        navigationManager.pop();
+        break;
+
+      case 'quota-set':
+        navigationManager.push('Set Quota');
+        await setQuota(options);
+        await dashboardWidget.refresh();
+        await promptContinue();
+        navigationManager.pop();
+        break;
+
+      case 'quota-show':
+        navigationManager.push('Quota Details');
+        await showQuota(options);
+        await promptContinue();
+        navigationManager.pop();
+        break;
+
+      case 'quota-reset':
+        navigationManager.push('Reset Usage');
+        await resetQuota(options);
+        await dashboardWidget.refresh();
+        await promptContinue();
+        navigationManager.pop();
+        break;
+
+      case 'quota-reenable':
+        navigationManager.push('Re-enable User');
+        await reenableUser(options);
+        await dashboardWidget.refresh();
         await promptContinue();
         navigationManager.pop();
         break;

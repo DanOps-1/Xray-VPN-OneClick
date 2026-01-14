@@ -1,6 +1,9 @@
 import { IDashboardWidget } from '../types/ui-components';
 import { SystemdManager } from '../services/systemd-manager';
 import { UserManager } from '../services/user-manager';
+import { QuotaManager } from '../services/quota-manager';
+import { TrafficManager } from '../services/traffic-manager';
+import { formatTraffic } from '../utils/traffic-formatter';
 import Table from 'cli-table3';
 import * as os from 'os';
 import { menuIcons } from '../constants/ui-symbols';
@@ -9,7 +12,9 @@ import { THEME, UI_CONSTANTS } from '../constants/theme';
 export class DashboardWidget implements IDashboardWidget {
   private systemdManager: SystemdManager;
   private userManager: UserManager;
-  
+  private quotaManager: QuotaManager;
+  private trafficManager: TrafficManager;
+
   private status: {
     serviceActive: boolean;
     serviceSubState: string;
@@ -18,6 +23,10 @@ export class DashboardWidget implements IDashboardWidget {
     systemLoad: string;
     memoryUsage: string;
     osInfo: string;
+    totalTraffic: string;
+    activeUsers: number;
+    warningUsers: number;
+    exceededUsers: number;
   } = {
     serviceActive: false,
     serviceSubState: 'unknown',
@@ -26,11 +35,17 @@ export class DashboardWidget implements IDashboardWidget {
     systemLoad: '0.00',
     memoryUsage: '0/0 MB',
     osInfo: 'Unknown',
+    totalTraffic: '0 B',
+    activeUsers: 0,
+    warningUsers: 0,
+    exceededUsers: 0,
   };
 
   constructor(serviceName: string = 'xray', configPath?: string) {
     this.systemdManager = new SystemdManager(serviceName);
     this.userManager = new UserManager(configPath, serviceName);
+    this.quotaManager = new QuotaManager();
+    this.trafficManager = new TrafficManager();
   }
 
   /**
@@ -38,9 +53,11 @@ export class DashboardWidget implements IDashboardWidget {
    */
   async refresh(): Promise<void> {
     try {
-      const [serviceStatus, users] = await Promise.all([
+      const [serviceStatus, users, quotas, usages] = await Promise.all([
         this.systemdManager.getStatus(),
         this.userManager.listUsers().catch(() => []),
+        this.quotaManager.getAllQuotas().catch(() => ({})),
+        this.trafficManager.getAllUsage().catch(() => []),
       ]);
 
       const load = os.loadavg();
@@ -48,7 +65,36 @@ export class DashboardWidget implements IDashboardWidget {
       const freeMem = Math.round(os.freemem() / 1024 / 1024);
       const usedMem = totalMem - freeMem;
       const uptime = os.uptime();
-      
+
+      // Calculate traffic statistics
+      let totalTrafficBytes = 0;
+      let activeUsers = 0;
+      let warningUsers = 0;
+      let exceededUsers = 0;
+
+      for (const usage of usages) {
+        totalTrafficBytes += usage.total;
+      }
+
+      // Count users by quota status
+      for (const [email, quota] of Object.entries(quotas)) {
+        const usage = usages.find((u) => u.email === email);
+        const usedBytes = usage?.total || quota.usedBytes || 0;
+
+        if (quota.quotaBytes > 0) {
+          const percent = (usedBytes / quota.quotaBytes) * 100;
+          if (percent >= 100) {
+            exceededUsers++;
+          } else if (percent >= 80) {
+            warningUsers++;
+          } else {
+            activeUsers++;
+          }
+        } else {
+          activeUsers++; // Unlimited quota counts as active
+        }
+      }
+
       this.status = {
         serviceActive: serviceStatus.active,
         serviceSubState: serviceStatus.subState,
@@ -57,6 +103,10 @@ export class DashboardWidget implements IDashboardWidget {
         systemLoad: load[0].toFixed(2),
         memoryUsage: `${usedMem}/${totalMem} MB`,
         osInfo: `${os.type()} ${os.release()}`,
+        totalTraffic: formatTraffic(totalTrafficBytes).display,
+        activeUsers,
+        warningUsers,
+        exceededUsers,
       };
     } catch (error) {
       // Graceful degradation
@@ -99,6 +149,7 @@ export class DashboardWidget implements IDashboardWidget {
       table.push(
         [`${THEME.primary('Service')}: ${statusIcon} ${statusText}`],
         [`${THEME.primary('Users')}:   ${THEME.highlight(String(this.status.userCount))}`],
+        [`${THEME.primary('Traffic')}: ${THEME.highlight(this.status.totalTraffic)}`],
         [`${THEME.primary('Uptime')}:  ${THEME.neutral(this.status.uptime)}`]
       );
     } else {
@@ -109,20 +160,36 @@ export class DashboardWidget implements IDashboardWidget {
       ].join('\n');
 
       const col2 = [
-        `${THEME.primary('System Resources')}`,
-        `${THEME.neutral('Load:')} ${THEME.highlight(this.status.systemLoad)}`,
-        `${THEME.neutral('Mem:')}  ${THEME.highlight(this.status.memoryUsage)}`
+        `${THEME.primary('Traffic Overview')}`,
+        `${THEME.secondary(menuIcons.STATS)} ${THEME.highlight(this.status.totalTraffic)}`,
+        this.getUserStatusLine()
       ].join('\n');
 
       const col3 = [
         `${THEME.primary('Users')}`,
-        `${THEME.secondary(menuIcons.USER)} ${THEME.highlight(String(this.status.userCount))} ${THEME.neutral('Active')}`
+        `${THEME.secondary(menuIcons.USER)} ${THEME.highlight(String(this.status.userCount))} ${THEME.neutral('Total')}`
       ].join('\n');
 
       table.push([col1, col2, col3]);
     }
 
     return table.toString();
+  }
+
+  private getUserStatusLine(): string {
+    const parts: string[] = [];
+
+    if (this.status.activeUsers > 0) {
+      parts.push(THEME.success(`${this.status.activeUsers} OK`));
+    }
+    if (this.status.warningUsers > 0) {
+      parts.push(THEME.warning(`${this.status.warningUsers} Warn`));
+    }
+    if (this.status.exceededUsers > 0) {
+      parts.push(THEME.error(`${this.status.exceededUsers} Over`));
+    }
+
+    return parts.length > 0 ? parts.join(' ') : THEME.neutral('No quotas set');
   }
 
   private calculateColWidths(width: number): number[] {

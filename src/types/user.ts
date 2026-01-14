@@ -3,6 +3,8 @@
  * @module types/user
  */
 
+import type { TrafficQuota, TrafficUsage, AlertLevel } from './quota';
+
 /**
  * 用户实体
  */
@@ -27,6 +29,18 @@ export interface User {
 
   /** 最后修改时间 */
   updatedAt?: string;
+
+  /** 流量配额（可选） */
+  quota?: TrafficQuota;
+
+  /** 当前流量使用（可选） */
+  usage?: TrafficUsage;
+
+  /** 使用百分比（0-100，无限制时为 0） */
+  usagePercent?: number;
+
+  /** 警告级别 */
+  alertLevel?: AlertLevel;
 }
 
 /**

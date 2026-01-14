@@ -35,6 +35,8 @@ export const menuIcons = {
   LOGS: '[日志]',
   LANGUAGE: '[语言]',
   EXIT: '[退出]',
+  STATS: '[流量]',
+  QUOTA: '[配额]',
 } as const;
 
 // Type exports for TypeScript support

@@ -7,8 +7,12 @@
  */
 
 import { UserManager } from '../services/user-manager';
+import { QuotaManager } from '../services/quota-manager';
+import { TrafficManager } from '../services/traffic-manager';
 import { maskSensitiveValue } from '../utils/format';
 import { copyToClipboard } from '../utils/clipboard';
+import { formatTraffic, formatUsageSummary, calculateUsagePercent, getAlertLevel } from '../utils/traffic-formatter';
+import { promptQuotaInput } from './quota';
 import logger from '../utils/logger';
 import chalk from 'chalk';
 import ora from 'ora';
@@ -16,8 +20,6 @@ import { confirm, input } from '@inquirer/prompts';
 import { menuIcons } from '../constants/ui-symbols';
 import { renderHeader } from '../utils/layout';
 import layoutManager from '../services/layout-manager';
-import { renderUserTable } from '../components/user-table';
-import { UserConfig } from '../types/user';
 
 /**
  * User command options
@@ -41,7 +43,16 @@ export interface UserCommandOptions {
 export async function listUsers(options: UserCommandOptions = {}): Promise<void> {
   try {
     const manager = new UserManager(options.configPath, options.serviceName);
+    const quotaManager = new QuotaManager();
+    const trafficManager = new TrafficManager();
+
+    const spinner = ora('正在获取用户列表...').start();
+
     const users = await manager.listUsers();
+    const quotas = await quotaManager.getAllQuotas();
+    const usages = await trafficManager.getAllUsage();
+
+    spinner.stop();
 
     if (options.json) {
       console.log(JSON.stringify(users, null, 2));
@@ -66,34 +77,48 @@ export async function listUsers(options: UserCommandOptions = {}): Promise<void>
       return;
     }
 
-    // Adapt UserManager users to UserConfig for table
-    // Assuming UserManager users match UserConfig or can be mapped
-    // The previous implementation mapped manually, now we use renderUserTable
-    // We need to ensure users passed match UserConfig expected by renderUserTable
-    // Assuming renderUserTable takes UserConfig[]
-    
-    // Convert to compatible type if necessary, or cast if structures align
-    // Based on previous code: users has email, id, level, flow
-    // renderUserTable expects: username/email, uuid/id, port, protocol
-    // Let's check UserConfig type compatibility or map it
-    
-    // Mapping adaptation:
-    // renderUserTable expects UserConfig { username, uuid, port, protocol, flow? }
-    // UserManager returns { email, id, level, flow } (based on previous code)
-    
-    const tableUsers = users.map(u => ({
-      username: u.email,
-      uuid: u.id,
-      // Port/Protocol might not be available in simple user list from UserManager
-      // If not available, we can pass dummy or fetch if needed
-      // For now, mapping what we have
-      port: 0, // Placeholder
-      protocol: 'vless', // Placeholder
-      flow: u.flow
-    } as unknown as UserConfig));
+    // Display users with quota and traffic info
+    for (const user of users) {
+      const quota = quotas[user.email];
+      const usage = usages.find((u) => u.email === user.email);
 
-    console.log(renderUserTable(tableUsers, terminalSize.width));
-    logger.newline();
+      // Calculate usage percentage and alert level
+      const usedBytes = usage?.total || quota?.usedBytes || 0;
+      const quotaBytes = quota?.quotaBytes ?? -1;
+      const percent = calculateUsagePercent(usedBytes, quotaBytes);
+      const alertLevel = getAlertLevel(percent);
+
+      // Color based on alert level
+      const getColorFn = (level: 'normal' | 'warning' | 'exceeded'): ((_text: string) => string) => {
+        switch (level) {
+          case 'exceeded':
+            return chalk.red;
+          case 'warning':
+            return chalk.yellow;
+          default:
+            return chalk.green;
+        }
+      };
+      const colorFn = getColorFn(alertLevel);
+
+      // Status indicator
+      const statusIcon = alertLevel === 'exceeded' ? '[!]' : alertLevel === 'warning' ? '[~]' : '[+]';
+
+      // User info line
+      console.log(`  ${colorFn(statusIcon)} ${chalk.white(user.email)}`);
+      console.log(`     UUID: ${chalk.gray(maskSensitiveValue(user.id))}`);
+
+      // Quota and usage info
+      if (quota) {
+        const quotaDisplay = quotaBytes < 0 ? '无限制' : formatTraffic(quotaBytes).display;
+        const usageDisplay = formatUsageSummary(usedBytes, quotaBytes);
+        console.log(`     配额: ${chalk.cyan(quotaDisplay)} | 使用: ${colorFn(usageDisplay)}`);
+      } else {
+        console.log(`     配额: ${chalk.gray('未设置')}`);
+      }
+
+      logger.newline();
+    }
   } catch (error) {
     logger.error((error as Error).message);
     process.exit(1);
@@ -140,6 +165,26 @@ export async function addUser(options: UserCommandOptions = {}): Promise<void> {
     logger.newline();
 
     logger.success('服务已自动重启');
+
+    // Ask if user wants to set a quota
+    const setQuotaNow = await confirm({
+      message: '是否为该用户设置流量配额？',
+      default: false,
+    });
+
+    if (setQuotaNow) {
+      const quotaBytes = await promptQuotaInput();
+      const quotaManager = new QuotaManager();
+
+      await quotaManager.setQuota({
+        email: user.email,
+        quotaBytes,
+        quotaType: quotaBytes < 0 ? 'unlimited' : 'limited',
+      });
+
+      const quotaDisplay = quotaBytes < 0 ? '无限制' : formatTraffic(quotaBytes).display;
+      logger.success(`已设置配额: ${quotaDisplay}`);
+    }
   } catch (error) {
     logger.error((error as Error).message);
     process.exit(1);
