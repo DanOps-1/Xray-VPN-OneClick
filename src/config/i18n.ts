@@ -25,6 +25,7 @@ export interface Translations {
     stopService: string;
     restartService: string;
     userManagement: string;
+    quotaManagement: string;
     configManagement: string;
     viewLogs: string;
     switchLanguage: string;
@@ -38,6 +39,28 @@ export interface Translations {
     active: string;
     inactive: string;
     unknown: string;
+  };
+
+  // Quota labels
+  quota: {
+    title: string;
+    list: string;
+    set: string;
+    show: string;
+    reset: string;
+    reenable: string;
+    unlimited: string;
+    used: string;
+    remaining: string;
+    exceeded: string;
+    warning: string;
+    normal: string;
+    noQuota: string;
+    selectUser: string;
+    selectPreset: string;
+    enterCustom: string;
+    confirmReset: string;
+    confirmReenable: string;
   };
 
   // Common actions
@@ -57,6 +80,11 @@ export interface Translations {
     terminalTooNarrow: string;
     terminalTooShort: string;
     terminalResizeSuggestion: string;
+    quotaSet: string;
+    quotaReset: string;
+    userReenabled: string;
+    noUsersWithQuota: string;
+    noDisabledUsers: string;
   };
 }
 
@@ -68,6 +96,7 @@ const zhTranslations: Translations = {
     stopService: '停止服务',
     restartService: '重启服务',
     userManagement: '用户管理',
+    quotaManagement: '流量配额管理',
     configManagement: '配置管理',
     viewLogs: '查看日志',
     switchLanguage: '切换语言 (Switch to English)',
@@ -79,6 +108,26 @@ const zhTranslations: Translations = {
     active: '运行中',
     inactive: '已停止',
     unknown: '未知',
+  },
+  quota: {
+    title: '流量配额管理',
+    list: '查看配额列表',
+    set: '设置用户配额',
+    show: '查看配额详情',
+    reset: '重置已用流量',
+    reenable: '重新启用用户',
+    unlimited: '无限制',
+    used: '已使用',
+    remaining: '剩余',
+    exceeded: '已超额',
+    warning: '接近限额',
+    normal: '正常',
+    noQuota: '未设置配额',
+    selectUser: '请选择用户',
+    selectPreset: '请选择预设配额',
+    enterCustom: '请输入自定义配额',
+    confirmReset: '确定要重置该用户的已用流量吗？',
+    confirmReenable: '确定要重新启用该用户吗？',
   },
   actions: {
     selectAction: '请选择操作',
@@ -94,6 +143,11 @@ const zhTranslations: Translations = {
     terminalTooNarrow: '终端宽度过窄',
     terminalTooShort: '终端高度过低',
     terminalResizeSuggestion: '请调整终端大小以获得最佳显示效果',
+    quotaSet: '配额设置成功',
+    quotaReset: '已用流量已重置',
+    userReenabled: '用户已重新启用',
+    noUsersWithQuota: '暂无设置配额的用户',
+    noDisabledUsers: '暂无被禁用的用户',
   },
 };
 
@@ -105,6 +159,7 @@ const enTranslations: Translations = {
     stopService: 'Stop Service',
     restartService: 'Restart Service',
     userManagement: 'User Management',
+    quotaManagement: 'Traffic Quota Management',
     configManagement: 'Config Management',
     viewLogs: 'View Logs',
     switchLanguage: 'Switch Language (切换为中文)',
@@ -116,6 +171,26 @@ const enTranslations: Translations = {
     active: 'Active',
     inactive: 'Inactive',
     unknown: 'Unknown',
+  },
+  quota: {
+    title: 'Traffic Quota Management',
+    list: 'View Quota List',
+    set: 'Set User Quota',
+    show: 'View Quota Details',
+    reset: 'Reset Used Traffic',
+    reenable: 'Re-enable User',
+    unlimited: 'Unlimited',
+    used: 'Used',
+    remaining: 'Remaining',
+    exceeded: 'Exceeded',
+    warning: 'Warning',
+    normal: 'Normal',
+    noQuota: 'No quota set',
+    selectUser: 'Select a user',
+    selectPreset: 'Select a preset quota',
+    enterCustom: 'Enter custom quota',
+    confirmReset: 'Are you sure you want to reset this user\'s traffic?',
+    confirmReenable: 'Are you sure you want to re-enable this user?',
   },
   actions: {
     selectAction: 'Please select an action',
@@ -131,6 +206,11 @@ const enTranslations: Translations = {
     terminalTooNarrow: 'Terminal width is too narrow',
     terminalTooShort: 'Terminal height is too short',
     terminalResizeSuggestion: 'Please resize your terminal for optimal display',
+    quotaSet: 'Quota set successfully',
+    quotaReset: 'Used traffic has been reset',
+    userReenabled: 'User has been re-enabled',
+    noUsersWithQuota: 'No users with quota configured',
+    noDisabledUsers: 'No disabled users',
   },
 };
 
