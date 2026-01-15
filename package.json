@@ -1,6 +1,6 @@
 {
   "name": "xray-manager",
-  "version": "1.7.3",
+  "version": "1.7.4",
   "description": "Xray VPN 服务管理 CLI 工具 - npm installable interactive CLI tool for Xray service management",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
