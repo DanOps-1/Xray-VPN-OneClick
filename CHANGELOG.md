@@ -11,6 +11,79 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - 新增 `review` 命令：对本地仓库生成开源成熟度评审报告（Markdown/JSON 输出）
 
+---
+
+## [1.6.0] - 2026-01-15
+
+📊 **Feature 011: Stats API 自动配置 & 社区优化**
+
+### Added - 新增功能
+
+#### 📊 Stats API 自动配置
+- **StatsConfigManager 服务类** (`src/services/stats-config-manager.ts`)
+  - 自动检测当前 Stats API 配置状态
+  - 识别缺失的配置组件（stats、api、policy、routing）
+  - 一键启用完整的流量统计功能
+
+- **智能端口管理**
+  - 自动检测可用端口（范围：10085-10185）
+  - 避免端口冲突
+  - 支持自定义端口配置
+
+- **安全配置机制**
+  - 配置前自动备份原配置文件
+  - 配置失败自动回滚
+  - 服务重启后自动验证状态
+
+- **交互式菜单集成**
+  - 新增「配置 Stats API」菜单选项
+  - 流量统计显示功能默认启用
+
+#### 🌐 社区优化
+- **Issue 模板**
+  - Bug 报告模板 (`bug_report.yml`)
+  - 功能建议模板 (`feature_request.yml`)
+  - 配置文件引导用户查阅文档 (`config.yml`)
+
+- **PR 模板**
+  - 标准化贡献流程 (`PULL_REQUEST_TEMPLATE.md`)
+
+- **GitHub 功能**
+  - 启用 Discussions 讨论区
+  - 创建 Good First Issues (#9, #10, #11, #12)
+
+- **README 增强**
+  - 新增「使用场景」章节（AI 服务、隐私安全、远程办公等）
+  - SEO 关键词优化
+
+### Technical - 技术细节
+
+- 新增类型定义 (`src/types/config.ts`)
+  - `XrayConfigWithStats` - 带 Stats 的完整配置类型
+  - `ApiInbound` - API 入站配置
+  - `PolicyLevelConfig` / `PolicySystemConfig` - 策略配置
+  - `StatsDetectionResult` / `StatsConfigResult` - 检测结果类型
+
+- 配置参数
+  - 默认 API 端口：10085
+  - 端口扫描范围：10085-10185
+  - 配置超时：5000ms
+  - 服务重启等待：2000ms
+
+---
+
+## [1.5.0] - 2026-01-14
+
+📈 **Feature 010: Traffic Quota Management - 流量配额管理**
+
+### Added - 新增功能
+
+- 流量配额管理系统
+- 用户流量限制与监控
+- 配额超限自动处理
+
+---
+
 ## [1.4.1] - 2026-01-14
 
 ### Fixed - 修复
