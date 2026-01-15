@@ -300,7 +300,13 @@ case "$OS_PKG_MANAGER" in
         apt-get install -y curl unzip openssl
         ;;
     dnf)
-        dnf install -y curl unzip openssl
+        # Amazon Linux 2023 使用 curl-minimal，与 curl 冲突
+        # 只安装缺失的包
+        if [[ "$OS_ID" == "amzn" ]]; then
+            dnf install -y unzip openssl || true
+        else
+            dnf install -y curl unzip openssl
+        fi
         ;;
 esac
 
