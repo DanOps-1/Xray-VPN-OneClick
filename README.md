@@ -1,5 +1,7 @@
 <div align="center">
 
+<img src="icon.png" alt="Xray VPN OneClick Logo" width="180" height="180">
+
 # 🚀 Xray VPN OneClick | 一键科学上网
 
 <h3>5分钟部署 VLESS+Reality 代理服务器 — 最强抗封锁协议</h3>

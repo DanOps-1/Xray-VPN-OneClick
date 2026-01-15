@@ -1,5 +1,7 @@
 <div align="center">
 
+<img src="../icon.png" alt="Xray VPN OneClick Logo" width="180" height="180">
+
 # 🚀 Xray VPN OneClick
 
 <h3>One-Click Xray VLESS+Reality Proxy Server Deployment</h3>
