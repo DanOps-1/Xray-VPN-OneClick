@@ -113,7 +113,7 @@ export async function showMenu(options: any[], message?: string): Promise<string
     choices: options,
   });
 
-  return answer;
+  return answer as string;
 }
 
 /**
