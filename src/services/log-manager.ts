@@ -10,6 +10,8 @@ import { spawn, ChildProcess } from 'child_process';
 import { existsSync } from 'fs';
 import { which } from '../utils/which';
 
+const DEFAULT_LOG_LINES = 200;
+
 /**
  * Log entry structure
  */
@@ -221,6 +223,8 @@ export class LogManager {
       );
     }
 
+    const lineLimit = options.lines ?? DEFAULT_LOG_LINES;
+
     // Build journalctl arguments
     const args: string[] = [
       '-u',
@@ -246,8 +250,8 @@ export class LogManager {
     }
 
     // Add line limit
-    if (options.lines) {
-      args.push('-n', String(options.lines));
+    if (Number.isFinite(lineLimit) && lineLimit > 0) {
+      args.push('-n', String(lineLimit));
     }
 
     return new Promise((resolve, reject) => {

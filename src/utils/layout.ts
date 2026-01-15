@@ -26,6 +26,9 @@ export interface RenderOptions {
   padding?: { top: number; right: number; bottom: number; left: number };
 }
 
+type TableConfig = NonNullable<ConstructorParameters<typeof Table>[0]>;
+type BorderChars = NonNullable<TableConfig['chars']>;
+
 /**
  * Calculate the display width of a string, accounting for Chinese characters
  *
@@ -239,7 +242,7 @@ export function renderTable(
   options?: RenderOptions
 ): string {
   // Map border style to cli-table3 style
-  const borderChars: Record<string, any> = {
+  const borderChars: Record<NonNullable<RenderOptions['borderStyle']>, BorderChars> = {
     single: {
       top: '─',
       'top-mid': '┬',
@@ -293,18 +296,18 @@ export function renderTable(
     },
   };
 
-  const borderStyle = options?.borderStyle || 'single';
+  const borderStyle: NonNullable<RenderOptions['borderStyle']> = options?.borderStyle ?? 'single';
 
   // Create table configuration
-  const tableConfig: any = {
+  const tableConfig: TableConfig = {
     head: columns.map((col) => col.header),
     chars: borderChars[borderStyle],
   };
 
   // Add column-specific configurations
   if (columns.some((col) => col.width || col.align)) {
-    tableConfig.colWidths = columns.map((col) => col.width || undefined);
-    tableConfig.colAligns = columns.map((col) => col.align || 'left');
+    tableConfig.colWidths = columns.map((col) => col.width ?? null);
+    tableConfig.colAligns = columns.map((col) => col.align ?? 'left');
   }
 
   const table = new Table(tableConfig);

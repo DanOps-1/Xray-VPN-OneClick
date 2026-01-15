@@ -142,7 +142,13 @@ export const DEFAULT_QUOTA_CONFIG: QuotaConfig = {
 /**
  * Stats API 缺失组件类型
  */
-export type MissingComponent = 'stats' | 'api' | 'api-inbound' | 'api-routing';
+export type MissingComponent =
+  | 'stats'
+  | 'policy'
+  | 'api'
+  | 'api-inbound'
+  | 'api-routing'
+  | 'api-outbound';
 
 /**
  * Stats API 检测结果

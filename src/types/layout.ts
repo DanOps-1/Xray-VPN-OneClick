@@ -10,7 +10,7 @@
 /**
  * Layout mode enum - defines different terminal size strategies
  */
-/* eslint-disable @typescript-eslint/no-unused-vars, no-unused-vars */
+/* eslint-disable no-unused-vars */
 export enum LayoutMode {
   /** Narrow terminals (< 80 columns) */
   COMPACT = 'compact',
@@ -19,12 +19,12 @@ export enum LayoutMode {
   /** Wide terminals (> 120 columns) */
   WIDE = 'wide',
 }
-/* eslint-enable @typescript-eslint/no-unused-vars, no-unused-vars */
+/* eslint-enable no-unused-vars */
 
 /**
  * Content region type enum - categorizes different UI regions
  */
-/* eslint-disable @typescript-eslint/no-unused-vars, no-unused-vars */
+/* eslint-disable no-unused-vars */
 export enum ContentRegionType {
   /** Page header/title area */
   HEADER = 'header',
@@ -37,7 +37,7 @@ export enum ContentRegionType {
   /** Footer/hints area */
   FOOTER = 'footer',
 }
-/* eslint-enable @typescript-eslint/no-unused-vars, no-unused-vars */
+/* eslint-enable no-unused-vars */
 
 /**
  * Content region interface - defines a rectangular area in the terminal

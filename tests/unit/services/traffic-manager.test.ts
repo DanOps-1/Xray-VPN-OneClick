@@ -5,15 +5,36 @@
  */
 
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { readFile } from 'fs/promises';
+import type { ChildProcess } from 'child_process';
 
 // Mock child_process
 vi.mock('child_process', () => ({
   exec: vi.fn(),
 }));
 
+vi.mock('fs/promises', () => ({
+  readFile: vi.fn(),
+}));
+
 describe('TrafficManager', () => {
+  type ExecCallback = (_error: Error | null, _result: { stdout: string; stderr: string }) => void;
+
   beforeEach(() => {
     vi.clearAllMocks();
+    const mockReadFile = vi.mocked(readFile);
+    mockReadFile.mockResolvedValue(
+      JSON.stringify({
+        policy: {
+          levels: {
+            '0': {
+              statsUserUplink: true,
+              statsUserDownlink: true,
+            },
+          },
+        },
+      })
+    );
   });
 
   afterEach(() => {
@@ -39,9 +60,9 @@ describe('TrafficManager', () => {
       const { exec } = await import('child_process');
       const mockExec = vi.mocked(exec);
 
-      mockExec.mockImplementation((_cmd, callback: any) => {
+      mockExec.mockImplementation((_cmd: string, callback: ExecCallback) => {
         callback(null, { stdout: '{"stat":[]}', stderr: '' });
-        return {} as any;
+        return {} as ChildProcess;
       });
 
       const { TrafficManager } = await import('../../../src/services/traffic-manager');
@@ -55,9 +76,9 @@ describe('TrafficManager', () => {
       const { exec } = await import('child_process');
       const mockExec = vi.mocked(exec);
 
-      mockExec.mockImplementation((_cmd, callback: any) => {
+      mockExec.mockImplementation((_cmd: string, callback: ExecCallback) => {
         callback(new Error('Connection refused'), { stdout: '', stderr: '' });
-        return {} as any;
+        return {} as ChildProcess;
       });
 
       const { TrafficManager } = await import('../../../src/services/traffic-manager');
@@ -73,9 +94,9 @@ describe('TrafficManager', () => {
       const { exec } = await import('child_process');
       const mockExec = vi.mocked(exec);
 
-      mockExec.mockImplementation((_cmd, callback: any) => {
+      mockExec.mockImplementation((_cmd: string, callback: ExecCallback) => {
         callback(new Error('Connection refused'), { stdout: '', stderr: '' });
-        return {} as any;
+        return {} as ChildProcess;
       });
 
       const { TrafficManager } = await import('../../../src/services/traffic-manager');
@@ -89,8 +110,7 @@ describe('TrafficManager', () => {
       const { exec } = await import('child_process');
       const mockExec = vi.mocked(exec);
 
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      mockExec.mockImplementation((cmd: string, callback: any) => {
+      mockExec.mockImplementation((cmd: string, callback: ExecCallback) => {
         if (cmd.includes('statsquery')) {
           callback(null, { stdout: '{"stat":[]}', stderr: '' });
         } else if (cmd.includes('uplink')) {
@@ -98,7 +118,7 @@ describe('TrafficManager', () => {
         } else if (cmd.includes('downlink')) {
           callback(null, { stdout: '{"stat":{"value":2000}}', stderr: '' });
         }
-        return {} as any;
+        return {} as ChildProcess;
       });
 
       const { TrafficManager } = await import('../../../src/services/traffic-manager');
@@ -119,9 +139,9 @@ describe('TrafficManager', () => {
       const { exec } = await import('child_process');
       const mockExec = vi.mocked(exec);
 
-      mockExec.mockImplementation((_cmd, callback: any) => {
+      mockExec.mockImplementation((_cmd: string, callback: ExecCallback) => {
         callback(new Error('Connection refused'), { stdout: '', stderr: '' });
-        return {} as any;
+        return {} as ChildProcess;
       });
 
       const { TrafficManager } = await import('../../../src/services/traffic-manager');
@@ -144,9 +164,9 @@ describe('TrafficManager', () => {
         ],
       };
 
-      mockExec.mockImplementation((_cmd, callback: any) => {
+      mockExec.mockImplementation((_cmd: string, callback: ExecCallback) => {
         callback(null, { stdout: JSON.stringify(statsResponse), stderr: '' });
-        return {} as any;
+        return {} as ChildProcess;
       });
 
       const { TrafficManager } = await import('../../../src/services/traffic-manager');

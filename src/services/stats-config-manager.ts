@@ -21,7 +21,15 @@ import {
   SERVICE_RESTART_WAIT,
   XRAY_STATS_COMMAND,
 } from '../constants/quota';
-import type { XrayConfigWithStats, ApiInbound, RoutingRule, ApiServiceType } from '../types/config';
+import type {
+  XrayConfigWithStats,
+  ApiInbound,
+  RoutingRule,
+  ApiServiceType,
+  PolicyLevelConfig,
+  PolicySystemConfig,
+  Outbound,
+} from '../types/config';
 import type { StatsDetectionResult, StatsConfigResult, MissingComponent } from '../types/quota';
 
 const execAsync = promisify(exec);
@@ -62,6 +70,17 @@ export class StatsConfigManager {
         missing.push('stats');
       }
 
+      // 检查 policy 配置（用户流量统计）
+      const levels = config.policy?.levels;
+      const hasUserStatsPolicy = levels
+        ? Object.values(levels).some(
+          (level) => level?.statsUserUplink === true && level?.statsUserDownlink === true
+        )
+        : false;
+      if (!hasUserStatsPolicy) {
+        missing.push('policy');
+      }
+
       // 检查 api 配置
       if (!config.api || !config.api.services?.includes('StatsService')) {
         missing.push('api');
@@ -75,6 +94,12 @@ export class StatsConfigManager {
         missing.push('api-inbound');
       }
 
+      // 检查 api outbound
+      const hasApiOutbound = config.outbounds?.some((outbound) => outbound.tag === 'api');
+      if (!hasApiOutbound) {
+        missing.push('api-outbound');
+      }
+
       // 检查 api 路由规则
       const hasApiRouting = config.routing?.rules?.some(
         (rule) => rule.inboundTag?.includes('api') && rule.outboundTag === 'api'
@@ -84,7 +109,7 @@ export class StatsConfigManager {
       }
     } catch {
       // 配置文件不存在或无法读取，所有组件都缺失
-      return ['stats', 'api', 'api-inbound', 'api-routing'];
+      return ['stats', 'policy', 'api', 'api-inbound', 'api-outbound', 'api-routing'];
     }
 
     return missing;
@@ -152,12 +177,25 @@ export class StatsConfigManager {
    */
   generateStatsConfig(port: number = DEFAULT_API_PORT): {
     stats: Record<string, never>;
+    policy: {
+      levels: Record<string, PolicyLevelConfig>;
+      system: PolicySystemConfig;
+    };
     api: { tag: string; services: ApiServiceType[] };
     apiInbound: ApiInbound;
+    apiOutbound: Outbound;
     apiRoutingRule: RoutingRule;
   } {
     return {
       stats: {},
+      policy: {
+        levels: {
+          ...DEFAULT_STATS_CONFIG.policy.levels,
+        },
+        system: {
+          ...DEFAULT_STATS_CONFIG.policy.system,
+        },
+      },
       api: {
         tag: DEFAULT_STATS_CONFIG.api.tag,
         services: [...DEFAULT_STATS_CONFIG.api.services] as ApiServiceType[],
@@ -170,6 +208,10 @@ export class StatsConfigManager {
         settings: {
           address: DEFAULT_STATS_CONFIG.apiInbound.settings.address,
         },
+      },
+      apiOutbound: {
+        protocol: DEFAULT_STATS_CONFIG.apiOutbound.protocol,
+        tag: DEFAULT_STATS_CONFIG.apiOutbound.tag,
       },
       apiRoutingRule: {
         type: DEFAULT_STATS_CONFIG.apiRoutingRule.type,
@@ -197,6 +239,31 @@ export class StatsConfigManager {
       merged.stats = statsConfig.stats;
     }
 
+    // 添加或更新 policy 配置（用户流量统计）
+    if (!merged.policy) {
+      merged.policy = statsConfig.policy;
+    } else {
+      const hasLevels = !!merged.policy.levels && Object.keys(merged.policy.levels).length > 0;
+      const levels = hasLevels
+        ? { ...merged.policy.levels }
+        : { ...statsConfig.policy.levels };
+
+      for (const levelKey of Object.keys(levels)) {
+        levels[levelKey] = {
+          ...levels[levelKey],
+          statsUserUplink: true,
+          statsUserDownlink: true,
+        };
+      }
+
+      merged.policy.levels = levels;
+      merged.policy.system = {
+        ...(merged.policy.system || {}),
+        statsInboundUplink: true,
+        statsInboundDownlink: true,
+      };
+    }
+
     // 添加或更新 api 配置
     if (!merged.api) {
       merged.api = statsConfig.api;
@@ -210,6 +277,12 @@ export class StatsConfigManager {
     );
     if (!hasApiInbound) {
       merged.inbounds = [...(merged.inbounds || []), statsConfig.apiInbound];
+    }
+
+    // 添加 api outbound（如果不存在）
+    const hasApiOutbound = merged.outbounds?.some((outbound) => outbound.tag === 'api');
+    if (!hasApiOutbound) {
+      merged.outbounds = [...(merged.outbounds || []), statsConfig.apiOutbound];
     }
 
     // 添加 api 路由规则（如果不存在）
@@ -336,8 +409,10 @@ export class StatsConfigManager {
     // 有缺失组件
     const componentNames: Record<MissingComponent, string> = {
       stats: 'stats 配置块',
+      policy: 'policy 配置',
       api: 'API 配置',
       'api-inbound': 'API 入站配置',
+      'api-outbound': 'API 出站配置',
       'api-routing': 'API 路由规则',
     };
 
@@ -345,7 +420,7 @@ export class StatsConfigManager {
 
     return {
       available: false,
-      configDetected: missingComponents.length < 4,
+      configDetected: missingComponents.length < 6,
       serviceRunning,
       message: `Stats API 未完全配置，缺少: ${missingNames}`,
       suggestion: '是否自动配置 Stats API？',

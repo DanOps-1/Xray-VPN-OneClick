@@ -11,6 +11,7 @@ import { promisify } from 'util';
 import { existsSync } from 'fs';
 import { readFile } from 'fs/promises';
 import type { TrafficUsage, XrayStatsResponse } from '../types/quota';
+import { QuotaManager } from './quota-manager';
 import {
   DEFAULT_API_PORT,
   DEFAULT_API_SERVER,
@@ -67,6 +68,49 @@ export class TrafficManager {
   }
 
   /**
+   * 从 Xray 配置中读取 API 端口
+   */
+  private async detectApiPortFromConfig(
+    configPath: string = DEFAULT_XRAY_CONFIG_PATH
+  ): Promise<number | null> {
+    try {
+      const content = await readFile(configPath, 'utf-8');
+      const config = JSON.parse(content);
+      const apiTag = config.api?.tag || 'api';
+      const apiInbound = config.inbounds?.find(
+        (inbound: { tag?: string }) => inbound.tag === apiTag
+      );
+      const port = Number(apiInbound?.port);
+      if (Number.isInteger(port) && port >= 1 && port <= 65535) {
+        return port;
+      }
+      return null;
+    } catch {
+      return null;
+    }
+  }
+
+  /**
+   * 从配额配置中同步 API 端口
+   */
+  private async syncApiPort(): Promise<void> {
+    let quotaPort: number | null = null;
+    try {
+      const quotaManager = new QuotaManager();
+      quotaPort = await quotaManager.getApiPort();
+    } catch {
+      quotaPort = null;
+    }
+
+    const configPort = await this.detectApiPortFromConfig();
+    const resolvedPort = configPort ?? quotaPort;
+
+    if (typeof resolvedPort === 'number' && Number.isInteger(resolvedPort) && resolvedPort >= 1 && resolvedPort <= 65535) {
+      this.apiPort = resolvedPort;
+    }
+  }
+
+  /**
    * 获取 API 服务器地址
    */
   getServerAddress(): string {
@@ -80,6 +124,7 @@ export class TrafficManager {
    */
   async isStatsAvailable(): Promise<boolean> {
     try {
+      await this.syncApiPort();
       const { stdout } = await execAsync(
         `${XRAY_STATS_COMMAND} api statsquery --server=${this.getServerAddress()} 2>/dev/null`
       );
@@ -89,6 +134,18 @@ export class TrafficManager {
     } catch {
       return false;
     }
+  }
+
+  /**
+   * 判断流量统计是否可用（含 policy 检查）
+   */
+  async isUsageAvailable(): Promise<boolean> {
+    const [available, policyEnabled] = await Promise.all([
+      this.isStatsAvailable(),
+      this.hasUserStatsPolicy(),
+    ]);
+
+    return available && policyEnabled;
   }
 
   /**
@@ -103,9 +160,31 @@ export class TrafficManager {
         `${XRAY_STATS_COMMAND} api stats --server=${this.getServerAddress()} -name "${name}" 2>/dev/null`
       );
       const result = JSON.parse(stdout || '{}');
-      return result.stat?.value || 0;
+      return Number(result.stat?.value) || 0;
     } catch {
       return 0;
+    }
+  }
+
+  /**
+   * 检查用户流量统计策略是否启用
+   */
+  private async hasUserStatsPolicy(configPath: string = DEFAULT_XRAY_CONFIG_PATH): Promise<boolean> {
+    try {
+      const content = await readFile(configPath, 'utf-8');
+      const config = JSON.parse(content);
+      const levels = config.policy?.levels;
+      if (!levels) {
+        return false;
+      }
+      const levelValues = Object.values(
+        levels as Record<string, { statsUserUplink?: boolean; statsUserDownlink?: boolean }>
+      );
+      return levelValues.some(
+        (level) => level?.statsUserUplink === true && level?.statsUserDownlink === true
+      );
+    } catch {
+      return false;
     }
   }
 
@@ -118,6 +197,11 @@ export class TrafficManager {
   async getUsage(email: string): Promise<TrafficUsage | null> {
     const available = await this.isStatsAvailable();
     if (!available) {
+      return null;
+    }
+
+    const policyEnabled = await this.hasUserStatsPolicy();
+    if (!policyEnabled) {
       return null;
     }
 
@@ -149,6 +233,11 @@ export class TrafficManager {
       return [];
     }
 
+    const policyEnabled = await this.hasUserStatsPolicy();
+    if (!policyEnabled) {
+      return [];
+    }
+
     try {
       const { stdout } = await execAsync(
         `${XRAY_STATS_COMMAND} api statsquery --server=${this.getServerAddress()} 2>/dev/null`
@@ -169,7 +258,7 @@ export class TrafficManager {
           }
 
           const stats = userStats.get(email)!;
-          stats[direction] = stat.value || 0;
+          stats[direction] = Number(stat.value) || 0;
         }
       }
 
@@ -215,7 +304,7 @@ export class TrafficManager {
           `${XRAY_STATS_COMMAND} api stats --server=${this.getServerAddress()} -name "${name}" -reset 2>/dev/null`
         );
         const result = JSON.parse(stdout || '{}');
-        return result.stat?.value || 0;
+        return Number(result.stat?.value) || 0;
       } catch {
         return 0;
       }
@@ -279,6 +368,19 @@ export class TrafficManager {
         return result;
       }
 
+      // 检查 policy 配置
+      const levels = config.policy?.levels;
+      const hasUserStatsPolicy = levels
+        ? Object.values(
+          levels as Record<string, { statsUserUplink?: boolean; statsUserDownlink?: boolean }>
+        ).some((level) => level?.statsUserUplink === true && level?.statsUserDownlink === true)
+        : false;
+      if (!hasUserStatsPolicy) {
+        result.message = 'Xray 配置中未启用 policy 流量统计';
+        result.suggestion = '请在 policy.levels 中启用 statsUserUplink/statsUserDownlink';
+        return result;
+      }
+
       result.configDetected = true;
 
       // 检查 api 配置
@@ -325,10 +427,17 @@ export class TrafficManager {
    * @returns 状态提示
    */
   async getStatusMessage(): Promise<string> {
-    const available = await this.isStatsAvailable();
+    const [available, policyEnabled] = await Promise.all([
+      this.isStatsAvailable(),
+      this.hasUserStatsPolicy(),
+    ]);
 
-    if (available) {
+    if (available && policyEnabled) {
       return '流量统计功能正常';
+    }
+
+    if (available && !policyEnabled) {
+      return '流量统计不可用 (需要在 Xray 配置中启用 policy 统计)';
     }
 
     const detection = await this.detectStatsConfig();

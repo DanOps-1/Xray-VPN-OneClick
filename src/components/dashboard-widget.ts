@@ -24,6 +24,7 @@ export class DashboardWidget implements IDashboardWidget {
     memoryUsage: string;
     osInfo: string;
     totalTraffic: string;
+    statsAvailable: boolean;
     activeUsers: number;
     warningUsers: number;
     exceededUsers: number;
@@ -36,6 +37,7 @@ export class DashboardWidget implements IDashboardWidget {
     memoryUsage: '0/0 MB',
     osInfo: 'Unknown',
     totalTraffic: '0 B',
+    statsAvailable: false,
     activeUsers: 0,
     warningUsers: 0,
     exceededUsers: 0,
@@ -53,12 +55,16 @@ export class DashboardWidget implements IDashboardWidget {
    */
   async refresh(): Promise<void> {
     try {
-      const [serviceStatus, users, quotas, usages] = await Promise.all([
+      const [serviceStatus, users, quotas, statsAvailable] = await Promise.all([
         this.systemdManager.getStatus(),
         this.userManager.listUsers().catch(() => []),
         this.quotaManager.getAllQuotas().catch(() => ({})),
-        this.trafficManager.getAllUsage().catch(() => []),
+        this.trafficManager.isUsageAvailable().catch(() => false),
       ]);
+
+      const usages = statsAvailable
+        ? await this.trafficManager.getAllUsage().catch(() => [])
+        : [];
 
       const load = os.loadavg();
       const totalMem = Math.round(os.totalmem() / 1024 / 1024);
@@ -77,21 +83,23 @@ export class DashboardWidget implements IDashboardWidget {
       }
 
       // Count users by quota status
-      for (const [email, quota] of Object.entries(quotas)) {
-        const usage = usages.find((u) => u.email === email);
-        const usedBytes = usage?.total || quota.usedBytes || 0;
+      if (statsAvailable) {
+        for (const [email, quota] of Object.entries(quotas)) {
+          const usage = usages.find((u) => u.email === email);
+          const usedBytes = usage?.total || quota.usedBytes || 0;
 
-        if (quota.quotaBytes > 0) {
-          const percent = (usedBytes / quota.quotaBytes) * 100;
-          if (percent >= 100) {
-            exceededUsers++;
-          } else if (percent >= 80) {
-            warningUsers++;
+          if (quota.quotaBytes > 0) {
+            const percent = (usedBytes / quota.quotaBytes) * 100;
+            if (percent >= 100) {
+              exceededUsers++;
+            } else if (percent >= 80) {
+              warningUsers++;
+            } else {
+              activeUsers++;
+            }
           } else {
-            activeUsers++;
+            activeUsers++; // Unlimited quota counts as active
           }
-        } else {
-          activeUsers++; // Unlimited quota counts as active
         }
       }
 
@@ -103,7 +111,8 @@ export class DashboardWidget implements IDashboardWidget {
         systemLoad: load[0].toFixed(2),
         memoryUsage: `${usedMem}/${totalMem} MB`,
         osInfo: `${os.type()} ${os.release()}`,
-        totalTraffic: formatTraffic(totalTrafficBytes).display,
+        totalTraffic: statsAvailable ? formatTraffic(totalTrafficBytes).display : '统计未启用',
+        statsAvailable,
         activeUsers,
         warningUsers,
         exceededUsers,
@@ -177,6 +186,10 @@ export class DashboardWidget implements IDashboardWidget {
   }
 
   private getUserStatusLine(): string {
+    if (!this.status.statsAvailable) {
+      return THEME.neutral('统计未启用');
+    }
+
     const parts: string[] = [];
 
     if (this.status.activeUsers > 0) {

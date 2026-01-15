@@ -85,6 +85,20 @@ export const DEFAULT_STATS_CONFIG = {
   /** Stats 配置块（空对象启用统计） */
   stats: {},
 
+  /** Policy 配置（启用用户和入站流量统计） */
+  policy: {
+    levels: {
+      '0': {
+        statsUserUplink: true,
+        statsUserDownlink: true,
+      },
+    },
+    system: {
+      statsInboundUplink: true,
+      statsInboundDownlink: true,
+    },
+  },
+
   /** API 配置 */
   api: {
     tag: 'api',
@@ -107,6 +121,12 @@ export const DEFAULT_STATS_CONFIG = {
     type: 'field' as const,
     inboundTag: ['api'],
     outboundTag: 'api',
+  },
+
+  /** API 出站配置 */
+  apiOutbound: {
+    protocol: 'freedom' as const,
+    tag: 'api',
   },
 } as const;
 

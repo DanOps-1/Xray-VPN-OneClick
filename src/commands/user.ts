@@ -46,11 +46,13 @@ export async function listUsers(options: UserCommandOptions = {}): Promise<void>
     const quotaManager = new QuotaManager();
     const trafficManager = new TrafficManager();
 
+    const statsAvailable = await trafficManager.isUsageAvailable();
+
     const spinner = ora('正在获取用户列表...').start();
 
     const users = await manager.listUsers();
     const quotas = await quotaManager.getAllQuotas();
-    const usages = await trafficManager.getAllUsage();
+    const usages = statsAvailable ? await trafficManager.getAllUsage() : [];
 
     spinner.stop();
 
@@ -77,16 +79,22 @@ export async function listUsers(options: UserCommandOptions = {}): Promise<void>
       return;
     }
 
+    if (!statsAvailable) {
+      console.log(chalk.yellow('  流量统计未启用，无法显示实际使用量。'));
+      console.log(chalk.gray('  提示: 配额管理 → 配置 Stats API'));
+      logger.newline();
+    }
+
     // Display users with quota and traffic info
     for (const user of users) {
       const quota = quotas[user.email];
-      const usage = usages.find((u) => u.email === user.email);
+      const usage = statsAvailable ? usages.find((u) => u.email === user.email) : undefined;
 
       // Calculate usage percentage and alert level
-      const usedBytes = usage?.total || quota?.usedBytes || 0;
+      const usedBytes = statsAvailable ? (usage?.total || 0) : 0;
       const quotaBytes = quota?.quotaBytes ?? -1;
-      const percent = calculateUsagePercent(usedBytes, quotaBytes);
-      const alertLevel = getAlertLevel(percent);
+      const percent = statsAvailable ? calculateUsagePercent(usedBytes, quotaBytes) : 0;
+      const alertLevel = statsAvailable ? getAlertLevel(percent) : 'normal';
 
       // Color based on alert level
       const getColorFn = (level: 'normal' | 'warning' | 'exceeded'): ((_text: string) => string) => {
@@ -99,23 +107,26 @@ export async function listUsers(options: UserCommandOptions = {}): Promise<void>
             return chalk.green;
         }
       };
-      const colorFn = getColorFn(alertLevel);
+      const colorFn = statsAvailable ? getColorFn(alertLevel) : chalk.gray;
 
       // Status indicator
-      const statusIcon = alertLevel === 'exceeded' ? '[!]' : alertLevel === 'warning' ? '[~]' : '[+]';
+      const statusIcon = statsAvailable
+        ? alertLevel === 'exceeded'
+          ? '[!]'
+          : alertLevel === 'warning'
+            ? '[~]'
+            : '[+]'
+        : '[?]';
 
       // User info line
       console.log(`  ${colorFn(statusIcon)} ${chalk.white(user.email)}`);
       console.log(`     UUID: ${chalk.gray(maskSensitiveValue(user.id))}`);
 
       // Quota and usage info
-      if (quota) {
-        const quotaDisplay = quotaBytes < 0 ? '无限制' : formatTraffic(quotaBytes).display;
-        const usageDisplay = formatUsageSummary(usedBytes, quotaBytes);
-        console.log(`     配额: ${chalk.cyan(quotaDisplay)} | 使用: ${colorFn(usageDisplay)}`);
-      } else {
-        console.log(`     配额: ${chalk.gray('未设置')}`);
-      }
+      const quotaDisplay = quota ? (quotaBytes < 0 ? '无限制' : formatTraffic(quotaBytes).display) : '未设置';
+      const usageDisplay = statsAvailable ? formatUsageSummary(usedBytes, quotaBytes) : '统计未启用';
+      const quotaColor = quota ? chalk.cyan : chalk.gray;
+      console.log(`     配额: ${quotaColor(quotaDisplay)} | 使用: ${colorFn(usageDisplay)}`);
 
       logger.newline();
     }

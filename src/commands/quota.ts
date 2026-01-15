@@ -58,6 +58,14 @@ async function promptStatsApiSetup(options: QuotaCommandOptions = {}): Promise<b
   const detection = await statsManager.detectStatsConfig();
 
   if (detection.available) {
+    if (detection.detectedPort) {
+      try {
+        const quotaManager = new QuotaManager();
+        await quotaManager.setApiPort(detection.detectedPort);
+      } catch (error) {
+        logger.warn(`保存 API 端口失败: ${(error as Error).message}`);
+      }
+    }
     return true;
   }
 
@@ -96,6 +104,12 @@ async function promptStatsApiSetup(options: QuotaCommandOptions = {}): Promise<b
       console.log(chalk.cyan('  备份文件: ') + chalk.gray(result.backupPath));
     }
     logger.newline();
+    try {
+      const quotaManager = new QuotaManager();
+      await quotaManager.setApiPort(result.apiPort);
+    } catch (error) {
+      logger.warn(`保存 API 端口失败: ${(error as Error).message}`);
+    }
     return true;
   } else {
     spinner.fail(chalk.red(result.message));
@@ -384,11 +398,20 @@ export async function listQuotas(options: QuotaCommandOptions = {}): Promise<voi
     const quotaManager = new QuotaManager();
     const trafficManager = new TrafficManager();
 
+    let statsAvailable = await trafficManager.isUsageAvailable();
+    const shouldPromptStats = !options.json && !process.env.VITEST && process.env.NODE_ENV !== 'test';
+    if (!statsAvailable && shouldPromptStats) {
+      const configured = await promptStatsApiSetup(options);
+      if (configured) {
+        statsAvailable = await trafficManager.isUsageAvailable();
+      }
+    }
+
     const spinner = ora('正在获取配额信息...').start();
 
     const users = await userManager.listUsers();
     const quotas = await quotaManager.getAllQuotas();
-    const usages = await trafficManager.getAllUsage();
+    const usages = statsAvailable ? await trafficManager.getAllUsage() : [];
 
     spinner.stop();
 
@@ -408,16 +431,22 @@ export async function listQuotas(options: QuotaCommandOptions = {}): Promise<voi
       return;
     }
 
+    if (!statsAvailable) {
+      console.log(chalk.yellow('  流量统计未启用，无法显示实际使用量。'));
+      console.log(chalk.gray('  提示: 配额管理 → 配置 Stats API'));
+      logger.newline();
+    }
+
     // Build user list with quota info
     const usersWithQuota: Array<User & { quotaDisplay: string; usageDisplay: string; alertLevel: 'normal' | 'warning' | 'exceeded' }> = [];
 
     for (const user of users) {
       const quota = quotas[user.email] || { quotaBytes: -1, quotaType: 'unlimited' as const, usedBytes: 0, lastReset: '', status: 'active' as const };
-      const usage = usages.find((u) => u.email === user.email);
+      const usage = statsAvailable ? usages.find((u) => u.email === user.email) : undefined;
 
-      const usedBytes = usage?.total || quota.usedBytes || 0;
-      const percent = calculateUsagePercent(usedBytes, quota.quotaBytes);
-      const alertLevel = getAlertLevel(percent);
+      const usedBytes = statsAvailable ? (usage?.total || 0) : 0;
+      const percent = statsAvailable ? calculateUsagePercent(usedBytes, quota.quotaBytes) : 0;
+      const alertLevel = statsAvailable ? getAlertLevel(percent) : 'normal';
 
       usersWithQuota.push({
         ...user,
@@ -426,14 +455,20 @@ export async function listQuotas(options: QuotaCommandOptions = {}): Promise<voi
         usagePercent: percent,
         alertLevel,
         quotaDisplay: quota.quotaBytes < 0 ? '无限制' : formatTraffic(quota.quotaBytes).display,
-        usageDisplay: formatUsageSummary(usedBytes, quota.quotaBytes),
+        usageDisplay: statsAvailable ? formatUsageSummary(usedBytes, quota.quotaBytes) : '统计未启用',
       });
     }
 
     // Display table
     for (const user of usersWithQuota) {
-      const colorFn = getAlertColor(user.alertLevel);
-      const statusIcon = user.alertLevel === 'exceeded' ? '🔴' : user.alertLevel === 'warning' ? '🟡' : '🟢';
+      const colorFn = statsAvailable ? getAlertColor(user.alertLevel) : chalk.gray;
+      const statusIcon = statsAvailable
+        ? user.alertLevel === 'exceeded'
+          ? '🔴'
+          : user.alertLevel === 'warning'
+            ? '🟡'
+            : '🟢'
+        : '⚪';
 
       console.log(`  ${statusIcon} ${chalk.white(user.email)}`);
       console.log(`     配额: ${chalk.cyan(user.quotaDisplay)}`);
@@ -527,6 +562,12 @@ export async function configureStatsApi(options: QuotaCommandOptions = {}): Prom
       console.log(chalk.cyan('  API 端口: ') + chalk.white(detection.detectedPort));
       console.log(chalk.cyan('  服务状态: ') + (detection.serviceRunning ? chalk.green('运行中') : chalk.red('已停止')));
       logger.newline();
+      try {
+        const quotaManager = new QuotaManager();
+        await quotaManager.setApiPort(detection.detectedPort);
+      } catch (error) {
+        logger.warn(`保存 API 端口失败: ${(error as Error).message}`);
+      }
       logger.info('Stats API 已配置，无需重新配置');
       return;
     }
@@ -535,8 +576,10 @@ export async function configureStatsApi(options: QuotaCommandOptions = {}): Prom
     if (detection.missingComponents.length > 0) {
       const componentNames: Record<string, string> = {
         stats: 'stats 配置块',
+        policy: 'policy 配置',
         api: 'API 配置',
         'api-inbound': 'API 入站配置',
+        'api-outbound': 'API 出站配置',
         'api-routing': 'API 路由规则',
       };
       const missingNames = detection.missingComponents.map((c) => componentNames[c] || c).join('、');
@@ -577,6 +620,12 @@ export async function configureStatsApi(options: QuotaCommandOptions = {}): Prom
         console.log(chalk.cyan('  备份文件: ') + chalk.gray(result.backupPath));
       }
       logger.newline();
+      try {
+        const quotaManager = new QuotaManager();
+        await quotaManager.setApiPort(result.apiPort);
+      } catch (error) {
+        logger.warn(`保存 API 端口失败: ${(error as Error).message}`);
+      }
     } else {
       spinner.fail(chalk.red(result.message));
       if (result.error) {

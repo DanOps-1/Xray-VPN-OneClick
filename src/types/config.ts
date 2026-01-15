@@ -22,6 +22,9 @@ export interface XrayConfig {
 
   /** DNS 配置 */
   dns?: DnsConfig;
+
+  /** Policy 配置（用于统计等功能） */
+  policy?: PolicyConfig;
 }
 
 /**
@@ -323,6 +326,40 @@ export interface DnsConfig {
 
   /** 域名匹配 */
   tag?: string;
+}
+
+/**
+ * Policy 配置（统计相关）
+ */
+export interface PolicyConfig {
+  /** 用户等级配置 */
+  levels?: Record<string, PolicyLevelConfig>;
+  /** 系统级统计配置 */
+  system?: PolicySystemConfig;
+}
+
+/**
+ * Policy 用户等级配置
+ */
+export interface PolicyLevelConfig {
+  /** 用户上行统计 */
+  statsUserUplink?: boolean;
+  /** 用户下行统计 */
+  statsUserDownlink?: boolean;
+  /** 允许其他扩展字段 */
+  [key: string]: unknown;
+}
+
+/**
+ * Policy 系统配置
+ */
+export interface PolicySystemConfig {
+  /** 入站上行统计 */
+  statsInboundUplink?: boolean;
+  /** 入站下行统计 */
+  statsInboundDownlink?: boolean;
+  /** 允许其他扩展字段 */
+  [key: string]: unknown;
 }
 
 /**
