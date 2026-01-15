@@ -1,0 +1,54 @@
+# Dependabot 配置 - 自动更新依赖
+# https://docs.github.com/en/code-security/dependabot/dependabot-version-updates
+
+version: 2
+updates:
+  # npm 依赖更新
+  - package-ecosystem: "npm"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "09:00"
+      timezone: "Asia/Shanghai"
+    open-pull-requests-limit: 5
+    commit-message:
+      prefix: "chore(deps)"
+    labels:
+      - "dependencies"
+      - "automated"
+    reviewers:
+      - "DanOps-1"
+    groups:
+      # 开发依赖分组
+      dev-dependencies:
+        dependency-type: "development"
+        patterns:
+          - "@types/*"
+          - "@typescript-eslint/*"
+          - "@vitest/*"
+          - "eslint*"
+          - "prettier"
+          - "typescript"
+          - "vitest"
+      # 生产依赖分组
+      production-dependencies:
+        dependency-type: "production"
+        patterns:
+          - "*"
+
+  # GitHub Actions 更新
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "09:00"
+      timezone: "Asia/Shanghai"
+    open-pull-requests-limit: 3
+    commit-message:
+      prefix: "ci(deps)"
+    labels:
+      - "dependencies"
+      - "ci"
+      - "automated"

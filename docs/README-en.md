@@ -10,14 +10,26 @@
   <strong>Latest Protocol | Secure & Reliable | 5-Min Setup | Cross-Platform</strong>
 </p>
 
-[![GitHub Stars](https://img.shields.io/github/stars/DanOps-1/Xray-VPN-OneClick?style=for-the-badge&logo=github&color=yellow)](https://github.com/DanOps-1/Xray-VPN-OneClick/stargazers)
-[![License](https://img.shields.io/github/license/DanOps-1/Xray-VPN-OneClick?style=for-the-badge&color=blue)](https://github.com/DanOps-1/Xray-VPN-OneClick/blob/main/LICENSE)
-[![Last Commit](https://img.shields.io/github/last-commit/DanOps-1/Xray-VPN-OneClick?style=for-the-badge&color=green)](https://github.com/DanOps-1/Xray-VPN-OneClick/commits/main)
-[![Language](https://img.shields.io/github/languages/top/DanOps-1/Xray-VPN-OneClick?style=for-the-badge&color=orange)](https://github.com/DanOps-1/Xray-VPN-OneClick)
+<p align="center">
+  <em>Access ChatGPT · Claude · Google · YouTube · GitHub</em>
+</p>
 
+<!-- Core Badges -->
+[![npm version](https://img.shields.io/npm/v/xray-manager?style=for-the-badge&logo=npm&color=red)](https://www.npmjs.com/package/xray-manager)
+[![npm downloads](https://img.shields.io/npm/dm/xray-manager?style=for-the-badge&logo=npm&color=orange)](https://www.npmjs.com/package/xray-manager)
+[![GitHub Stars](https://img.shields.io/github/stars/DanOps-1/Xray-VPN-OneClick?style=for-the-badge&logo=github&color=yellow)](https://github.com/DanOps-1/Xray-VPN-OneClick/stargazers)
+[![GitHub Forks](https://img.shields.io/github/forks/DanOps-1/Xray-VPN-OneClick?style=for-the-badge&logo=github)](https://github.com/DanOps-1/Xray-VPN-OneClick/network/members)
+
+<!-- CI/CD Badges -->
+[![CI](https://img.shields.io/github/actions/workflow/status/DanOps-1/Xray-VPN-OneClick/ci.yml?style=for-the-badge&logo=github-actions&label=CI)](https://github.com/DanOps-1/Xray-VPN-OneClick/actions)
+[![codecov](https://img.shields.io/codecov/c/github/DanOps-1/Xray-VPN-OneClick?style=for-the-badge&logo=codecov)](https://codecov.io/gh/DanOps-1/Xray-VPN-OneClick)
+[![License](https://img.shields.io/github/license/DanOps-1/Xray-VPN-OneClick?style=for-the-badge&color=blue)](https://github.com/DanOps-1/Xray-VPN-OneClick/blob/main/LICENSE)
+
+<!-- Tech Stack Badges -->
 [![Platform](https://img.shields.io/badge/Platform-Linux-blue?style=for-the-badge&logo=linux)](https://github.com/DanOps-1/Xray-VPN-OneClick)
 [![Protocol](https://img.shields.io/badge/Protocol-VLESS%2BReality-purple?style=for-the-badge)](https://github.com/XTLS/REALITY)
-[![Docker](https://img.shields.io/badge/Docker-External-6c757d?style=for-the-badge&logo=docker&logoColor=white)](https://www.docker.com/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.x-3178c6?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![Node.js](https://img.shields.io/badge/Node.js-18+-339933?style=for-the-badge&logo=node.js&logoColor=white)](https://nodejs.org/)
 
 [**中文**](../README.md) | [**English**](README-en.md)
 
