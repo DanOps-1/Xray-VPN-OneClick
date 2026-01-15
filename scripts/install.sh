@@ -112,9 +112,18 @@ echo ""
 echo "[3/5] 生成配置参数..."
 UUID=$(cat /proc/sys/kernel/random/uuid)
 KEYS=$(/usr/local/bin/xray x25519)
-PRIVATE_KEY=$(echo "$KEYS" | grep "Private key" | awk '{print $3}')
-PUBLIC_KEY=$(echo "$KEYS" | grep "Public key" | awk '{print $3}')
+# 使用 cut 解析，兼容新旧版本 xray 输出格式
+PRIVATE_KEY=$(echo "$KEYS" | grep -i "Private key" | cut -d':' -f2 | tr -d ' ')
+PUBLIC_KEY=$(echo "$KEYS" | grep -i "Public key" | cut -d':' -f2 | tr -d ' ')
 SHORT_ID=$(openssl rand -hex 8)
+
+# 验证密钥生成成功
+if [[ -z "$PRIVATE_KEY" || -z "$PUBLIC_KEY" ]]; then
+    echo "错误: 密钥生成失败"
+    echo "xray x25519 输出:"
+    echo "$KEYS"
+    exit 1
+fi
 
 echo "UUID: $UUID"
 echo "Private Key: $PRIVATE_KEY"
