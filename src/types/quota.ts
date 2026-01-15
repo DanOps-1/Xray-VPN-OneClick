@@ -138,3 +138,46 @@ export const DEFAULT_QUOTA_CONFIG: QuotaConfig = {
   apiPort: 10085,
   users: {},
 };
+
+/**
+ * Stats API 缺失组件类型
+ */
+export type MissingComponent = 'stats' | 'api' | 'api-inbound' | 'api-routing';
+
+/**
+ * Stats API 检测结果
+ */
+export interface StatsDetectionResult {
+  /** API 是否可用（可连接） */
+  available: boolean;
+  /** 配置文件中是否检测到 stats 配置 */
+  configDetected: boolean;
+  /** 检测到的 API 端口 */
+  detectedPort?: number;
+  /** Xray 服务是否运行 */
+  serviceRunning: boolean;
+  /** 状态描述消息 */
+  message: string;
+  /** 建议操作 */
+  suggestion?: string;
+  /** 缺失的配置组件列表 */
+  missingComponents: MissingComponent[];
+}
+
+/**
+ * Stats API 配置结果
+ */
+export interface StatsConfigResult {
+  /** 配置是否成功 */
+  success: boolean;
+  /** 备份文件路径 */
+  backupPath?: string;
+  /** 配置的 API 端口 */
+  apiPort: number;
+  /** 结果消息 */
+  message: string;
+  /** 错误信息（如果失败） */
+  error?: string;
+  /** 是否已回滚 */
+  rolledBack: boolean;
+}

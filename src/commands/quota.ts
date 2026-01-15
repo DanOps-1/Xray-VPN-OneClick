@@ -9,6 +9,7 @@
 import { QuotaManager } from '../services/quota-manager';
 import { TrafficManager } from '../services/traffic-manager';
 import { UserManager } from '../services/user-manager';
+import { StatsConfigManager } from '../services/stats-config-manager';
 import { parseTraffic, formatTraffic, formatUsageSummary, calculateUsagePercent, getAlertLevel } from '../utils/traffic-formatter';
 import { PRESET_QUOTAS } from '../constants/quota';
 import logger from '../utils/logger';
@@ -45,6 +46,70 @@ function getAlertColor(level: 'normal' | 'warning' | 'exceeded'): (_text: string
       return chalk.yellow;
     default:
       return chalk.green;
+  }
+}
+
+/**
+ * Prompt user to setup Stats API if not available
+ * @returns true if Stats API is now available, false otherwise
+ */
+async function promptStatsApiSetup(options: QuotaCommandOptions = {}): Promise<boolean> {
+  const statsManager = new StatsConfigManager(options.configPath, options.serviceName);
+  const detection = await statsManager.detectStatsConfig();
+
+  if (detection.available) {
+    return true;
+  }
+
+  // Show detection result
+  logger.newline();
+  console.log(chalk.yellow(`  ⚠️  ${detection.message}`));
+  logger.newline();
+
+  if (detection.missingComponents.length === 0) {
+    // Config exists but API not responding
+    console.log(chalk.gray('  Stats API 已配置但无法连接，请检查 Xray 服务状态'));
+    return false;
+  }
+
+  // Prompt for auto-configuration
+  const shouldConfigure = await confirm({
+    message: '是否自动配置 Stats API？配置后可查看流量统计',
+    default: true,
+  });
+
+  if (!shouldConfigure) {
+    return false;
+  }
+
+  // Execute configuration
+  const spinner = ora('正在配置 Stats API...').start();
+
+  spinner.text = '正在备份配置...';
+  const result = await statsManager.enableStatsApi();
+
+  if (result.success) {
+    spinner.succeed(chalk.green(result.message));
+    logger.newline();
+    console.log(chalk.cyan('  API 端口: ') + chalk.white(result.apiPort));
+    if (result.backupPath) {
+      console.log(chalk.cyan('  备份文件: ') + chalk.gray(result.backupPath));
+    }
+    logger.newline();
+    return true;
+  } else {
+    spinner.fail(chalk.red(result.message));
+    if (result.error) {
+      console.log(chalk.red(`  错误: ${result.error}`));
+    }
+    if (result.rolledBack) {
+      console.log(chalk.yellow('  已自动恢复原配置'));
+    }
+    if (result.backupPath) {
+      console.log(chalk.gray(`  备份文件: ${result.backupPath}`));
+    }
+    logger.newline();
+    return false;
   }
 }
 
@@ -179,7 +244,7 @@ export async function showQuota(options: QuotaCommandOptions = {}): Promise<void
 
     // Get quota and usage
     const quota = await quotaManager.getQuota(selectedEmail);
-    const usage = await trafficManager.getUsage(selectedEmail);
+    let usage = await trafficManager.getUsage(selectedEmail);
 
     spinner.stop();
 
@@ -221,7 +286,30 @@ export async function showQuota(options: QuotaCommandOptions = {}): Promise<void
       console.log(chalk.gray(`  上行: ${formatTraffic(usage.uplink).display}`));
       console.log(chalk.gray(`  下行: ${formatTraffic(usage.downlink).display}`));
     } else {
-      console.log(chalk.yellow('  流量统计不可用 (Xray Stats API 未启用或服务未运行)'));
+      // Stats API not available - prompt for setup
+      const configured = await promptStatsApiSetup(options);
+      if (configured) {
+        // Retry getting usage after configuration
+        usage = await trafficManager.getUsage(selectedEmail);
+        if (usage) {
+          const usedDisplay = formatTraffic(usage.total).display;
+          const percent = calculateUsagePercent(usage.total, quota.quotaBytes);
+          const alertLevel = getAlertLevel(percent);
+          const colorFn = getAlertColor(alertLevel);
+
+          console.log(chalk.cyan('  已用: ') + colorFn(usedDisplay));
+          console.log(chalk.cyan('  使用率: ') + colorFn(`${percent}%`));
+
+          if (quota.quotaBytes > 0) {
+            const remaining = Math.max(0, quota.quotaBytes - usage.total);
+            console.log(chalk.cyan('  剩余: ') + chalk.white(formatTraffic(remaining).display));
+          }
+
+          logger.newline();
+          console.log(chalk.gray(`  上行: ${formatTraffic(usage.uplink).display}`));
+          console.log(chalk.gray(`  下行: ${formatTraffic(usage.downlink).display}`));
+        }
+      }
     }
 
     logger.newline();
@@ -408,6 +496,100 @@ export async function reenableUser(_options: QuotaCommandOptions = {}): Promise<
 
     spinner.succeed(chalk.green('用户已重新启用！'));
     logger.newline();
+  } catch (error) {
+    logger.error((error as Error).message);
+    process.exit(1);
+  }
+}
+
+/**
+ * Configure Stats API manually
+ */
+export async function configureStatsApi(options: QuotaCommandOptions = {}): Promise<void> {
+  try {
+    const statsManager = new StatsConfigManager(options.configPath, options.serviceName);
+    const detection = await statsManager.detectStatsConfig();
+
+    const terminalSize = layoutManager.detectTerminalSize();
+    const headerTitle = `${menuIcons.CONFIG} Stats API 配置`;
+    const headerText = renderHeader(headerTitle, terminalSize.width, 'left');
+
+    logger.newline();
+    logger.separator();
+    console.log(chalk.bold.cyan(headerText));
+    logger.separator();
+    logger.newline();
+
+    // Show current status
+    console.log(chalk.cyan('  当前状态: ') + (detection.available ? chalk.green('已配置且可用') : chalk.yellow('未配置或不可用')));
+
+    if (detection.available && detection.detectedPort) {
+      console.log(chalk.cyan('  API 端口: ') + chalk.white(detection.detectedPort));
+      console.log(chalk.cyan('  服务状态: ') + (detection.serviceRunning ? chalk.green('运行中') : chalk.red('已停止')));
+      logger.newline();
+      logger.info('Stats API 已配置，无需重新配置');
+      return;
+    }
+
+    // Show missing components
+    if (detection.missingComponents.length > 0) {
+      const componentNames: Record<string, string> = {
+        stats: 'stats 配置块',
+        api: 'API 配置',
+        'api-inbound': 'API 入站配置',
+        'api-routing': 'API 路由规则',
+      };
+      const missingNames = detection.missingComponents.map((c) => componentNames[c] || c).join('、');
+      console.log(chalk.cyan('  缺失组件: ') + chalk.yellow(missingNames));
+    }
+
+    logger.newline();
+
+    // Show benefits
+    console.log(chalk.gray('  配置 Stats API 后，您可以：'));
+    console.log(chalk.gray('  • 查看用户实时流量使用情况'));
+    console.log(chalk.gray('  • 设置流量配额并自动限制'));
+    console.log(chalk.gray('  • 查看流量统计报表'));
+    logger.newline();
+
+    // Confirm configuration
+    const shouldConfigure = await confirm({
+      message: '是否立即配置 Stats API？',
+      default: true,
+    });
+
+    if (!shouldConfigure) {
+      logger.info('操作已取消');
+      return;
+    }
+
+    // Execute configuration
+    const spinner = ora('正在配置 Stats API...').start();
+
+    spinner.text = '正在备份配置...';
+    const result = await statsManager.enableStatsApi();
+
+    if (result.success) {
+      spinner.succeed(chalk.green(result.message));
+      logger.newline();
+      console.log(chalk.cyan('  API 端口: ') + chalk.white(result.apiPort));
+      if (result.backupPath) {
+        console.log(chalk.cyan('  备份文件: ') + chalk.gray(result.backupPath));
+      }
+      logger.newline();
+    } else {
+      spinner.fail(chalk.red(result.message));
+      if (result.error) {
+        console.log(chalk.red(`  错误: ${result.error}`));
+      }
+      if (result.rolledBack) {
+        console.log(chalk.yellow('  已自动恢复原配置'));
+      }
+      if (result.backupPath) {
+        console.log(chalk.gray(`  备份文件: ${result.backupPath}`));
+      }
+      logger.newline();
+    }
   } catch (error) {
     logger.error((error as Error).message);
     process.exit(1);

@@ -77,3 +77,55 @@ export const PRESET_QUOTAS = [
   { label: '1 TB', bytes: 1 * UNIT_BYTES.TB },
   { label: '无限制', bytes: -1 },
 ];
+
+/**
+ * 默认 Stats API 配置
+ */
+export const DEFAULT_STATS_CONFIG = {
+  /** Stats 配置块（空对象启用统计） */
+  stats: {},
+
+  /** API 配置 */
+  api: {
+    tag: 'api',
+    services: ['StatsService'] as const,
+  },
+
+  /** API 入站配置 */
+  apiInbound: {
+    tag: 'api',
+    port: DEFAULT_API_PORT,
+    listen: DEFAULT_API_SERVER,
+    protocol: 'dokodemo-door' as const,
+    settings: {
+      address: DEFAULT_API_SERVER,
+    },
+  },
+
+  /** API 路由规则 */
+  apiRoutingRule: {
+    type: 'field' as const,
+    inboundTag: ['api'],
+    outboundTag: 'api',
+  },
+} as const;
+
+/**
+ * Stats API 端口范围
+ */
+export const STATS_PORT_RANGE = {
+  /** 起始端口 */
+  START: 10085,
+  /** 结束端口 */
+  END: 10099,
+} as const;
+
+/**
+ * Stats API 连接超时（毫秒）
+ */
+export const STATS_API_TIMEOUT = 5000;
+
+/**
+ * 服务重启等待时间（毫秒）
+ */
+export const SERVICE_RESTART_WAIT = 2000;

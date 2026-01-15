@@ -324,3 +324,61 @@ export interface DnsConfig {
   /** 域名匹配 */
   tag?: string;
 }
+
+/**
+ * Stats 配置（启用流量统计）
+ */
+export interface StatsConfig {
+  // 空对象即可启用统计功能
+}
+
+/**
+ * API 服务类型
+ */
+export type ApiServiceType = 'StatsService' | 'HandlerService' | 'LoggerService' | 'RoutingService';
+
+/**
+ * API 配置（用于 Stats API）
+ */
+export interface ApiConfig {
+  /** API 标签，用于路由引用 */
+  tag: string;
+  /** 启用的 API 服务列表 */
+  services: ApiServiceType[];
+}
+
+/**
+ * Dokodemo-door 入站设置（用于 API）
+ */
+export interface DokodemoSettings {
+  /** 目标地址 */
+  address: string;
+}
+
+/**
+ * API 入站配置
+ */
+export interface ApiInbound {
+  /** 入站标签 */
+  tag: string;
+  /** 监听端口 */
+  port: number;
+  /** 监听地址 */
+  listen: string;
+  /** 协议类型 */
+  protocol: 'dokodemo-door';
+  /** 协议设置 */
+  settings: DokodemoSettings;
+}
+
+/**
+ * 扩展的 Xray 配置（包含 Stats API）
+ */
+export interface XrayConfigWithStats extends Omit<XrayConfig, 'inbounds'> {
+  /** Stats 配置 */
+  stats?: StatsConfig;
+  /** API 配置 */
+  api?: ApiConfig;
+  /** 入站连接配置（包含 API inbound） */
+  inbounds: (Inbound | ApiInbound)[];
+}

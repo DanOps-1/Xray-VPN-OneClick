@@ -6,13 +6,13 @@
  * @module commands/interactive
  */
 
-import { select, confirm, Separator } from '@inquirer/prompts';
+import { select, confirm, input, Separator } from '@inquirer/prompts';
 import chalk from 'chalk';
 import logger from '../utils/logger';
 import { ExitCode } from '../constants/exit-codes';
 import { displayServiceStatus, startService, stopService, restartService } from './service';
 import { listUsers, addUser, deleteUser, showUserShare } from './user';
-import { setQuota, showQuota, resetQuota, listQuotas, reenableUser } from './quota';
+import { setQuota, showQuota, resetQuota, listQuotas, reenableUser, configureStatsApi } from './quota';
 import { menuIcons } from '../constants/ui-symbols';
 import { t, toggleLanguage } from '../config/i18n';
 import layoutManager from '../services/layout-manager';
@@ -289,6 +289,8 @@ async function handleQuotaManagementMenu(options: MenuOptions): Promise<boolean>
       { name: `${THEME.warning('[重置]')} ${THEME.neutral('重置已用流量')}`, value: 'quota-reset' },
       { name: `${THEME.success('[启用]')} ${THEME.neutral('重新启用用户')}`, value: 'quota-reenable' },
       { type: 'separator' },
+      { name: `${THEME.primary('[配置]')} ${THEME.neutral('配置 Stats API')}`, value: 'stats-config' },
+      { type: 'separator' },
       { name: `${THEME.neutral('[返回]')} ${THEME.neutral('返回主菜单')}`, value: 'back' },
     ];
 
@@ -336,6 +338,14 @@ async function handleQuotaManagementMenu(options: MenuOptions): Promise<boolean>
         navigationManager.pop();
         break;
 
+      case 'stats-config':
+        navigationManager.push('Stats API Config');
+        await configureStatsApi(options);
+        await dashboardWidget.refresh();
+        await promptContinue();
+        navigationManager.pop();
+        break;
+
       default:
         logger.warn(`未知选项: ${selection}`);
         break;
@@ -347,9 +357,8 @@ async function handleQuotaManagementMenu(options: MenuOptions): Promise<boolean>
  * Prompt user to continue
  */
 async function promptContinue(): Promise<void> {
-  await confirm({
+  await input({
     message: '按 Enter 继续...',
-    default: true,
   });
 }
 
