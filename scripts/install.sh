@@ -112,9 +112,20 @@ echo ""
 echo "[3/5] 生成配置参数..."
 UUID=$(cat /proc/sys/kernel/random/uuid)
 KEYS=$(/usr/local/bin/xray x25519)
-# 使用 cut 解析，兼容新旧版本 xray 输出格式
-PRIVATE_KEY=$(echo "$KEYS" | grep -i "Private key" | cut -d':' -f2 | tr -d ' ')
-PUBLIC_KEY=$(echo "$KEYS" | grep -i "Public key" | cut -d':' -f2 | tr -d ' ')
+# 兼容新旧版本 xray x25519 输出格式
+# 旧版: "Private key: xxx" / "Public key: xxx"
+# 新版 v26+: "PrivateKey: xxx" / "Password: xxx" (Password 即 PublicKey)
+PRIVATE_KEY=$(echo "$KEYS" | grep -iE "^Private\s*key:" | cut -d':' -f2 | tr -d ' ')
+PUBLIC_KEY=$(echo "$KEYS" | grep -iE "^Public\s*key:" | cut -d':' -f2 | tr -d ' ')
+
+# 如果旧格式解析失败，尝试新格式 (v26+)
+if [[ -z "$PRIVATE_KEY" ]]; then
+    PRIVATE_KEY=$(echo "$KEYS" | grep -E "^PrivateKey:" | cut -d':' -f2 | tr -d ' ')
+fi
+if [[ -z "$PUBLIC_KEY" ]]; then
+    # v26+ 使用 Password 字段作为 PublicKey
+    PUBLIC_KEY=$(echo "$KEYS" | grep -E "^Password:" | cut -d':' -f2 | tr -d ' ')
+fi
 SHORT_ID=$(openssl rand -hex 8)
 
 # 验证密钥生成成功
