@@ -1063,6 +1063,28 @@ sudo sysctl -p
 
 ---
 
+## ⭐ Star History
+
+<a href="https://star-history.com/#DanOps-1/Xray-VPN-OneClick&Date">
+ <picture>
+   <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=DanOps-1/Xray-VPN-OneClick&type=Date&theme=dark" />
+   <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/svg?repos=DanOps-1/Xray-VPN-OneClick&type=Date" />
+   <img alt="Star History Chart" src="https://api.star-history.com/svg?repos=DanOps-1/Xray-VPN-OneClick&type=Date" />
+ </picture>
+</a>
+
+---
+
+## 👥 Contributors
+
+感谢所有为这个项目做出贡献的人！
+
+<a href="https://github.com/DanOps-1/Xray-VPN-OneClick/graphs/contributors">
+  <img src="https://contrib.rocks/image?repo=DanOps-1/Xray-VPN-OneClick" />
+</a>
+
+---
+
 <div align="center">
 
 **⭐ 如果这个项目对你有帮助，请给一个 Star 支持一下！**
