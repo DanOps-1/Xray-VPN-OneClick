@@ -18,8 +18,8 @@ export interface User {
   /** 创建时间（ISO 8601 字符串） */
   createdAt: string;
 
-  /** 状态：active, disabled */
-  status: 'active' | 'disabled';
+  /** 状态：active, disabled, exceeded */
+  status: 'active' | 'disabled' | 'exceeded';
 
   /** 流控模式（可选） */
   flow?: string;

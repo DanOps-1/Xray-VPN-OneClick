@@ -45,6 +45,12 @@ export const DEFAULT_PATHS = {
 
   /** 用户配置文件 */
   USER_CONFIG_FILE: join(homedir(), '.xray-manager', 'config.json'),
+
+  /** 服务器配置文件（公网 IP 等） */
+  SERVER_CONFIG_FILE: '/usr/local/etc/xray/server-config.json',
+
+  /** 用户元数据文件（创建时间、状态等） */
+  USER_METADATA_FILE: '/usr/local/etc/xray/user-metadata.json',
 } as const;
 
 /**

@@ -225,4 +225,76 @@ export class ConfigManager {
     // Validate and write
     await this.writeConfig(config);
   }
+
+  /**
+   * Get formatted configuration for display
+   *
+   * @returns Pretty-printed JSON string
+   */
+  async getFormattedConfig(): Promise<string> {
+    const config = await this.readConfig();
+    return JSON.stringify(config, null, 2);
+  }
+
+  /**
+   * List available backups with metadata
+   *
+   * @returns Array of backup info objects
+   */
+  async listBackupsWithInfo(): Promise<Array<{ path: string; filename: string; createdAt: Date; size: number }>> {
+    const backupPaths = await this.listBackups();
+    const backupsWithInfo = [];
+
+    for (const backupPath of backupPaths) {
+      try {
+        const stats = await import('fs/promises').then(fs => fs.stat(backupPath));
+        const filename = backupPath.split('/').pop() || '';
+
+        // Extract timestamp from filename: config.2024-01-15T10-30-00-000Z.json
+        let createdAt = stats.mtime;
+        const timestampMatch = filename.match(/config\.(\d{4}-\d{2}-\d{2}T\d{2}-\d{2}-\d{2})/);
+        if (timestampMatch) {
+          const isoString = timestampMatch[1].replace(/-/g, (match, offset) => {
+            // Replace dashes in time portion with colons
+            return offset > 10 ? ':' : '-';
+          });
+          try {
+            createdAt = new Date(isoString);
+          } catch {
+            // Use file mtime as fallback
+          }
+        }
+
+        backupsWithInfo.push({
+          path: backupPath,
+          filename,
+          createdAt,
+          size: stats.size,
+        });
+      } catch {
+        // Skip files we can't stat
+        continue;
+      }
+    }
+
+    return backupsWithInfo;
+  }
+
+  /**
+   * Restore configuration from backup with optional service restart
+   *
+   * @param backupPath - Path to backup file
+   * @param restartService - Whether to restart service after restore (default: true)
+   */
+  async restoreFromBackup(backupPath: string, restartService: boolean = true): Promise<void> {
+    // First restore the config
+    await this.restoreConfig(backupPath);
+
+    // Optionally restart service
+    if (restartService) {
+      const { SystemdManager } = await import('./systemd-manager');
+      const systemd = new SystemdManager(DEFAULT_PATHS.SERVICE_NAME);
+      await systemd.restart();
+    }
+  }
 }

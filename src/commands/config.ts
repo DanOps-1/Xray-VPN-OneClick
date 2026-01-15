@@ -14,6 +14,7 @@ import ora from 'ora';
 import { confirm, input, select } from '@inquirer/prompts';
 import { basename } from 'path';
 import { menuIcons } from '../constants/ui-symbols';
+import { t } from '../config/i18n';
 
 /**
  * Config command options
@@ -338,5 +339,193 @@ export async function modifyConfig(options: ConfigCommandOptions = {}): Promise<
   } catch (error) {
     logger.error((error as Error).message);
     process.exit(1);
+  }
+}
+
+/**
+ * Show config management submenu
+ *
+ * @param options - Command options
+ * @returns Selected action result
+ */
+export async function showConfigMenu(options: ConfigCommandOptions = {}): Promise<void> {
+  const translations = t();
+
+  while (true) {
+    try {
+      logger.newline();
+      console.log(chalk.bold.cyan(`${menuIcons.CONFIG} ${translations.config.title}`));
+      logger.newline();
+
+      const action = await select({
+        message: translations.actions.selectAction,
+        choices: [
+          { name: `${menuIcons.VIEW} ${translations.config.viewConfig}`, value: 'view' },
+          { name: `💾 ${translations.config.backupConfig}`, value: 'backup' },
+          { name: `🔄 ${translations.config.restoreConfig}`, value: 'restore' },
+          { name: chalk.gray(`${menuIcons.BACK} ${translations.actions.back}`), value: 'back' },
+        ],
+      });
+
+      if (action === 'back') {
+        return;
+      }
+
+      switch (action) {
+        case 'view':
+          await viewConfigFormatted(options);
+          break;
+        case 'backup':
+          await createBackup(options);
+          break;
+        case 'restore':
+          await restoreFromBackup(options);
+          break;
+      }
+
+      // Wait for user to press enter before showing menu again
+      await input({
+        message: chalk.gray('按 Enter 继续...'),
+      });
+    } catch (error) {
+      // Handle Ctrl+C or other interrupts
+      if ((error as Error).name === 'ExitPromptError') {
+        return;
+      }
+      throw error;
+    }
+  }
+}
+
+/**
+ * View formatted configuration
+ *
+ * @param options - Command options
+ */
+async function viewConfigFormatted(options: ConfigCommandOptions = {}): Promise<void> {
+  const translations = t();
+
+  try {
+    const manager = new ConfigManager(options.configPath);
+    const formattedConfig = await manager.getFormattedConfig();
+
+    logger.newline();
+    logger.separator();
+    console.log(chalk.bold.cyan(`${menuIcons.CONFIG} ${translations.config.viewConfig}`));
+    logger.separator();
+    logger.newline();
+
+    // Display formatted JSON with syntax highlighting
+    const lines = formattedConfig.split('\n');
+    for (const line of lines) {
+      // Simple syntax highlighting
+      const highlighted = line
+        .replace(/"([^"]+)":/g, chalk.cyan('"$1":'))
+        .replace(/: "([^"]+)"/g, ': ' + chalk.green('"$1"'))
+        .replace(/: (\d+)/g, ': ' + chalk.yellow('$1'))
+        .replace(/: (true|false)/g, ': ' + chalk.magenta('$1'));
+      console.log(highlighted);
+    }
+
+    logger.newline();
+  } catch (error) {
+    logger.error((error as Error).message);
+  }
+}
+
+/**
+ * Create configuration backup
+ *
+ * @param options - Command options
+ */
+async function createBackup(options: ConfigCommandOptions = {}): Promise<void> {
+  const translations = t();
+
+  try {
+    const manager = new ConfigManager(options.configPath);
+
+    const spinner = ora(translations.config.backupConfig + '...').start();
+
+    const backupPath = await manager.backupConfig();
+
+    spinner.succeed(chalk.green(translations.config.backupSuccess.replace('{path}', backupPath)));
+
+    logger.newline();
+  } catch (error) {
+    logger.error((error as Error).message);
+  }
+}
+
+/**
+ * Restore configuration from backup with menu selection
+ *
+ * @param options - Command options
+ */
+async function restoreFromBackup(options: ConfigCommandOptions = {}): Promise<void> {
+  const translations = t();
+
+  try {
+    const manager = new ConfigManager(options.configPath);
+
+    // List backups with info
+    const backups = await manager.listBackupsWithInfo();
+
+    if (backups.length === 0) {
+      logger.warn(translations.config.noBackups);
+      return;
+    }
+
+    logger.newline();
+    console.log(chalk.bold(`💾 ${translations.config.selectBackup}`));
+    logger.newline();
+
+    // Create choices from backups
+    const choices = backups.map((backup, index) => {
+      const date = backup.createdAt.toLocaleString('zh-CN');
+      const size = (backup.size / 1024).toFixed(1) + ' KB';
+      return {
+        name: `${index + 1}. ${backup.filename} (${date}, ${size})`,
+        value: backup.path,
+      };
+    });
+
+    choices.push({
+      name: chalk.gray(`${menuIcons.BACK} ${translations.actions.back}`),
+      value: 'back',
+    });
+
+    const selectedBackup = await select({
+      message: translations.config.selectBackup,
+      choices,
+    });
+
+    if (selectedBackup === 'back') {
+      return;
+    }
+
+    // Confirm restoration
+    logger.newline();
+    console.log(chalk.yellow(`⚠️  ${translations.config.restoreWarning}`));
+    logger.newline();
+
+    const confirmed = await confirm({
+      message: translations.config.confirmRestore,
+      default: false,
+    });
+
+    if (!confirmed) {
+      logger.info('已取消恢复操作');
+      return;
+    }
+
+    const spinner = ora('正在恢复配置...').start();
+
+    await manager.restoreFromBackup(selectedBackup, true);
+
+    spinner.succeed(chalk.green(translations.config.restoreSuccess));
+
+    logger.newline();
+  } catch (error) {
+    logger.error((error as Error).message);
   }
 }

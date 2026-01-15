@@ -10,6 +10,7 @@ import { QuotaManager } from '../services/quota-manager';
 import { TrafficManager } from '../services/traffic-manager';
 import { UserManager } from '../services/user-manager';
 import { StatsConfigManager } from '../services/stats-config-manager';
+import { QuotaEnforcer } from '../services/quota-enforcer';
 import { parseTraffic, formatTraffic, formatUsageSummary, calculateUsagePercent, getAlertLevel } from '../utils/traffic-formatter';
 import { PRESET_QUOTAS } from '../constants/quota';
 import logger from '../utils/logger';
@@ -19,6 +20,7 @@ import { select, input, confirm } from '@inquirer/prompts';
 import { menuIcons } from '../constants/ui-symbols';
 import { renderHeader } from '../utils/layout';
 import layoutManager from '../services/layout-manager';
+import { t } from '../config/i18n';
 import type { User } from '../types/user';
 
 /**
@@ -639,6 +641,106 @@ export async function configureStatsApi(options: QuotaCommandOptions = {}): Prom
       }
       logger.newline();
     }
+  } catch (error) {
+    logger.error((error as Error).message);
+    process.exit(1);
+  }
+}
+
+/**
+ * Execute quota check and enforce limits
+ *
+ * @param options - Command options
+ */
+export async function executeQuotaCheck(options: QuotaCommandOptions = {}): Promise<void> {
+  const translations = t();
+
+  try {
+    const terminalSize = layoutManager.detectTerminalSize();
+    const headerTitle = `${menuIcons.QUOTA} ${translations.quota.executeCheck}`;
+    const headerText = renderHeader(headerTitle, terminalSize.width, 'left');
+
+    logger.newline();
+    logger.separator();
+    console.log(chalk.bold.cyan(headerText));
+    logger.separator();
+    logger.newline();
+
+    // Check if Stats API is available
+    const statsAvailable = await promptStatsApiSetup(options);
+    if (!statsAvailable) {
+      logger.warn('Stats API 不可用，无法执行配额检查');
+      return;
+    }
+
+    // Execute quota enforcement
+    const spinner = ora('正在检查用户配额...').start();
+
+    const enforcer = new QuotaEnforcer(options.configPath, options.serviceName);
+    const summary = await enforcer.enforceQuotas(true); // Auto-disable exceeded users
+
+    spinner.succeed(chalk.green(translations.quota.checkComplete));
+    logger.newline();
+
+    // Display summary
+    console.log(chalk.cyan('  检查结果:'));
+    logger.newline();
+
+    // Normal users
+    console.log(chalk.green(`  ✓ ${translations.quota.normalUsers}: ${summary.normalCount}`));
+
+    // Warning users
+    if (summary.warningCount > 0) {
+      console.log(chalk.yellow(`  ⚠ ${translations.quota.warningUsers}: ${summary.warningCount}`));
+    }
+
+    // Exceeded users
+    if (summary.exceededCount > 0) {
+      console.log(chalk.red(`  ✗ ${translations.quota.exceededUsers}: ${summary.exceededCount} (${translations.quota.disabledUsers})`));
+    }
+
+    // Newly disabled
+    if (summary.newlyDisabledCount > 0) {
+      console.log(chalk.red(`  ! 新禁用: ${summary.newlyDisabledCount}`));
+    }
+
+    logger.newline();
+
+    // Show details if there are exceeded users
+    if (summary.exceededCount > 0 && summary.results) {
+      console.log(chalk.cyan('  超限用户详情:'));
+      for (const detail of summary.results) {
+        if (detail.alertLevel === 'exceeded') {
+          const usedFormatted = formatTraffic(detail.usedBytes);
+          const quotaFormatted = formatTraffic(detail.quotaBytes);
+          console.log(chalk.red(`    • ${detail.email}: ${usedFormatted} / ${quotaFormatted}`));
+        }
+      }
+      logger.newline();
+    }
+
+    // Update user metadata status
+    const userManager = new UserManager(options.configPath, options.serviceName);
+    const metadataManager = userManager.getMetadataManager();
+
+    if (summary.results) {
+      for (const detail of summary.results) {
+        if (detail.alertLevel === 'exceeded') {
+          try {
+            // Find user by email to get UUID
+            const users = await userManager.listUsers();
+            const user = users.find(u => u.email === detail.email);
+            if (user) {
+              await metadataManager.updateStatus(user.id, 'exceeded');
+            }
+          } catch {
+            // Ignore metadata update errors
+          }
+        }
+      }
+    }
+
+    logger.info('配额检查完成');
   } catch (error) {
     logger.error((error as Error).message);
     process.exit(1);

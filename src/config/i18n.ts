@@ -61,6 +61,48 @@ export interface Translations {
     enterCustom: string;
     confirmReset: string;
     confirmReenable: string;
+    executeCheck: string;
+    checkComplete: string;
+    normalUsers: string;
+    warningUsers: string;
+    exceededUsers: string;
+    disabledUsers: string;
+  };
+
+  // Logs labels
+  logs: {
+    title: string;
+    accessLog: string;
+    errorLog: string;
+    noLogs: string;
+    logFileNotFound: string;
+    logFileEmpty: string;
+    showingLines: string;
+  };
+
+  // Config labels
+  config: {
+    title: string;
+    viewConfig: string;
+    backupConfig: string;
+    restoreConfig: string;
+    backupSuccess: string;
+    restoreSuccess: string;
+    noBackups: string;
+    selectBackup: string;
+    confirmRestore: string;
+    restoreWarning: string;
+  };
+
+  // Public IP labels
+  publicIp: {
+    detecting: string;
+    detected: string;
+    detectionFailed: string;
+    enterManually: string;
+    invalidIp: string;
+    saved: string;
+    natDetected: string;
   };
 
   // Common actions
@@ -128,6 +170,42 @@ const zhTranslations: Translations = {
     enterCustom: '请输入自定义配额',
     confirmReset: '确定要重置该用户的已用流量吗？',
     confirmReenable: '确定要重新启用该用户吗？',
+    executeCheck: '执行配额检查',
+    checkComplete: '配额检查完成',
+    normalUsers: '正常用户',
+    warningUsers: '警告用户',
+    exceededUsers: '超限用户',
+    disabledUsers: '已禁用',
+  },
+  logs: {
+    title: '日志查看',
+    accessLog: '访问日志',
+    errorLog: '错误日志',
+    noLogs: '暂无日志',
+    logFileNotFound: '日志文件不存在',
+    logFileEmpty: '日志文件为空',
+    showingLines: '显示最近 {lines} 行',
+  },
+  config: {
+    title: '配置管理',
+    viewConfig: '查看当前配置',
+    backupConfig: '备份配置',
+    restoreConfig: '恢复配置',
+    backupSuccess: '配置已备份到: {path}',
+    restoreSuccess: '配置已恢复',
+    noBackups: '暂无备份文件',
+    selectBackup: '请选择要恢复的备份',
+    confirmRestore: '确定要恢复此备份吗？',
+    restoreWarning: '恢复配置将覆盖当前配置并重启服务',
+  },
+  publicIp: {
+    detecting: '正在检测公网 IP...',
+    detected: '检测到公网 IP: {ip}',
+    detectionFailed: '无法自动检测公网 IP',
+    enterManually: '请手动输入公网 IP 地址',
+    invalidIp: '无效的 IP 地址格式',
+    saved: '公网 IP 已保存',
+    natDetected: '检测到 NAT 环境 (私有 IP: {ip})',
   },
   actions: {
     selectAction: '请选择操作',
@@ -191,6 +269,42 @@ const enTranslations: Translations = {
     enterCustom: 'Enter custom quota',
     confirmReset: 'Are you sure you want to reset this user\'s traffic?',
     confirmReenable: 'Are you sure you want to re-enable this user?',
+    executeCheck: 'Execute Quota Check',
+    checkComplete: 'Quota check complete',
+    normalUsers: 'Normal users',
+    warningUsers: 'Warning users',
+    exceededUsers: 'Exceeded users',
+    disabledUsers: 'Disabled',
+  },
+  logs: {
+    title: 'Log Viewer',
+    accessLog: 'Access Log',
+    errorLog: 'Error Log',
+    noLogs: 'No logs available',
+    logFileNotFound: 'Log file not found',
+    logFileEmpty: 'Log file is empty',
+    showingLines: 'Showing last {lines} lines',
+  },
+  config: {
+    title: 'Config Management',
+    viewConfig: 'View Current Config',
+    backupConfig: 'Backup Config',
+    restoreConfig: 'Restore Config',
+    backupSuccess: 'Config backed up to: {path}',
+    restoreSuccess: 'Config restored successfully',
+    noBackups: 'No backup files available',
+    selectBackup: 'Select a backup to restore',
+    confirmRestore: 'Are you sure you want to restore this backup?',
+    restoreWarning: 'Restoring will overwrite current config and restart service',
+  },
+  publicIp: {
+    detecting: 'Detecting public IP...',
+    detected: 'Detected public IP: {ip}',
+    detectionFailed: 'Failed to detect public IP automatically',
+    enterManually: 'Please enter public IP address manually',
+    invalidIp: 'Invalid IP address format',
+    saved: 'Public IP saved',
+    natDetected: 'NAT environment detected (private IP: {ip})',
   },
   actions: {
     selectAction: 'Please select an action',

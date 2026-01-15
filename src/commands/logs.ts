@@ -14,6 +14,7 @@ import { detectTerminalCapabilities } from '../utils/terminal';
 import { resolveIcon } from '../utils/icons';
 import { LogLevel } from '../utils/logger';
 import { menuIcons } from '../constants/ui-symbols';
+import { t } from '../config/i18n';
 
 /**
  * Logs command options
@@ -308,5 +309,145 @@ export async function filterLogs(options: LogsCommandOptions = {}): Promise<void
   } catch (error) {
     logger.error((error as Error).message);
     process.exit(1);
+  }
+}
+
+/**
+ * Show logs submenu
+ *
+ * @param options - Command options
+ * @returns Selected action result
+ */
+export async function showLogsMenu(options: LogsCommandOptions = {}): Promise<void> {
+  const translations = t();
+
+  while (true) {
+    try {
+      logger.newline();
+      console.log(chalk.bold.cyan(`${menuIcons.LOGS} ${translations.logs.title}`));
+      logger.newline();
+
+      const action = await select({
+        message: translations.actions.selectAction,
+        choices: [
+          { name: `${menuIcons.VIEW} ${translations.logs.accessLog}`, value: 'access' },
+          { name: `${menuIcons.ERROR} ${translations.logs.errorLog}`, value: 'error' },
+          { name: chalk.gray(`${menuIcons.BACK} ${translations.actions.back}`), value: 'back' },
+        ],
+      });
+
+      if (action === 'back') {
+        return;
+      }
+
+      if (action === 'access') {
+        await viewAccessLogs(options);
+      } else if (action === 'error') {
+        await viewErrorLogs(options);
+      }
+
+      // Wait for user to press enter before showing menu again
+      await input({
+        message: chalk.gray('按 Enter 继续...'),
+      });
+    } catch (error) {
+      // Handle Ctrl+C or other interrupts
+      if ((error as Error).name === 'ExitPromptError') {
+        return;
+      }
+      throw error;
+    }
+  }
+}
+
+/**
+ * View access logs from file
+ *
+ * @param options - Command options
+ */
+export async function viewAccessLogs(options: LogsCommandOptions = {}): Promise<void> {
+  const translations = t();
+  const serviceName = options.serviceName || 'xray';
+  const manager = new LogManager(serviceName);
+  const lines = options.lines || 50;
+
+  try {
+    // Check if log file exists
+    const exists = await manager.logExists('access');
+    if (!exists) {
+      logger.newline();
+      console.log(chalk.yellow(`${menuIcons.WARNING} ${translations.logs.logFileNotFound}`));
+      return;
+    }
+
+    // Read logs
+    const logs = await manager.readAccessLog(lines);
+
+    logger.newline();
+    logger.separator();
+    console.log(chalk.bold.cyan(`${menuIcons.LOGS} ${translations.logs.accessLog}`));
+    console.log(chalk.gray(`   ${translations.logs.showingLines.replace('{lines}', String(logs.length))}`));
+    logger.separator();
+    logger.newline();
+
+    if (logs.length === 0) {
+      console.log(chalk.gray(`  ${translations.logs.logFileEmpty}`));
+      return;
+    }
+
+    // Display logs
+    for (const log of logs) {
+      console.log(formatLogEntry(log));
+    }
+
+    logger.newline();
+  } catch (error) {
+    logger.error((error as Error).message);
+  }
+}
+
+/**
+ * View error logs from file
+ *
+ * @param options - Command options
+ */
+export async function viewErrorLogs(options: LogsCommandOptions = {}): Promise<void> {
+  const translations = t();
+  const serviceName = options.serviceName || 'xray';
+  const manager = new LogManager(serviceName);
+  const lines = options.lines || 50;
+
+  try {
+    // Check if log file exists
+    const exists = await manager.logExists('error');
+    if (!exists) {
+      logger.newline();
+      console.log(chalk.yellow(`${menuIcons.WARNING} ${translations.logs.logFileNotFound}`));
+      return;
+    }
+
+    // Read logs
+    const logs = await manager.readErrorLog(lines);
+
+    logger.newline();
+    logger.separator();
+    console.log(chalk.bold.red(`${menuIcons.ERROR} ${translations.logs.errorLog}`));
+    console.log(chalk.gray(`   ${translations.logs.showingLines.replace('{lines}', String(logs.length))}`));
+    logger.separator();
+    logger.newline();
+
+    if (logs.length === 0) {
+      console.log(chalk.gray(`  ${translations.logs.logFileEmpty}`));
+      return;
+    }
+
+    // Display logs with error highlighting
+    for (const log of logs) {
+      console.log(formatLogEntry(log));
+    }
+
+    logger.newline();
+  } catch (error) {
+    logger.error((error as Error).message);
   }
 }

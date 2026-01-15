@@ -12,7 +12,9 @@ import logger from '../utils/logger';
 import { ExitCode } from '../constants/exit-codes';
 import { displayServiceStatus, startService, stopService, restartService } from './service';
 import { listUsers, addUser, deleteUser, showUserShare } from './user';
-import { setQuota, showQuota, resetQuota, listQuotas, reenableUser, configureStatsApi } from './quota';
+import { setQuota, showQuota, resetQuota, listQuotas, reenableUser, configureStatsApi, executeQuotaCheck } from './quota';
+import { showLogsMenu } from './logs';
+import { showConfigMenu } from './config';
 import { menuIcons } from '../constants/ui-symbols';
 import { t, toggleLanguage } from '../config/i18n';
 import layoutManager from '../services/layout-manager';
@@ -185,13 +187,15 @@ export async function handleMenuSelection(selection: string, options: MenuOption
       return quotaResult;
 
     case 'config':
-      logger.info('配置管理功能即将推出...');
-      await promptContinue();
+      navigationManager.push('Config');
+      await showConfigMenu({ configPath: options.configPath, serviceName: options.serviceName });
+      navigationManager.pop();
       return false;
 
     case 'logs':
-      logger.info('日志查看功能即将推出...');
-      await promptContinue();
+      navigationManager.push('Logs');
+      await showLogsMenu({ serviceName: options.serviceName });
+      navigationManager.pop();
       return false;
 
     default:
@@ -289,6 +293,7 @@ async function handleQuotaManagementMenu(options: MenuOptions): Promise<boolean>
       { name: `${THEME.warning('[重置]')} ${THEME.neutral('重置已用流量')}`, value: 'quota-reset' },
       { name: `${THEME.success('[启用]')} ${THEME.neutral('重新启用用户')}`, value: 'quota-reenable' },
       { type: 'separator' },
+      { name: `${THEME.warning('[检查]')} ${THEME.neutral('执行配额检查')}`, value: 'quota-check' },
       { name: `${THEME.primary('[配置]')} ${THEME.neutral('配置 Stats API')}`, value: 'stats-config' },
       { type: 'separator' },
       { name: `${THEME.neutral('[返回]')} ${THEME.neutral('返回主菜单')}`, value: 'back' },
@@ -333,6 +338,14 @@ async function handleQuotaManagementMenu(options: MenuOptions): Promise<boolean>
       case 'quota-reenable':
         navigationManager.push('Re-enable User');
         await reenableUser(options);
+        await dashboardWidget.refresh();
+        await promptContinue();
+        navigationManager.pop();
+        break;
+
+      case 'quota-check':
+        navigationManager.push('Quota Check');
+        await executeQuotaCheck(options);
         await dashboardWidget.refresh();
         await promptContinue();
         navigationManager.pop();

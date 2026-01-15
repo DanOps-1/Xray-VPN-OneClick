@@ -37,6 +37,12 @@ export const menuIcons = {
   EXIT: '[退出]',
   STATS: '[流量]',
   QUOTA: '[配额]',
+  VIEW: '[查看]',
+  BACK: '[返回]',
+  ERROR: '[错误]',
+  WARNING: '[警告]',
+  BACKUP: '[备份]',
+  RESTORE: '[恢复]',
 } as const;
 
 // Type exports for TypeScript support

@@ -8,9 +8,12 @@
 
 import { spawn, ChildProcess } from 'child_process';
 import { existsSync } from 'fs';
+import { readFile, stat } from 'fs/promises';
 import { which } from '../utils/which';
+import { DEFAULT_PATHS } from '../constants/paths';
 
 const DEFAULT_LOG_LINES = 200;
+const DEFAULT_FILE_LOG_LINES = 50;
 
 /**
  * Log entry structure
@@ -389,6 +392,119 @@ export class LogManager {
       kill: () => {
         child.kill('SIGINT');
       },
+    };
+  }
+
+  /**
+   * Read last N lines from access log file
+   *
+   * @param lines - Number of lines to read (default: 50)
+   * @returns Array of log entry objects
+   */
+  async readAccessLog(lines: number = DEFAULT_FILE_LOG_LINES): Promise<LogEntry[]> {
+    return this.readLogFile(DEFAULT_PATHS.ACCESS_LOG, lines);
+  }
+
+  /**
+   * Read last N lines from error log file
+   *
+   * @param lines - Number of lines to read (default: 50)
+   * @returns Array of log entry objects
+   */
+  async readErrorLog(lines: number = DEFAULT_FILE_LOG_LINES): Promise<LogEntry[]> {
+    return this.readLogFile(DEFAULT_PATHS.ERROR_LOG, lines);
+  }
+
+  /**
+   * Check if a log file exists
+   *
+   * @param type - Log type ('access' or 'error')
+   * @returns true if file exists
+   */
+  async logExists(type: 'access' | 'error'): Promise<boolean> {
+    const logPath = type === 'access' ? DEFAULT_PATHS.ACCESS_LOG : DEFAULT_PATHS.ERROR_LOG;
+    return existsSync(logPath);
+  }
+
+  /**
+   * Get log file size
+   *
+   * @param type - Log type ('access' or 'error')
+   * @returns File size in bytes, or 0 if file doesn't exist
+   */
+  async getLogSize(type: 'access' | 'error'): Promise<number> {
+    const logPath = type === 'access' ? DEFAULT_PATHS.ACCESS_LOG : DEFAULT_PATHS.ERROR_LOG;
+    try {
+      const stats = await stat(logPath);
+      return stats.size;
+    } catch {
+      return 0;
+    }
+  }
+
+  /**
+   * Read last N lines from a log file
+   *
+   * @param logPath - Path to log file
+   * @param lines - Number of lines to read
+   * @returns Array of log entry objects
+   */
+  private async readLogFile(logPath: string, lines: number): Promise<LogEntry[]> {
+    if (!existsSync(logPath)) {
+      return [];
+    }
+
+    try {
+      const content = await readFile(logPath, 'utf-8');
+      const allLines = content.split('\n').filter(line => line.trim());
+
+      // Get last N lines
+      const lastLines = allLines.slice(-lines);
+
+      return lastLines.map((line, index) => this.parseFileLogEntry(line, allLines.length - lines + index + 1));
+    } catch (error) {
+      throw new Error(`读取日志文件失败: ${(error as Error).message}`);
+    }
+  }
+
+  /**
+   * Parse a log line from file into LogEntry
+   *
+   * @param line - Raw log line
+   * @param lineNumber - Line number in file
+   * @returns LogEntry object
+   */
+  private parseFileLogEntry(line: string, _lineNumber: number): LogEntry {
+    // Try to parse timestamp from common log formats
+    // Format 1: 2024/01/15 10:30:00 [Info] message
+    // Format 2: 2024-01-15T10:30:00.000Z message
+    let timestamp = new Date();
+    let level = 'info';
+    let message = line;
+
+    // Try to extract timestamp
+    const timestampMatch = line.match(/^(\d{4}[/-]\d{2}[/-]\d{2}[T\s]\d{2}:\d{2}:\d{2})/);
+    if (timestampMatch) {
+      try {
+        timestamp = new Date(timestampMatch[1].replace(' ', 'T'));
+        message = line.substring(timestampMatch[0].length).trim();
+      } catch {
+        // Keep default timestamp
+      }
+    }
+
+    // Try to extract log level
+    const levelMatch = message.match(/^\[?(Info|Warning|Error|Debug)\]?:?\s*/i);
+    if (levelMatch) {
+      level = levelMatch[1].toLowerCase();
+      message = message.substring(levelMatch[0].length);
+    }
+
+    return {
+      timestamp,
+      message,
+      level,
+      raw: line,
     };
   }
 }
