@@ -49,18 +49,13 @@
 - [🎯 主要特性](#-主要特性)
 - [🆚 协议对比](#-协议对比)
 - [🚀 快速开始](#-快速开始)
-  - [系统要求](#系统要求)
-  - [一键安装](#一键安装推荐)
-- [📱 客户端配置](#-客户端配置)
 - [🛠️ 服务管理](#️-服务管理)
+- [📱 客户端配置](#-客户端配置)
 - [🗑️ 卸载与清理](#️-卸载与清理)
-- [📖 详细文档](#-详细文档)
-- [🔒 安全建议](#-安全建议)
-- [📊 支持的云平台](#-支持的云平台)
 - [💡 常见问题](#-常见问题)
+- [📖 详细文档](#-详细文档)
 - [🤝 贡献指南](#-贡献指南)
 - [📄 许可证](#-许可证)
-- [⚠️ 免责声明](#️-免责声明)
 
 ---
 
@@ -220,126 +215,83 @@
 
 ## 🚀 快速开始
 
-### 系统要求
+### 📋 系统要求
+
+<details>
+<summary><b>点击查看详细配置要求</b></summary>
 
 <table>
 <tr>
 <td width="50%">
 
-#### 最低配置
-- **操作系统**: Linux (见下方支持列表)
-- **内存**: 512 MB RAM
-- **存储**: 100 MB 可用空间
-- **网络**: 公网 IP 地址
+**最低配置**
+- 操作系统: Linux (见下方支持列表)
+- 内存: 512 MB RAM
+- 存储: 100 MB 可用空间
+- 网络: 公网 IP 地址
 
 </td>
 <td width="50%">
 
-#### 推荐配置
-- **操作系统**: Ubuntu 22.04 LTS / Debian 12
-- **内存**: 1 GB RAM
-- **CPU**: 1 核心
-- **带宽**: 10 Mbps+
+**推荐配置**
+- 操作系统: Ubuntu 22.04 LTS / Debian 12
+- 内存: 1 GB RAM
+- CPU: 1 核心
+- 带宽: 10 Mbps+
 
 </td>
 </tr>
 </table>
 
-#### 支持的操作系统
+**支持的操作系统**
 
-| 发行版 | 最低版本 | 包管理器 | 状态 |
-|--------|----------|----------|------|
-| Ubuntu | 22.04 | apt | ✅ 完全支持 |
-| Debian | 11 | apt | ✅ 完全支持 |
-| Kali Linux | 2023+ | apt | ✅ 完全支持 |
-| CentOS Stream | 9 | dnf | ✅ 完全支持 |
-| AlmaLinux | 9 | dnf | ✅ 完全支持 |
-| Rocky Linux | 9 | dnf | ✅ 完全支持 |
-| Fedora | 39 | dnf | ✅ 完全支持 |
-| Amazon Linux | 2023 | dnf | ✅ 完全支持 |
+| 发行版 | 最低版本 | 状态 |
+|--------|----------|------|
+| Ubuntu / Debian / Kali | 22.04 / 11 / 2023+ | ✅ 完全支持 |
+| CentOS Stream / AlmaLinux / Rocky | 9 | ✅ 完全支持 |
+| Fedora / Amazon Linux | 39 / 2023 | ✅ 完全支持 |
 
-### 一键安装（推荐）
+</details>
 
-#### 方式一：直接下载（国外服务器）
+### ⚡ 一键安装
 
+选择适合你的安装方式（推荐方式一）：
+
+<table>
+<tr>
+<td width="33%">
+
+**方式一：直接安装**
 ```bash
 wget https://raw.githubusercontent.com/DanOps-1/Xray-VPN-OneClick/main/scripts/install.sh -O xray-install.sh
 sudo bash xray-install.sh
 ```
 
-或者使用 curl：
+</td>
+<td width="33%">
 
+**方式二：加速安装**
 ```bash
-curl -O https://raw.githubusercontent.com/DanOps-1/Xray-VPN-OneClick/main/scripts/install.sh
-sudo bash install.sh
-```
-
-#### 方式二：加速下载（国内服务器或网络受限）
-
-如果上述命令连接超时，使用以下加速方法：
-
-```bash
-# 使用 GitHub 代理加速
+# 国内服务器推荐
 wget https://ghproxy.com/https://raw.githubusercontent.com/DanOps-1/Xray-VPN-OneClick/main/scripts/install.sh -O xray-install.sh
 sudo bash xray-install.sh
 ```
 
-或使用 jsDelivr CDN：
+</td>
+<td width="33%">
 
+**方式三：克隆仓库**
 ```bash
-# jsDelivr CDN 加速
-wget https://cdn.jsdelivr.net/gh/DanOps-1/Xray-VPN-OneClick@main/scripts/install.sh -O xray-install.sh
-sudo bash xray-install.sh
-```
-
-#### 方式三：克隆仓库（最完整）
-
-```bash
-# 直接克隆
 git clone https://github.com/DanOps-1/Xray-VPN-OneClick.git
 cd Xray-VPN-OneClick/scripts
 sudo bash install.sh
-
-# 如果 git clone 也超时，使用代理
-git clone https://ghproxy.com/https://github.com/DanOps-1/Xray-VPN-OneClick.git
-cd Xray-VPN-OneClick/scripts
-sudo bash install.sh
 ```
 
-### 安装过程
+</td>
+</tr>
+</table>
 
-安装脚本会自动完成以下步骤：
-
-1. ✅ 检测系统环境并安装依赖
-2. ✅ 下载并安装最新版 Xray-core
-3. ✅ 自动生成配置参数（UUID、密钥对、Short ID）
-4. ✅ 创建优化的服务端配置文件
-5. ✅ 配置并启动 systemd 服务
-6. ✅ 显示客户端配置信息和分享链接
-
-### 安装完成后
-
-安装完成后，脚本会输出以下信息：
-
-```
-================================
-✅ Xray 安装成功！
-================================
-
-📋 服务器信息：
-地址: YOUR_SERVER_IP
-端口: 443
-
-🔑 客户端配置：
-UUID: xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
-Public Key: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-...
-
-📱 分享链接：
-vless://xxxxxxxx@YOUR_IP:443?...
-```
-
-**保存好这些信息**，用于客户端配置。
+安装完成后，脚本会自动输出服务器信息和客户端配置，**请妥善保存**。
 
 ---
 
@@ -372,127 +324,90 @@ vless://xxxxxxxx@YOUR_IP:443?...
 
 ## 🛠️ 服务管理
 
-### 方式一：交互式 CLI 工具（推荐）⭐
+### 🎯 交互式 CLI 工具（推荐）
 
-我们提供了一个强大的 npm 命令行工具，让 Xray 服务管理变得简单直观：
-
-#### 安装 CLI 工具
-
-**方式一：从 npm 安装（推荐）⭐**
+安装后使用强大的 CLI 工具管理 Xray 服务：
 
 ```bash
-# 全局安装（推荐）
+# 安装 CLI 工具
 npm install -g xray-manager
 
-# 或使用 npx（无需安装）
-npx xray-manager
-```
-
-**方式二：从源代码安装**
-
-```bash
-# 克隆仓库
-git clone https://github.com/DanOps-1/Xray-VPN-OneClick.git
-cd Xray-VPN-OneClick
-
-# 安装依赖并全局安装
-npm install
-sudo npm install -g .
-```
-
-**npm 包信息**
-- 📦 包名: `xray-manager`
-- 🔗 npm 主页: https://www.npmjs.com/package/xray-manager
-- 📥 每周下载: [![npm](https://img.shields.io/npm/dw/xray-manager)](https://www.npmjs.com/package/xray-manager)
-
-#### 启动交互式菜单
-
-```bash
-# 使用全名
+# 启动交互式菜单
 xray-manager
-
 # 或使用简短别名
 xm
 ```
 
-#### CLI 功能特性
+> 💡 **提示**: 也可以使用 `npx xray-manager` 无需安装直接运行
 
-<table>
-<tr>
-<td width="50%">
+#### 🎨 主要功能
 
-**📊 服务管理**
+| 功能模块 | 说明 |
+|---------|------|
+| 📊 **服务管理** | 查看状态、启动/停止/重启服务 |
+| 👥 **用户管理** | 添加/删除用户、生成分享链接 |
+| 📊 **流量配额** ⭐ | 设置配额、流量预警、超额自动禁用 |
+| ⚙️ **配置管理** | 备份/恢复配置、修改配置项 |
+| 📝 **日志查看** | 实时日志、按级别/时间过滤 |
+| 📈 **仪表盘** | 服务概览、用户统计、流量统计 |
+
+<details>
+<summary><b>查看详细功能列表</b></summary>
+
+**服务管理**
 - 查看服务状态（运行时长、内存使用）
 - 启动/停止/重启服务
 - 自动检测权限和 systemd
 
-</td>
-<td width="50%">
-
-**👥 用户管理**
+**用户管理**
 - 列出所有用户（含流量使用信息）
 - 添加新用户（自动生成 UUID）
 - 删除用户
 - 显示分享链接（自动复制到剪贴板）
 
-</td>
-</tr>
-<tr>
-<td width="50%">
-
-**📊 流量配额管理** ⭐ NEW
+**流量配额管理** ⭐ NEW
 - 为用户设置流量配额（预设/自定义）
 - 查看流量使用情况和剩余配额
 - 流量预警（80%黄色/100%红色）
 - 超额自动禁用用户
 - 重置流量和重新启用用户
 
-</td>
-<td width="50%">
-
-**⚙️  配置管理**
+**配置管理**
 - 查看当前配置
 - 创建配置备份（时间戳命名）
 - 列出所有备份
 - 恢复配置
 - 修改配置项
 
-</td>
-</tr>
-<tr>
-<td width="50%">
-
-**📝 日志查看**
+**日志查看**
 - 查看最近日志
 - 实时跟踪日志（Ctrl+C 停止）
 - 按级别过滤（error/warning/info/debug）
 - 按时间范围过滤
 
-</td>
-<td width="50%">
-
-**📈 仪表盘**
+**仪表盘**
 - 服务状态概览
 - 用户统计（活跃/警告/超额）
 - 总流量使用统计
 - 实时数据刷新
 
-</td>
-</tr>
-</table>
+</details>
 
 #### 终端兼容性 🌍
 
-CLI 工具现已支持多种终端环境，自动适配不同系统：
+<details>
+<summary><b>查看终端兼容性详情</b></summary>
 
-**🖥️ 支持的终端**
-- ✅ **现代终端**: xterm, iTerm2, GNOME Terminal, Konsole（Unicode + 彩色）
-- ✅ **Windows CMD**: 完全兼容（纯 ASCII 文本图标）
-- ✅ **SSH 会话**: 自动检测并适配远程终端
-- ✅ **传统终端**: vt100, dumb terminal（降级到 ASCII）
-- ✅ **管道输出**: 重定向时自动切换到纯文本 + 时间戳模式
+CLI 工具支持多种终端环境，自动适配不同系统：
 
-**🎨 三种输出模式**
+**支持的终端**
+- ✅ 现代终端: xterm, iTerm2, GNOME Terminal, Konsole（Unicode + 彩色）
+- ✅ Windows CMD: 完全兼容（纯 ASCII 文本图标）
+- ✅ SSH 会话: 自动检测并适配远程终端
+- ✅ 传统终端: vt100, dumb terminal（降级到 ASCII）
+- ✅ 管道输出: 重定向时自动切换到纯文本 + 时间戳模式
+
+**三种输出模式**
 
 | 模式 | 使用场景 | 特性 |
 |------|---------|------|
@@ -500,110 +415,38 @@ CLI 工具现已支持多种终端环境，自动适配不同系统：
 | **PLAIN_TTY** | 无彩色终端 | ASCII 图标 + 格式化（无彩色） |
 | **PIPE** | 管道/日志文件 | 纯文本 + 时间戳 + 结构化输出 |
 
-**🔧 自动检测特性**
-- TTY 状态检测
-- 颜色支持检测（支持 NO_COLOR 环境变量）
-- Unicode 支持检测（基于 TERM 环境变量和平台）
-- 终端宽度自适应（80-160 列优化）
+**终端尺寸推荐**
 
-**📐 终端尺寸推荐**
+| 尺寸类型 | 终端大小 | 布局模式 |
+|---------|---------|---------|
+| **最小** | 60x20 | COMPACT |
+| **标准** | 80x24 | STANDARD（推荐） |
+| **宽屏** | 120+ 列 | WIDE |
 
-为获得最佳交互式 UI 体验（v1.2.0+ 响应式布局系统）：
+</details>
 
-| 尺寸类型 | 终端大小 | 布局模式 | 特性 |
-|---------|---------|---------|------|
-| **最小** | 60x20 | COMPACT | 紧凑模式，基本功能 |
-| **标准** | 80x24 | STANDARD | 推荐配置，完整显示 |
-| **宽屏** | 120+ 列 | WIDE | 多列布局，最佳体验 |
+### 🔧 systemd 原生命令
 
-界面会自动检测终端大小并适配布局：
-- 菜单选项 + 描述 ≤ 80 列
-- 表格和分隔符自适应终端宽度
-- 宽屏终端（>120 列）自动启用多列显示
-- 窄终端（60-80 列）降级到紧凑模式
-
-**示例输出**
-
-```
-# 现代终端 (RICH 模式)
-✓ 服务启动成功！
-[查看] 查看服务状态
-[启动] 启动服务
-
-# Windows CMD (PLAIN_TTY 模式)
-[OK] 服务启动成功！
-[查看] 查看服务状态
-[启动] 启动服务
-
-# 管道输出 (PIPE 模式)
-2026-01-08T10:30:45.123Z [OK] 服务启动成功
-```
-
-#### 菜单结构
-
-```
-Xray Manager - 交互式管理工具
-├── 📊 查看服务状态
-├── 🚀 启动服务
-├── 🛑 停止服务
-├── 🔄 重启服务
-├── 👥 用户管理
-│   ├── 📋 查看用户列表（含流量信息）
-│   ├── ➕ 添加用户
-│   ├── ➖ 删除用户
-│   └── 📤 显示分享链接
-├── 📊 流量配额管理 ⭐ NEW
-│   ├── 📋 查看配额列表
-│   ├── ⚙️  设置用户配额
-│   ├── 📈 查看配额详情
-│   ├── 🔄 重置已用流量
-│   └── ✅ 重新启用用户
-├── ⚙️  配置管理
-│   ├── 📄 查看当前配置
-│   ├── 💾 备份配置
-│   ├── 📋 查看备份列表
-│   ├── ♻️  恢复配置
-│   └── ✏️  修改配置项
-└── 📝 日志查看
-    ├── 📄 查看最近日志
-    ├── 🔴 实时跟踪日志
-    └── 🔍 过滤日志
-```
-
-#### 安全特性
-
-- ✅ **命令注入防护** - 所有输入都经过严格验证
-- ✅ **敏感信息脱敏** - UUID、密钥显示为 `前4后4` 格式
-- ✅ **自动备份** - 修改配置前自动创建备份
-- ✅ **权限检测** - 自动检测 sudo 权限并提示
-- ✅ **安全文件权限** - 配置文件权限设置为 600
-
----
-
-### 方式二：systemd 原生命令
+如果不使用 CLI 工具，也可以直接使用 systemd 命令：
 
 ```bash
 # 查看服务状态
 sudo systemctl status xray
 
-# 启动服务
+# 启动/停止/重启服务
 sudo systemctl start xray
-
-# 停止服务
 sudo systemctl stop xray
-
-# 重启服务
 sudo systemctl restart xray
 
-# 查看实时日志
-sudo journalctl -u xray -f
-
-# 查看最近日志
-sudo journalctl -u xray -n 100
+# 查看日志
+sudo journalctl -u xray -f        # 实时日志
+sudo journalctl -u xray -n 100    # 最近 100 行
 ```
 
-### 方式三：Bash 脚本工具
+<details>
+<summary><b>查看 Bash 脚本工具</b></summary>
 
+**用户管理脚本**
 ```bash
 # 添加新用户
 sudo bash scripts/add-user.sh user@example.com
@@ -618,8 +461,7 @@ sudo bash scripts/show-config.sh users
 sudo bash scripts/show-config.sh link user@example.com
 ```
 
-### 系统维护
-
+**系统维护脚本**
 ```bash
 # 更新 Xray 到最新版本
 sudo bash scripts/update.sh
@@ -633,6 +475,8 @@ sudo bash scripts/restore.sh <备份文件>
 # 卸载 Xray
 sudo bash scripts/uninstall.sh
 ```
+
+</details>
 
 ---
 
@@ -735,16 +579,16 @@ sudo lsof -i :443
 
 ## 🔒 安全建议
 
-### 基本安全措施
+**基本安全措施**
 
-1. ✅ **定期更换密钥** - 建议每 3-6 个月更换 UUID 和密钥对
-2. ✅ **使用强密码** - 为服务器 SSH 设置强密码或密钥认证
-3. ✅ **配置防火墙** - 只开放必要的端口（443）
-4. ✅ **定期更新** - 及时更新 Xray 到最新版本修复安全漏洞
-5. ✅ **监控日志** - 定期检查日志发现异常访问
-6. ✅ **配置备份** - 定期备份配置文件到安全位置
+1. ✅ 定期更换密钥（建议每 3-6 个月）
+2. ✅ 使用强密码或密钥认证
+3. ✅ 配置防火墙，只开放必要端口
+4. ✅ 及时更新 Xray 到最新版本
+5. ✅ 定期检查日志和备份配置
 
-### 进阶安全配置
+<details>
+<summary><b>查看进阶安全配置</b></summary>
 
 ```bash
 # 限制 SSH 访问
@@ -762,66 +606,27 @@ sudo apt install unattended-upgrades
 sudo dpkg-reconfigure --priority=low unattended-upgrades
 ```
 
+</details>
+
 ---
 
 ## 📊 支持的云平台
 
 本项目已在以下云平台测试通过：
 
-### 国外云平台
-- ✅ **AWS EC2** - Amazon Web Services
-- ✅ **Google Cloud Platform** - GCP Compute Engine
-- ✅ **Microsoft Azure** - Azure Virtual Machines
-- ✅ **DigitalOcean** - Droplets
-- ✅ **Vultr** - Cloud Compute
-- ✅ **Linode** - Akamai Cloud
-- ✅ **Hetzner** - Cloud Servers
+<details>
+<summary><b>查看支持的云平台列表</b></summary>
 
-### 国内云平台
-- ✅ **阿里云** - ECS 云服务器
-- ✅ **腾讯云** - CVM 云服务器
-- ✅ **华为云** - ECS 弹性云服务器
+**国外云平台**
+- ✅ AWS EC2, Google Cloud Platform, Microsoft Azure
+- ✅ DigitalOcean, Vultr, Linode, Hetzner
+
+**国内云平台**
+- ✅ 阿里云、腾讯云、华为云
 
 > **注意**: 在国内云平台使用可能面临合规风险，请谨慎选择。
 
----
-
-## 🐳 Docker 部署（外部镜像）
-
-本仓库暂不提供 Dockerfile 或 docker-compose 文件，以下命令仅为外部镜像示例。
-实际参数与镜像维护状态请以镜像文档为准。
-
-### 使用 Docker 部署
-
-```bash
-# 拉取外部镜像（示例）
-docker pull danops/xray-reality
-
-# 运行容器
-docker run -d \
-  --name xray \
-  -p 443:443 \
-  -v /etc/xray:/etc/xray \
-  --restart=unless-stopped \
-  danops/xray-reality
-```
-
-### 使用 Docker Compose
-
-```yaml
-version: '3'
-services:
-  xray:
-    image: danops/xray-reality
-    container_name: xray
-    restart: unless-stopped
-    ports:
-      - "443:443"
-    volumes:
-      - ./config:/etc/xray
-```
-
-详细说明：请参考镜像维护方文档
+</details>
 
 ---
 
@@ -928,6 +733,9 @@ sudo sysctl -p
 - ✅ 流量重置和用户重新启用功能
 - ✅ 完整的单元测试和集成测试
 
+<details>
+<summary><b>查看历史版本</b></summary>
+
 ### v1.4.1 (2026-01-12)
 
 **Bug 修复**
@@ -982,6 +790,8 @@ sudo sysctl -p
 - ✅ 详细的中英文文档
 - ✅ 多平台客户端配置指南
 - ✅ 性能优化和安全加固指南
+
+</details>
 
 ---
 
