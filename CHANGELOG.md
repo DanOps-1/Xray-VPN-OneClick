@@ -13,6 +13,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.7.7] - 2026-01-16
+
+### Fixed - 修复
+
+- **分享链接 REALITY 协议支持**
+  - 修复分享链接硬编码 `security=tls` 的问题
+  - 正确读取配置中的 `streamSettings.security` 类型
+  - 添加 X25519 公钥生成函数（从私钥自动计算）
+  - REALITY 链接现在包含完整参数：`pbk`、`sni`、`sid`、`fp`、`spx`
+
+---
+
 ## [1.7.0] - 2026-01-15
 
 🔧 **Feature 012: 核心功能完善 - Core Features Completion**
