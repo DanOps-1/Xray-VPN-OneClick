@@ -46,6 +46,9 @@ export const DEFAULT_PATHS = {
   /** 用户配置文件 */
   USER_CONFIG_FILE: join(homedir(), '.xray-manager', 'config.json'),
 
+  /** Clash 配置文件（默认输出） */
+  CLASH_CONFIG_FILE: join(homedir(), 'clash-config-v3.yaml'),
+
   /** 服务器配置文件（公网 IP 等） */
   SERVER_CONFIG_FILE: '/usr/local/etc/xray/server-config.json',
 

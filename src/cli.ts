@@ -15,6 +15,7 @@ import { ExitCode, gracefulExit } from './constants/exit-codes';
 import { preflightChecks } from './utils/preflight';
 import { startInteractiveMenu } from './commands/interactive';
 import { registerReviewCommand } from './commands/review';
+import { registerClashCommand } from './commands/clash';
 
 // Read package.json for version
 const packageJson = require('../package.json');
@@ -41,6 +42,7 @@ async function main(): Promise<void> {
     .option('--verbose', '详细输出模式');
 
   registerReviewCommand(program);
+  registerClashCommand(program);
 
   // Default action: start interactive menu when no command provided
   program.action(async () => {

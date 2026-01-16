@@ -13,6 +13,7 @@ import { maskSensitiveValue } from '../utils/format';
 import { copyToClipboard } from '../utils/clipboard';
 import { formatTraffic, formatUsageSummary, calculateUsagePercent, getAlertLevel } from '../utils/traffic-formatter';
 import { promptQuotaInput } from './quota';
+import { exportClashConfigFromLink } from './clash';
 import logger from '../utils/logger';
 import chalk from 'chalk';
 import ora from 'ora';
@@ -324,6 +325,20 @@ export async function showUserShare(options: UserCommandOptions = {}): Promise<v
       logger.success('链接已复制到剪贴板');
     } else {
       logger.hint('可以手动复制上方链接');
+    }
+
+    const exportClash = await confirm({
+      message: '是否生成 Clash 配置文件？',
+      default: false,
+    });
+
+    if (exportClash) {
+      await exportClashConfigFromLink({
+        link: shareInfo.shareLink,
+        proxyName: shareInfo.user.email,
+        promptOutputPath: true,
+        promptOverwrite: true,
+      });
     }
   } catch (error) {
     logger.error((error as Error).message);
