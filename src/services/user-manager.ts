@@ -6,13 +6,49 @@
  * @module services/user-manager
  */
 
-import { randomUUID } from 'crypto';
+import { randomUUID, createPrivateKey, createPublicKey } from 'crypto';
 import { ConfigManager } from './config-manager';
 import { SystemdManager } from './systemd-manager';
 import { PublicIpManager } from './public-ip-manager';
 import { UserMetadataManager } from './user-metadata-manager';
 import type { User, CreateUserParams, UserShareInfo } from '../types/user';
 import { isValidEmail } from '../utils/validator';
+
+/**
+ * Generate X25519 public key from private key
+ *
+ * @param privateKeyBase64 - Base64URL encoded private key (32 bytes)
+ * @returns Base64URL encoded public key
+ */
+function generatePublicKeyFromPrivate(privateKeyBase64: string): string {
+  try {
+    // Decode the raw private key (32 bytes)
+    const privateKeyBuffer = Buffer.from(privateKeyBase64, 'base64url');
+
+    // X25519 PKCS#8 DER header (for 32-byte raw key)
+    const pkcs8Header = Buffer.from([
+      0x30, 0x2e, 0x02, 0x01, 0x00, 0x30, 0x05, 0x06, 0x03, 0x2b, 0x65, 0x6e,
+      0x04, 0x22, 0x04, 0x20,
+    ]);
+
+    const privateKeyDer = Buffer.concat([pkcs8Header, privateKeyBuffer]);
+
+    const privateKey = createPrivateKey({
+      key: privateKeyDer,
+      format: 'der',
+      type: 'pkcs8',
+    });
+
+    const publicKey = createPublicKey(privateKey);
+    const publicKeySpki = publicKey.export({ type: 'spki', format: 'der' });
+
+    // Extract the raw public key (last 32 bytes of SPKI)
+    const publicKeyRaw = publicKeySpki.slice(-32);
+    return publicKeyRaw.toString('base64url');
+  } catch {
+    throw new Error('Failed to generate public key from private key');
+  }
+}
 
 /**
  * UserManager - Manage Xray users
@@ -214,10 +250,19 @@ export class UserManager {
     const config = await this.configManager.readConfig();
     const metadata = await this.metadataManager.getMetadata(userId);
 
-    // Find user
+    // Find user and inbound settings
     let user: User | undefined;
     let inboundPort: number | undefined;
     let inboundProtocol: string | undefined;
+    let streamSettings: {
+      network?: string;
+      security?: string;
+      realitySettings?: {
+        privateKey: string;
+        serverNames: string[];
+        shortIds: string[];
+      };
+    } | undefined;
 
     for (const inbound of config.inbounds || []) {
       if (inbound.settings?.clients) {
@@ -233,6 +278,7 @@ export class UserManager {
           };
           inboundPort = inbound.port;
           inboundProtocol = inbound.protocol;
+          streamSettings = inbound.streamSettings;
           break;
         }
       }
@@ -251,16 +297,46 @@ export class UserManager {
       throw new Error('无法获取公网 IP，请手动设置');
     }
 
-    // Generate VLESS link
-    // Format: vless://UUID@server:port?encryption=none&security=tls&type=tcp&flow=xtls-rprx-vision#email
+    // Build VLESS link based on security type
     const port = inboundPort || 443;
     const encryption = 'none';
-    const security = 'tls';
-    const type = 'tcp';
+    const security = streamSettings?.security || 'tls';
+    const network = streamSettings?.network || 'tcp';
     const flow = user.flow || 'xtls-rprx-vision';
     const name = encodeURIComponent(user.email);
 
-    const vlessLink = `vless://${user.id}@${serverAddress}:${port}?encryption=${encryption}&security=${security}&type=${type}&flow=${flow}#${name}`;
+    let vlessLink: string;
+    let publicKey: string | undefined;
+    let shortId: string | undefined;
+    let serverName: string | undefined;
+
+    if (security === 'reality' && streamSettings?.realitySettings) {
+      const reality = streamSettings.realitySettings;
+
+      // Generate public key from private key
+      publicKey = generatePublicKeyFromPrivate(reality.privateKey);
+      serverName = reality.serverNames[0] || 'www.microsoft.com';
+      shortId = reality.shortIds[0] || '';
+
+      // Build REALITY link
+      // Format: vless://UUID@server:port?encryption=none&security=reality&type=tcp&flow=xtls-rprx-vision&pbk=PUBLIC_KEY&fp=chrome&sni=SNI&sid=SHORT_ID#name
+      const params = new URLSearchParams({
+        encryption,
+        security: 'reality',
+        type: network,
+        flow,
+        pbk: publicKey,
+        fp: 'chrome',
+        sni: serverName,
+        sid: shortId,
+        spx: '/',
+      });
+
+      vlessLink = `vless://${user.id}@${serverAddress}:${port}?${params.toString()}#${name}`;
+    } else {
+      // Build standard TLS link
+      vlessLink = `vless://${user.id}@${serverAddress}:${port}?encryption=${encryption}&security=${security}&type=${network}&flow=${flow}#${name}`;
+    }
 
     return {
       user,
@@ -269,7 +345,10 @@ export class UserManager {
       serverPort: port,
       protocol: inboundProtocol || 'vless',
       security,
-      qrCode: vlessLink, // QR code would be generated from this
+      serverName,
+      publicKey,
+      shortId,
+      qrCode: vlessLink,
     };
   }
 
