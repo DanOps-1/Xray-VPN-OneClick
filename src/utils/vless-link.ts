@@ -4,6 +4,8 @@
  */
 
 import { isValidPort, isValidUuid } from './validator';
+import { ProtocolError } from './errors';
+import { ProtocolErrors } from '../constants/error-codes';
 
 export interface VlessLinkInfo {
   uuid: string;
@@ -37,29 +39,29 @@ export function parseVlessLink(raw: string): VlessLinkInfo {
   try {
     url = new URL(normalized);
   } catch {
-    throw new Error('无效的 VLESS 链接');
+    throw new ProtocolError(ProtocolErrors.INVALID_VLESS_LINK);
   }
 
   if (url.protocol !== 'vless:') {
-    throw new Error('仅支持 vless:// 链接');
+    throw new ProtocolError(ProtocolErrors.INVALID_VLESS_LINK, url.protocol);
   }
 
   const uuid = url.username;
   if (!uuid) {
-    throw new Error('VLESS 链接缺少 UUID');
+    throw new ProtocolError(ProtocolErrors.VLESS_MISSING_UUID);
   }
   if (!isValidUuid(uuid)) {
-    throw new Error('VLESS 链接 UUID 格式无效');
+    throw new ProtocolError(ProtocolErrors.VLESS_MISSING_UUID, uuid);
   }
 
   const server = url.hostname;
   if (!server) {
-    throw new Error('VLESS 链接缺少服务器地址');
+    throw new ProtocolError(ProtocolErrors.VLESS_MISSING_HOST);
   }
 
   const port = url.port ? parseInt(url.port, 10) : 443;
   if (!isValidPort(port)) {
-    throw new Error('VLESS 链接端口无效');
+    throw new ProtocolError(ProtocolErrors.VLESS_INVALID_PORT, String(port));
   }
 
   const name = url.hash ? decodeURIComponent(url.hash.slice(1)) : '';

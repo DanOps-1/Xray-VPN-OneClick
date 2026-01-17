@@ -21,6 +21,7 @@ import { confirm, input } from '@inquirer/prompts';
 import { menuIcons } from '../constants/ui-symbols';
 import { renderHeader } from '../utils/layout';
 import layoutManager from '../services/layout-manager';
+import { AppError } from '../utils/errors';
 
 /**
  * User command options
@@ -132,7 +133,11 @@ export async function listUsers(options: UserCommandOptions = {}): Promise<void>
       logger.newline();
     }
   } catch (error) {
-    logger.error((error as Error).message);
+    if (AppError.isAppError(error)) {
+      logger.formattedError(error);
+    } else {
+      logger.error((error as Error).message);
+    }
     process.exit(1);
   }
 }
@@ -198,7 +203,11 @@ export async function addUser(options: UserCommandOptions = {}): Promise<void> {
       logger.success(`已设置配额: ${quotaDisplay}`);
     }
   } catch (error) {
-    logger.error((error as Error).message);
+    if (AppError.isAppError(error)) {
+      logger.formattedError(error);
+    } else {
+      logger.error((error as Error).message);
+    }
     process.exit(1);
   }
 }
@@ -257,7 +266,11 @@ export async function deleteUser(options: UserCommandOptions = {}): Promise<void
     spinner.succeed(chalk.green('用户删除成功！'));
     logger.success('服务已自动重启');
   } catch (error) {
-    logger.error((error as Error).message);
+    if (AppError.isAppError(error)) {
+      logger.formattedError(error);
+    } else {
+      logger.error((error as Error).message);
+    }
     process.exit(1);
   }
 }
@@ -341,7 +354,11 @@ export async function showUserShare(options: UserCommandOptions = {}): Promise<v
       });
     }
   } catch (error) {
-    logger.error((error as Error).message);
+    if (AppError.isAppError(error)) {
+      logger.formattedError(error);
+    } else {
+      logger.error((error as Error).message);
+    }
     process.exit(1);
   }
 }

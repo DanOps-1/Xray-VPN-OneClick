@@ -126,7 +126,7 @@ describe('Quota Flow Integration Tests', () => {
           quotaBytes: 1024,
           quotaType: 'limited',
         })
-      ).rejects.toThrow('无效的邮箱格式');
+      ).rejects.toThrow('输入格式不正确');
     });
 
     it('should validate quota bytes', async () => {
@@ -136,7 +136,7 @@ describe('Quota Flow Integration Tests', () => {
           quotaBytes: -2, // Invalid: not -1 and not >= 0
           quotaType: 'limited',
         })
-      ).rejects.toThrow('无效的配额值');
+      ).rejects.toThrow('配额值无效');
     });
 
     it('should get all quotas', async () => {

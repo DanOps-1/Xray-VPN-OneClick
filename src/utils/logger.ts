@@ -6,6 +6,14 @@
 import chalk from 'chalk';
 import { detectTerminalCapabilities } from './terminal';
 import { resolveIcon, resolveSpecialIcon, getStatusIndicator } from './icons';
+import { AppError } from './errors';
+import { ErrorInfo } from '../constants/error-codes';
+import {
+  formatAppError,
+  formatErrorInfo,
+  formatError as formatErrorUtil,
+  type FormatOptions,
+} from './error-formatter';
 
 /**
  * 日志级别
@@ -317,6 +325,46 @@ export function code(codeText: string): void {
 }
 
 /**
+ * 输出格式化的 AppError（带原因和解决方案）
+ * @param err - AppError 实例
+ * @param options - 格式化选项
+ */
+export function formattedError(err: AppError, options?: FormatOptions): void {
+  const formatted = formatAppError(err, options);
+  console.error(formatted);
+}
+
+/**
+ * 输出格式化的错误信息（从 ErrorInfo 对象）
+ * @param errorInfo - 错误信息定义
+ * @param details - 附加详情
+ * @param options - 格式化选项
+ */
+export function formattedErrorInfo(
+  errorInfo: ErrorInfo,
+  details?: string,
+  options?: FormatOptions,
+): void {
+  const formatted = formatErrorInfo(errorInfo, details, options);
+  console.error(formatted);
+}
+
+/**
+ * 输出格式化的通用错误
+ * @param err - 任意 Error 对象
+ * @param fallbackInfo - 如果不是 AppError，使用的回退错误信息
+ * @param options - 格式化选项
+ */
+export function formattedGenericError(
+  err: Error,
+  fallbackInfo?: ErrorInfo,
+  options?: FormatOptions,
+): void {
+  const formatted = formatErrorUtil(err, fallbackInfo, options);
+  console.error(formatted);
+}
+
+/**
  * 默认导出对象
  */
 export default {
@@ -337,4 +385,7 @@ export default {
   code,
   configure: configureLogger,
   getOutputMode,
+  formattedError,
+  formattedErrorInfo,
+  formattedGenericError,
 };

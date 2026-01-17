@@ -11,6 +11,8 @@ import { existsSync } from 'fs';
 import { dirname, join } from 'path';
 import { DEFAULT_PATHS } from '../constants/paths';
 import type { XrayConfig } from '../types/config';
+import { ConfigError } from '../utils/errors';
+import { ConfigErrors } from '../constants/error-codes';
 
 /**
  * ConfigManager - Safe configuration file operations
@@ -41,11 +43,11 @@ export class ConfigManager {
       return config;
     } catch (error) {
       if ((error as NodeJS.ErrnoException).code === 'ENOENT') {
-        throw new Error(`配置文件不存在: ${this.configPath}`);
+        throw new ConfigError(ConfigErrors.CONFIG_NOT_FOUND, this.configPath);
       } else if ((error as NodeJS.ErrnoException).code === 'EACCES') {
-        throw new Error(`配置文件无读取权限: ${this.configPath}。请使用 sudo 或以 root 用户运行。`);
+        throw new ConfigError(ConfigErrors.CONFIG_NO_READ_PERMISSION, this.configPath);
       } else if (error instanceof SyntaxError) {
-        throw new Error(`配置文件 JSON 格式错误: ${(error as Error).message}`);
+        throw new ConfigError(ConfigErrors.CONFIG_INVALID_JSON, (error as Error).message);
       }
       throw error;
     }
@@ -75,7 +77,7 @@ export class ConfigManager {
       await chmod(this.configPath, 0o600);
     } catch (error) {
       if ((error as NodeJS.ErrnoException).code === 'EACCES') {
-        throw new Error(`配置文件无写入权限: ${this.configPath}。请使用 sudo 或以 root 用户运行。`);
+        throw new ConfigError(ConfigErrors.CONFIG_NO_WRITE_PERMISSION, this.configPath);
       }
       throw error;
     }
@@ -89,32 +91,32 @@ export class ConfigManager {
    */
   validateConfig(config: XrayConfig): void {
     if (!config || typeof config !== 'object') {
-      throw new Error('配置必须是一个对象');
+      throw new ConfigError(ConfigErrors.CONFIG_INVALID_STRUCTURE, '配置必须是一个对象');
     }
 
     // Check for required top-level fields
     if (!config.inbounds || !Array.isArray(config.inbounds)) {
-      throw new Error('配置必须包含 inbounds 数组');
+      throw new ConfigError(ConfigErrors.CONFIG_INVALID_STRUCTURE, '缺少 inbounds 数组');
     }
 
     if (!config.outbounds || !Array.isArray(config.outbounds)) {
-      throw new Error('配置必须包含 outbounds 数组');
+      throw new ConfigError(ConfigErrors.CONFIG_INVALID_STRUCTURE, '缺少 outbounds 数组');
     }
 
     // Validate inbounds
     for (const inbound of config.inbounds) {
       if (!inbound.protocol) {
-        throw new Error('每个 inbound 必须指定 protocol');
+        throw new ConfigError(ConfigErrors.CONFIG_INVALID_STRUCTURE, 'inbound 缺少 protocol');
       }
       if (typeof inbound.port !== 'number') {
-        throw new Error('每个 inbound 必须指定有效的 port');
+        throw new ConfigError(ConfigErrors.CONFIG_INVALID_STRUCTURE, 'inbound 缺少有效 port');
       }
     }
 
     // Validate outbounds
     for (const outbound of config.outbounds) {
       if (!outbound.protocol) {
-        throw new Error('每个 outbound 必须指定 protocol');
+        throw new ConfigError(ConfigErrors.CONFIG_INVALID_STRUCTURE, 'outbound 缺少 protocol');
       }
     }
   }
@@ -145,7 +147,7 @@ export class ConfigManager {
 
       return backupPath;
     } catch (error) {
-      throw new Error(`备份配置失败: ${(error as Error).message}`);
+      throw new ConfigError(ConfigErrors.CONFIG_BACKUP_FAILED, (error as Error).message);
     }
   }
 
@@ -169,7 +171,7 @@ export class ConfigManager {
 
       return backups;
     } catch (error) {
-      throw new Error(`列出备份失败: ${(error as Error).message}`);
+      throw new ConfigError(ConfigErrors.CONFIG_BACKUP_FAILED, (error as Error).message);
     }
   }
 
@@ -193,7 +195,7 @@ export class ConfigManager {
       // Validate and write
       await this.writeConfig(config);
     } catch (error) {
-      throw new Error(`恢复配置失败: ${(error as Error).message}`);
+      throw new ConfigError(ConfigErrors.CONFIG_RESTORE_FAILED, (error as Error).message);
     }
   }
 

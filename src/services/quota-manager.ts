@@ -17,6 +17,8 @@ import type {
 } from '../types/quota';
 import { DEFAULT_QUOTA, DEFAULT_QUOTA_CONFIG } from '../types/quota';
 import { QUOTA_CONFIG_PATH, WARNING_THRESHOLD, EXCEEDED_THRESHOLD } from '../constants/quota';
+import { QuotaError, ValidationError, NetworkError } from '../utils/errors';
+import { QuotaErrors, ValidationErrors, NetworkErrors } from '../constants/error-codes';
 
 /**
  * 验证邮箱格式
@@ -78,9 +80,9 @@ export class QuotaManager {
       };
     } catch (error) {
       if ((error as NodeJS.ErrnoException).code === 'EACCES') {
-        throw new Error(`配额配置文件无读取权限: ${this.configPath}`);
+        throw new QuotaError(QuotaErrors.QUOTA_CONFIG_NOT_FOUND, this.configPath);
       } else if (error instanceof SyntaxError) {
-        throw new Error(`配额配置文件 JSON 格式错误: ${(error as Error).message}`);
+        throw new QuotaError(QuotaErrors.QUOTA_CONFIG_NOT_FOUND, (error as Error).message);
       }
       throw error;
     }
@@ -107,7 +109,7 @@ export class QuotaManager {
       await chmod(this.configPath, 0o600);
     } catch (error) {
       if ((error as NodeJS.ErrnoException).code === 'EACCES') {
-        throw new Error(`配额配置文件无写入权限: ${this.configPath}`);
+        throw new QuotaError(QuotaErrors.TRAFFIC_UPDATE_FAILED, this.configPath);
       }
       throw error;
     }
@@ -133,12 +135,12 @@ export class QuotaManager {
   async setQuota(params: SetQuotaParams): Promise<void> {
     // 验证邮箱
     if (!isValidEmail(params.email)) {
-      throw new Error(`无效的邮箱格式: ${params.email}`);
+      throw new ValidationError(ValidationErrors.INVALID_FORMAT, params.email);
     }
 
     // 验证配额值
     if (!isValidQuotaBytes(params.quotaBytes)) {
-      throw new Error(`无效的配额值: ${params.quotaBytes}，必须为 -1（无限制）或 >= 0`);
+      throw new QuotaError(QuotaErrors.INVALID_QUOTA_VALUE, String(params.quotaBytes));
     }
 
     const config = await this.readConfig();
@@ -166,7 +168,7 @@ export class QuotaManager {
     const config = await this.readConfig();
 
     if (!config.users[email]) {
-      throw new Error(`用户配额不存在: ${email}`);
+      throw new QuotaError(QuotaErrors.USER_QUOTA_NOT_FOUND, email);
     }
 
     config.users[email].usedBytes = 0;
@@ -186,7 +188,7 @@ export class QuotaManager {
   async updateUsage(email: string, usedBytes: number): Promise<void> {
     // 验证已用字节数
     if (!Number.isFinite(usedBytes) || usedBytes < 0) {
-      throw new Error(`无效的已用流量值: ${usedBytes}，必须 >= 0`);
+      throw new ValidationError(ValidationErrors.VALUE_OUT_OF_RANGE, String(usedBytes));
     }
 
     const config = await this.readConfig();
@@ -237,7 +239,7 @@ export class QuotaManager {
     const config = await this.readConfig();
 
     if (!config.users[email]) {
-      throw new Error(`用户配额不存在: ${email}`);
+      throw new QuotaError(QuotaErrors.USER_QUOTA_NOT_FOUND, email);
     }
 
     config.users[email].status = status;
@@ -285,7 +287,7 @@ export class QuotaManager {
    */
   async setApiPort(port: number): Promise<void> {
     if (!isValidPort(port)) {
-      throw new Error(`无效的端口号: ${port}，必须在 1-65535 范围内`);
+      throw new NetworkError(NetworkErrors.INVALID_PORT, String(port));
     }
 
     const config = await this.readConfig();
