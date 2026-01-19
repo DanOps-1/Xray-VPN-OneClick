@@ -9,12 +9,7 @@
 import { readFile, writeFile, mkdir, chmod } from 'fs/promises';
 import { existsSync } from 'fs';
 import { dirname } from 'path';
-import type {
-  TrafficQuota,
-  QuotaConfig,
-  SetQuotaParams,
-  AlertLevel,
-} from '../types/quota';
+import type { TrafficQuota, QuotaConfig, SetQuotaParams, AlertLevel } from '../types/quota';
 import { DEFAULT_QUOTA, DEFAULT_QUOTA_CONFIG } from '../types/quota';
 import { QUOTA_CONFIG_PATH, WARNING_THRESHOLD, EXCEEDED_THRESHOLD } from '../constants/quota';
 import { QuotaError, ValidationError, NetworkError } from '../utils/errors';

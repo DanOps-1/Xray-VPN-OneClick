@@ -26,10 +26,10 @@ describe('NavigationManager', () => {
   it('should pop levels', () => {
     navManager.push('Level 1');
     navManager.push('Level 2');
-    
+
     expect(navManager.pop()).toBe('Level 2');
     expect(navManager.getBreadcrumb()).toBe('Home > Level 1');
-    
+
     expect(navManager.pop()).toBe('Level 1');
     expect(navManager.getBreadcrumb()).toBe('Home');
   });

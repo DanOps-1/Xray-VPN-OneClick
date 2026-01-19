@@ -59,7 +59,9 @@ export function evaluateLicense(scan: RepoScanResult): AreaEvaluation {
     findings.push({
       areaId: 'license',
       title: 'License file present',
-      details: licenseType ? `Detected license type: ${licenseType}.` : 'License file present but type not detected.',
+      details: licenseType
+        ? `Detected license type: ${licenseType}.`
+        : 'License file present but type not detected.',
       evidence: [fileEvidence(scan.repoPath, scan.files.license)],
     });
 
@@ -76,7 +78,11 @@ export function evaluateLicense(scan: RepoScanResult): AreaEvaluation {
     }
   }
 
-  const status = !scan.files.license ? 'missing' : recommendations.length > 0 ? 'needs-improvement' : 'good';
+  const status = !scan.files.license
+    ? 'missing'
+    : recommendations.length > 0
+      ? 'needs-improvement'
+      : 'good';
 
   return {
     areaId: 'license',

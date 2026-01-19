@@ -121,19 +121,9 @@ describe('Multi-Column Layout Integration', () => {
 
       const size = layoutManager.detectTerminalSize();
 
-      const leftColumn = [
-        '【服务状态】',
-        '状态: 运行中',
-        '端口: 443',
-        '用户数: 5',
-      ];
+      const leftColumn = ['【服务状态】', '状态: 运行中', '端口: 443', '用户数: 5'];
 
-      const rightColumn = [
-        '【系统资源】',
-        'CPU: 5%',
-        '内存: 120MB',
-        '运行时长: 2d 5h',
-      ];
+      const rightColumn = ['【系统资源】', 'CPU: 5%', '内存: 120MB', '运行时长: 2d 5h'];
 
       const rendered = renderColumns([leftColumn, rightColumn], size.width, 2);
 

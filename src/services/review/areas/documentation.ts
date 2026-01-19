@@ -45,7 +45,9 @@ export function evaluateDocumentation(scan: RepoScanResult): AreaEvaluation {
 
     const hasInstall = hasKeyword(scan.content.readme, 'install');
     const hasUsage = hasKeyword(scan.content.readme, 'usage');
-    const hasContributing = hasKeyword(scan.content.readme, 'contributing') || hasKeyword(scan.content.readme, 'contribute');
+    const hasContributing =
+      hasKeyword(scan.content.readme, 'contributing') ||
+      hasKeyword(scan.content.readme, 'contribute');
 
     if (!hasInstall || !hasUsage) {
       const missingParts = [!hasInstall ? 'installation' : null, !hasUsage ? 'usage' : null]
@@ -60,7 +62,8 @@ export function evaluateDocumentation(scan: RepoScanResult): AreaEvaluation {
       recommendations.push({
         areaId: 'documentation',
         title: 'Expand README with installation and usage sections',
-        details: 'Add concise installation steps and usage examples so new users can start quickly.',
+        details:
+          'Add concise installation steps and usage examples so new users can start quickly.',
         priority: 'medium',
         timeHorizon: 'quick',
         riskIfIgnored: 'Adoption and onboarding will remain slow and support load will increase.',
@@ -72,7 +75,8 @@ export function evaluateDocumentation(scan: RepoScanResult): AreaEvaluation {
       recommendations.push({
         areaId: 'documentation',
         title: 'Link to contribution guidance from README',
-        details: 'Add a brief contribution section or link to CONTRIBUTING.md for new contributors.',
+        details:
+          'Add a brief contribution section or link to CONTRIBUTING.md for new contributors.',
         priority: 'low',
         timeHorizon: 'quick',
         riskIfIgnored: 'Potential contributors may not find the right onboarding materials.',
@@ -100,7 +104,11 @@ export function evaluateDocumentation(scan: RepoScanResult): AreaEvaluation {
     });
   }
 
-  const status = !scan.files.readme ? 'missing' : recommendations.length > 0 ? 'needs-improvement' : 'good';
+  const status = !scan.files.readme
+    ? 'missing'
+    : recommendations.length > 0
+      ? 'needs-improvement'
+      : 'good';
 
   return {
     areaId: 'documentation',

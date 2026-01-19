@@ -12,7 +12,15 @@ import logger from '../utils/logger';
 import { ExitCode } from '../constants/exit-codes';
 import { displayServiceStatus, startService, stopService, restartService } from './service';
 import { listUsers, addUser, deleteUser, showUserShare } from './user';
-import { setQuota, showQuota, resetQuota, listQuotas, reenableUser, configureStatsApi, executeQuotaCheck } from './quota';
+import {
+  setQuota,
+  showQuota,
+  resetQuota,
+  listQuotas,
+  reenableUser,
+  configureStatsApi,
+  executeQuotaCheck,
+} from './quota';
 import { showLogsMenu } from './logs';
 import { showConfigMenu } from './config';
 import { menuIcons } from '../constants/ui-symbols';
@@ -119,7 +127,10 @@ export async function showMenu(options: any[], message?: string): Promise<string
 /**
  * Handle menu selection
  */
-export async function handleMenuSelection(selection: string, options: MenuOptions): Promise<boolean> {
+export async function handleMenuSelection(
+  selection: string,
+  options: MenuOptions
+): Promise<boolean> {
   switch (selection) {
     case 'switch-language':
       toggleLanguage();
@@ -213,7 +224,7 @@ async function handleUserManagementMenu(options: MenuOptions): Promise<boolean> 
     screenManager.clear();
     await dashboardWidget.refresh();
     screenManager.renderHeader(dashboardWidget, navigationManager.getBreadcrumb());
-    
+
     // Submenu Header - Use theme colors
     console.log(THEME.secondary(`${menuIcons.USER} 用户管理`));
     logger.separator();
@@ -223,7 +234,10 @@ async function handleUserManagementMenu(options: MenuOptions): Promise<boolean> 
       { name: `${THEME.primary('[列表]')} ${THEME.neutral('查看用户列表')}`, value: 'user-list' },
       { name: `${THEME.success('[添加]')} ${THEME.neutral('添加用户')}`, value: 'user-add' },
       { name: `${THEME.error('[删除]')} ${THEME.neutral('删除用户')}`, value: 'user-delete' },
-      { name: `${THEME.secondary('[分享]')} ${THEME.neutral('显示分享链接')}`, value: 'user-share' },
+      {
+        name: `${THEME.secondary('[分享]')} ${THEME.neutral('显示分享链接')}`,
+        value: 'user-share',
+      },
       new Separator(),
       { name: `${THEME.neutral('[返回]')} ${THEME.neutral('返回主菜单')}`, value: 'back' },
     ];
@@ -289,12 +303,21 @@ async function handleQuotaManagementMenu(options: MenuOptions): Promise<boolean>
     const quotaMenuOptions = [
       { name: `${THEME.primary('[列表]')} ${THEME.neutral('查看配额列表')}`, value: 'quota-list' },
       { name: `${THEME.success('[设置]')} ${THEME.neutral('设置用户配额')}`, value: 'quota-set' },
-      { name: `${THEME.secondary('[详情]')} ${THEME.neutral('查看配额详情')}`, value: 'quota-show' },
+      {
+        name: `${THEME.secondary('[详情]')} ${THEME.neutral('查看配额详情')}`,
+        value: 'quota-show',
+      },
       { name: `${THEME.warning('[重置]')} ${THEME.neutral('重置已用流量')}`, value: 'quota-reset' },
-      { name: `${THEME.success('[启用]')} ${THEME.neutral('重新启用用户')}`, value: 'quota-reenable' },
+      {
+        name: `${THEME.success('[启用]')} ${THEME.neutral('重新启用用户')}`,
+        value: 'quota-reenable',
+      },
       new Separator(),
       { name: `${THEME.warning('[检查]')} ${THEME.neutral('执行配额检查')}`, value: 'quota-check' },
-      { name: `${THEME.primary('[配置]')} ${THEME.neutral('配置 Stats API')}`, value: 'stats-config' },
+      {
+        name: `${THEME.primary('[配置]')} ${THEME.neutral('配置 Stats API')}`,
+        value: 'stats-config',
+      },
       new Separator(),
       { name: `${THEME.neutral('[返回]')} ${THEME.neutral('返回主菜单')}`, value: 'back' },
     ];

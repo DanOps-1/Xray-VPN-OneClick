@@ -62,9 +62,7 @@ describe('Table and Section Rendering Integration', () => {
         { header: '流量', key: 'traffic', align: 'right' as const },
       ];
 
-      const rows = [
-        { username: 'user1', status: '活跃', traffic: '1.2GB' },
-      ];
+      const rows = [{ username: 'user1', status: '活跃', traffic: '1.2GB' }];
 
       const result = renderTable(columns, rows);
 
@@ -77,11 +75,9 @@ describe('Table and Section Rendering Integration', () => {
 
   describe('Service status sections', () => {
     it('should render service info with visual grouping using sections', () => {
-      const statusSection = renderSection(
-        '服务状态',
-        '运行中\n进程 PID: 12345\n运行时长: 2d 5h',
-        { showBorder: true }
-      );
+      const statusSection = renderSection('服务状态', '运行中\n进程 PID: 12345\n运行时长: 2d 5h', {
+        showBorder: true,
+      });
 
       const configSection = renderSection(
         '配置信息',
@@ -89,11 +85,9 @@ describe('Table and Section Rendering Integration', () => {
         { showBorder: true }
       );
 
-      const networkSection = renderSection(
-        '网络信息',
-        '公网 IP: 192.168.1.1\n带宽: 100Mbps',
-        { showBorder: true }
-      );
+      const networkSection = renderSection('网络信息', '公网 IP: 192.168.1.1\n带宽: 100Mbps', {
+        showBorder: true,
+      });
 
       // Verify all sections render properly
       expect(statusSection).toContain('服务状态');
@@ -120,11 +114,9 @@ describe('Table and Section Rendering Integration', () => {
     });
 
     it('should handle mixed English and Chinese in sections', () => {
-      const result = renderSection(
-        'Service Status (服务状态)',
-        'Running (运行中)',
-        { showBorder: false }
-      );
+      const result = renderSection('Service Status (服务状态)', 'Running (运行中)', {
+        showBorder: false,
+      });
 
       expect(result).toContain('Service Status');
       expect(result).toContain('服务状态');
@@ -136,23 +128,19 @@ describe('Table and Section Rendering Integration', () => {
   describe('Visual hierarchy', () => {
     it('should demonstrate clear visual grouping with sections', () => {
       // Main section with subsections
-      const mainSection = renderSection(
-        '=== 系统概览 ===',
-        '以下是系统各模块状态',
-        { showBorder: false }
-      );
+      const mainSection = renderSection('=== 系统概览 ===', '以下是系统各模块状态', {
+        showBorder: false,
+      });
 
-      const statusSubsection = renderSection(
-        '1. 服务状态',
-        '✓ 正常运行',
-        { showBorder: false, padding: { top: 0, right: 0, bottom: 0, left: 2 } }
-      );
+      const statusSubsection = renderSection('1. 服务状态', '✓ 正常运行', {
+        showBorder: false,
+        padding: { top: 0, right: 0, bottom: 0, left: 2 },
+      });
 
-      const userSubsection = renderSection(
-        '2. 用户统计',
-        '当前用户: 5',
-        { showBorder: false, padding: { top: 0, right: 0, bottom: 0, left: 2 } }
-      );
+      const userSubsection = renderSection('2. 用户统计', '当前用户: 5', {
+        showBorder: false,
+        padding: { top: 0, right: 0, bottom: 0, left: 2 },
+      });
 
       expect(mainSection).toContain('系统概览');
       expect(statusSubsection).toContain('服务状态');

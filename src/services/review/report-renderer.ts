@@ -94,7 +94,9 @@ export function renderReportMarkdown(report: ReviewReport, options: RenderOption
   ].join('\n');
 
   const summary = renderSummaryMarkdown(report);
-  const contributorRecommendations = report.recommendations.filter((rec) => rec.areaId === 'contribution');
+  const contributorRecommendations = report.recommendations.filter(
+    (rec) => rec.areaId === 'contribution'
+  );
   const contributorSection = contributorRecommendations.length
     ? ['## Contributor Guidance', renderRecommendationsList(contributorRecommendations)].join('\n')
     : '';

@@ -93,7 +93,11 @@ export class LayoutManager {
   /**
    * Create a new layout configuration
    */
-  public createLayout(mode: LayoutMode, regions: ContentRegion[], options?: LayoutOptions): TerminalLayout {
+  public createLayout(
+    mode: LayoutMode,
+    regions: ContentRegion[],
+    options?: LayoutOptions
+  ): TerminalLayout {
     const size = this.detectTerminalSize();
 
     // Determine columns based on mode

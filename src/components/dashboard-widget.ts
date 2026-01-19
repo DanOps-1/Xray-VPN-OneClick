@@ -62,9 +62,7 @@ export class DashboardWidget implements IDashboardWidget {
         this.trafficManager.isUsageAvailable().catch(() => false),
       ]);
 
-      const usages = statsAvailable
-        ? await this.trafficManager.getAllUsage().catch(() => [])
-        : [];
+      const usages = statsAvailable ? await this.trafficManager.getAllUsage().catch(() => []) : [];
 
       const load = os.loadavg();
       const totalMem = Math.round(os.totalmem() / 1024 / 1024);
@@ -137,20 +135,31 @@ export class DashboardWidget implements IDashboardWidget {
       },
       // Use standard single line characters for cleaner look
       chars: {
-        'top': '─', 'top-mid': '┬', 'top-left': '┌', 'top-right': '┐',
-        'bottom': '─', 'bottom-mid': '┴', 'bottom-left': '└', 'bottom-right': '┘',
-        'left': '│', 'left-mid': '├', 'mid': '─', 'mid-mid': '┼',
-        'right': '│', 'right-mid': '┤', 'middle': '│'
-      }
+        top: '─',
+        'top-mid': '┬',
+        'top-left': '┌',
+        'top-right': '┐',
+        bottom: '─',
+        'bottom-mid': '┴',
+        'bottom-left': '└',
+        'bottom-right': '┘',
+        left: '│',
+        'left-mid': '├',
+        mid: '─',
+        'mid-mid': '┼',
+        right: '│',
+        'right-mid': '┤',
+        middle: '│',
+      },
     });
 
     // Use indicators instead of coloring full text
-    const statusIcon = this.status.serviceActive 
-      ? THEME.success(UI_CONSTANTS.INDICATOR.ACTIVE) 
+    const statusIcon = this.status.serviceActive
+      ? THEME.success(UI_CONSTANTS.INDICATOR.ACTIVE)
       : THEME.error(UI_CONSTANTS.INDICATOR.ACTIVE); // Use dot for inactive too, just red
-      
-    const statusText = this.status.serviceActive 
-      ? THEME.neutral('Active') 
+
+    const statusText = this.status.serviceActive
+      ? THEME.neutral('Active')
       : THEME.neutral(this.status.serviceSubState);
 
     if (width < 60) {
@@ -165,18 +174,18 @@ export class DashboardWidget implements IDashboardWidget {
       // Standard/Wide Layout
       const col1 = [
         `${THEME.primary('Service Status')}`,
-        `${statusIcon} ${statusText} ${THEME.neutral(`(${this.status.uptime})`)}`
+        `${statusIcon} ${statusText} ${THEME.neutral(`(${this.status.uptime})`)}`,
       ].join('\n');
 
       const col2 = [
         `${THEME.primary('Traffic Overview')}`,
         `${THEME.secondary(menuIcons.STATS)} ${THEME.highlight(this.status.totalTraffic)}`,
-        this.getUserStatusLine()
+        this.getUserStatusLine(),
       ].join('\n');
 
       const col3 = [
         `${THEME.primary('Users')}`,
-        `${THEME.secondary(menuIcons.USER)} ${THEME.highlight(String(this.status.userCount))} ${THEME.neutral('Total')}`
+        `${THEME.secondary(menuIcons.USER)} ${THEME.highlight(String(this.status.userCount))} ${THEME.neutral('Total')}`,
       ].join('\n');
 
       table.push([col1, col2, col3]);
@@ -211,14 +220,14 @@ export class DashboardWidget implements IDashboardWidget {
     }
     const contentWidth = width - 4; // Borders take ~4 chars
     const colWidth = Math.floor(contentWidth / 3);
-    return [colWidth, colWidth, contentWidth - (colWidth * 2)];
+    return [colWidth, colWidth, contentWidth - colWidth * 2];
   }
 
   private formatUptime(seconds: number): string {
     const days = Math.floor(seconds / (3600 * 24));
     const hours = Math.floor((seconds % (3600 * 24)) / 3600);
     const minutes = Math.floor((seconds % 3600) / 60);
-    
+
     if (days > 0) return `${days}d ${hours}h`;
     if (hours > 0) return `${hours}h ${minutes}m`;
     return `${minutes}m`;

@@ -108,9 +108,9 @@ describe('User Management Integration', () => {
         await manager.addUser({ email, level: 0 });
 
         // Try to add same email again
-        await expect(
-          manager.addUser({ email, level: 0 })
-        ).rejects.toThrow(/already exists|duplicate/i);
+        await expect(manager.addUser({ email, level: 0 })).rejects.toThrow(
+          /already exists|duplicate/i
+        );
       } catch (error) {
         // Expected to fail before implementation
         expect(error).toBeDefined();

@@ -15,7 +15,7 @@ import type { LogLevel } from './logger';
  * Status indicator with both Unicode and ASCII representations
  */
 export interface StatusIndicator {
-  level: string;  // Using string instead of LogLevel enum to avoid circular dependency
+  level: string; // Using string instead of LogLevel enum to avoid circular dependency
   unicode: string;
   ascii: string;
   color: 'green' | 'red' | 'yellow' | 'cyan' | 'blue' | 'gray';
@@ -134,7 +134,7 @@ export function resolveIcon(level: LogLevel, capabilities: TerminalCapabilities)
  */
 export function resolveSpecialIcon(
   state: 'LOADING' | 'PROGRESS' | 'HINT',
-  capabilities: TerminalCapabilities,
+  capabilities: TerminalCapabilities
 ): string {
   const indicator = EXTRA_INDICATORS[state];
 

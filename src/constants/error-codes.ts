@@ -37,7 +37,7 @@ export const ConfigErrors = {
     title: '配置文件不存在',
     causes: ['Xray 尚未安装', '配置文件被删除或移动', '路径配置错误'],
     solutions: [
-      "运行安装脚本重新安装 Xray",
+      '运行安装脚本重新安装 Xray',
       '检查配置文件路径: /usr/local/etc/xray/config.json',
       "使用 'xray-vpn config --restore' 从备份恢复",
     ],
@@ -56,11 +56,7 @@ export const ConfigErrors = {
     code: 'E103',
     title: '配置文件无写入权限',
     causes: ['当前用户权限不足', '文件系统只读', '磁盘空间不足'],
-    solutions: [
-      "使用 sudo 运行: 'sudo xray-vpn'",
-      "检查磁盘空间: 'df -h'",
-      "检查文件系统状态",
-    ],
+    solutions: ["使用 sudo 运行: 'sudo xray-vpn'", "检查磁盘空间: 'df -h'", '检查文件系统状态'],
   },
   CONFIG_INVALID_JSON: {
     code: 'E104',
@@ -86,11 +82,7 @@ export const ConfigErrors = {
     code: 'E106',
     title: '配置备份失败',
     causes: ['目标目录不存在', '磁盘空间不足', '权限不足'],
-    solutions: [
-      "确保备份目录存在",
-      "检查磁盘空间: 'df -h'",
-      '使用 sudo 运行程序',
-    ],
+    solutions: ['确保备份目录存在', "检查磁盘空间: 'df -h'", '使用 sudo 运行程序'],
   },
   CONFIG_RESTORE_FAILED: {
     code: 'E107',
@@ -198,11 +190,7 @@ export const QuotaErrors = {
     code: 'E304',
     title: '流量统计更新失败',
     causes: ['配额文件写入失败', '并发访问冲突', '数据格式错误'],
-    solutions: [
-      '检查配额文件写入权限',
-      '确保没有其他进程正在修改配额文件',
-      '重新初始化配额系统',
-    ],
+    solutions: ['检查配额文件写入权限', '确保没有其他进程正在修改配额文件', '重新初始化配额系统'],
   },
   QUOTA_EXCEEDED: {
     code: 'E305',
@@ -290,11 +278,7 @@ export const NetworkErrors = {
     code: 'E502',
     title: '连接超时',
     causes: ['网络不稳定', '服务器无响应', '防火墙丢弃数据包'],
-    solutions: [
-      '检查网络连接',
-      "测试网络: 'ping <server_ip>'",
-      '检查服务器端防火墙设置',
-    ],
+    solutions: ['检查网络连接', "测试网络: 'ping <server_ip>'", '检查服务器端防火墙设置'],
   },
   PUBLIC_IP_FAILED: {
     code: 'E503',
@@ -303,7 +287,7 @@ export const NetworkErrors = {
     solutions: [
       "检查网络连接: 'curl -s https://api.ipify.org'",
       '手动指定服务器 IP 地址',
-      "检查 DNS 设置",
+      '检查 DNS 设置',
     ],
   },
   INVALID_PORT: {
@@ -323,7 +307,7 @@ export const NetworkErrors = {
     solutions: [
       "查看端口占用: 'ss -tlnp | grep <port>'",
       '选择其他未使用的端口',
-      "停止占用端口的服务后重试",
+      '停止占用端口的服务后重试',
     ],
   },
 } as const;
@@ -336,41 +320,25 @@ export const FileErrors = {
     code: 'E601',
     title: '文件不存在',
     causes: ['文件已被删除', '路径错误', '从未创建'],
-    solutions: [
-      '检查文件路径是否正确',
-      '确认文件是否已创建',
-      '检查父目录是否存在',
-    ],
+    solutions: ['检查文件路径是否正确', '确认文件是否已创建', '检查父目录是否存在'],
   },
   DIRECTORY_NOT_FOUND: {
     code: 'E602',
     title: '目录不存在',
     causes: ['目录已被删除', '路径错误', '父目录不存在'],
-    solutions: [
-      "创建目录: 'mkdir -p <path>'",
-      '检查路径拼写',
-      '确保有创建目录的权限',
-    ],
+    solutions: ["创建目录: 'mkdir -p <path>'", '检查路径拼写', '确保有创建目录的权限'],
   },
   FILE_READ_FAILED: {
     code: 'E603',
     title: '文件读取失败',
     causes: ['权限不足', '文件被锁定', '文件已损坏'],
-    solutions: [
-      '使用 sudo 运行',
-      '检查文件是否被其他进程占用',
-      '检查文件权限设置',
-    ],
+    solutions: ['使用 sudo 运行', '检查文件是否被其他进程占用', '检查文件权限设置'],
   },
   FILE_WRITE_FAILED: {
     code: 'E604',
     title: '文件写入失败',
     causes: ['权限不足', '磁盘空间不足', '文件系统只读'],
-    solutions: [
-      '使用 sudo 运行',
-      "检查磁盘空间: 'df -h'",
-      '检查文件系统挂载状态',
-    ],
+    solutions: ['使用 sudo 运行', "检查磁盘空间: 'df -h'", '检查文件系统挂载状态'],
   },
 } as const;
 
@@ -382,28 +350,19 @@ export const ValidationErrors = {
     code: 'E701',
     title: '必填字段不能为空',
     causes: ['未提供必要的输入', '输入只包含空白字符'],
-    solutions: [
-      '请提供所有必填字段的值',
-      '检查输入是否包含有效内容',
-    ],
+    solutions: ['请提供所有必填字段的值', '检查输入是否包含有效内容'],
   },
   INVALID_FORMAT: {
     code: 'E702',
     title: '输入格式不正确',
     causes: ['输入不符合预期格式', '包含非法字符'],
-    solutions: [
-      '检查输入格式要求',
-      '参考示例输入',
-    ],
+    solutions: ['检查输入格式要求', '参考示例输入'],
   },
   VALUE_OUT_OF_RANGE: {
     code: 'E703',
     title: '值超出有效范围',
     causes: ['数值过大或过小', '超出允许的限制'],
-    solutions: [
-      '检查允许的值范围',
-      '使用范围内的值重试',
-    ],
+    solutions: ['检查允许的值范围', '使用范围内的值重试'],
   },
 } as const;
 
@@ -415,47 +374,31 @@ export const ProtocolErrors = {
     code: 'E801',
     title: 'VLESS 链接格式无效',
     causes: ['链接格式不正确', '不是 vless:// 协议', '链接不完整'],
-    solutions: [
-      '确保链接以 vless:// 开头',
-      '检查链接是否完整复制',
-      '验证链接来源是否可靠',
-    ],
+    solutions: ['确保链接以 vless:// 开头', '检查链接是否完整复制', '验证链接来源是否可靠'],
   },
   VLESS_MISSING_UUID: {
     code: 'E802',
     title: 'VLESS 链接缺少 UUID',
     causes: ['链接格式错误', 'UUID 部分被截断'],
-    solutions: [
-      '检查链接是否完整',
-      '重新获取正确的分享链接',
-    ],
+    solutions: ['检查链接是否完整', '重新获取正确的分享链接'],
   },
   VLESS_MISSING_HOST: {
     code: 'E803',
     title: 'VLESS 链接缺少服务器地址',
     causes: ['链接格式错误', '服务器地址部分缺失'],
-    solutions: [
-      '检查链接格式',
-      '确保包含服务器地址和端口',
-    ],
+    solutions: ['检查链接格式', '确保包含服务器地址和端口'],
   },
   VLESS_INVALID_PORT: {
     code: 'E804',
     title: 'VLESS 链接端口无效',
     causes: ['端口不是数字', '端口超出范围'],
-    solutions: [
-      '端口必须是 1-65535 之间的数字',
-      '检查链接格式是否正确',
-    ],
+    solutions: ['端口必须是 1-65535 之间的数字', '检查链接格式是否正确'],
   },
   VLESS_MISSING_REALITY_PBK: {
     code: 'E805',
     title: 'Reality 链接缺少公钥参数',
     causes: ['链接缺少 pbk 参数', 'Reality 配置不完整'],
-    solutions: [
-      'Reality 链接必须包含 pbk (公钥) 参数',
-      '重新生成包含完整参数的链接',
-    ],
+    solutions: ['Reality 链接必须包含 pbk (公钥) 参数', '重新生成包含完整参数的链接'],
   },
 } as const;
 
@@ -467,10 +410,7 @@ export const SystemErrors = {
     code: 'E901',
     title: '需要管理员权限',
     causes: ['当前用户不是 root', '未使用 sudo 运行'],
-    solutions: [
-      "使用 sudo 运行: 'sudo xray-vpn'",
-      "切换到 root 用户: 'su -'",
-    ],
+    solutions: ["使用 sudo 运行: 'sudo xray-vpn'", "切换到 root 用户: 'su -'"],
   },
   UNSUPPORTED_OS: {
     code: 'E902',
@@ -495,11 +435,7 @@ export const SystemErrors = {
     code: 'E904',
     title: '启动预检查失败',
     causes: ['系统环境不满足要求', '必要服务未运行', '配置存在问题'],
-    solutions: [
-      "运行诊断命令检查问题",
-      '检查上述错误信息并逐一解决',
-      '确保所有必要服务已启动',
-    ],
+    solutions: ['运行诊断命令检查问题', '检查上述错误信息并逐一解决', '确保所有必要服务已启动'],
   },
 } as const;
 

@@ -185,7 +185,9 @@ export function validateLayout(layout: TerminalLayout): boolean {
 export function validateRegion(region: ContentRegion, layout: TerminalLayout): boolean {
   // 1. Check position bounds
   if (region.position.row < 0 || region.position.row >= layout.height) {
-    throw new Error(`Region ${region.id}: row ${region.position.row} out of bounds (0-${layout.height - 1})`);
+    throw new Error(
+      `Region ${region.id}: row ${region.position.row} out of bounds (0-${layout.height - 1})`
+    );
   }
   if (region.position.column < 0 || region.position.column >= layout.width) {
     throw new Error(
@@ -198,10 +200,14 @@ export function validateRegion(region: ContentRegion, layout: TerminalLayout): b
   const maxHeight = layout.height - region.position.row;
 
   if (region.size.width <= 0 || region.size.width > maxWidth) {
-    throw new Error(`Region ${region.id}: width ${region.size.width} out of bounds (1-${maxWidth})`);
+    throw new Error(
+      `Region ${region.id}: width ${region.size.width} out of bounds (1-${maxWidth})`
+    );
   }
   if (region.size.height <= 0 || region.size.height > maxHeight) {
-    throw new Error(`Region ${region.id}: height ${region.size.height} out of bounds (1-${maxHeight})`);
+    throw new Error(
+      `Region ${region.id}: height ${region.size.height} out of bounds (1-${maxHeight})`
+    );
   }
 
   // 3. Check padding validity

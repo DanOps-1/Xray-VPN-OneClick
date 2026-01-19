@@ -315,9 +315,7 @@ describe('Interactive Menu Navigation', () => {
       const { select } = await import('@inquirer/prompts');
 
       // Mock select to resolve quickly
-      (select as any).mockImplementation(() =>
-        Promise.resolve('service')
-      );
+      (select as any).mockImplementation(() => Promise.resolve('service'));
 
       try {
         const { showMenu } = await import('../../../src/commands/interactive');

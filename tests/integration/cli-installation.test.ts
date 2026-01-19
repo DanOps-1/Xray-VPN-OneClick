@@ -20,7 +20,7 @@ describe('CLI Installation', () => {
       try {
         execSync('npm run build', {
           cwd: join(__dirname, '../..'),
-          stdio: 'inherit'
+          stdio: 'inherit',
         });
       } catch (error) {
         console.error('Failed to build project:', error);

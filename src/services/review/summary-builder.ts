@@ -10,9 +10,10 @@ export function buildSummary(areas: AssessmentArea[], recommendations: Recommend
   const highPriority = recommendations.filter((rec) => rec.priority === 'high');
   const quickWins = recommendations.filter((rec) => rec.timeHorizon === 'quick');
 
-  const headline = highPriority.length > 0
-    ? 'High priority improvements are needed.'
-    : 'No high priority risks detected.';
+  const headline =
+    highPriority.length > 0
+      ? 'High priority improvements are needed.'
+      : 'No high priority risks detected.';
 
   const riskNotes = highPriority.slice(0, 3).map((rec) => rec.riskIfIgnored);
   if (riskNotes.length === 0 && recommendations.length > 0) {

@@ -57,7 +57,9 @@ async function fileExists(path: string): Promise<boolean> {
   }
 }
 
-async function writeClashConfigFile(options: ClashExportOptions): Promise<ClashExportResult | null> {
+async function writeClashConfigFile(
+  options: ClashExportOptions
+): Promise<ClashExportResult | null> {
   const rawLink = options.link || '';
   const link = rawLink.trim();
   if (!link) {
@@ -66,7 +68,9 @@ async function writeClashConfigFile(options: ClashExportOptions): Promise<ClashE
 
   const outputPath = normalizeOutputPath(options.outputPath || DEFAULT_PATHS.CLASH_CONFIG_FILE);
   const info = parseVlessLink(link);
-  const { yaml, proxyName, proxyGroupName } = buildClashConfigYaml(info, { proxyName: options.proxyName });
+  const { yaml, proxyName, proxyGroupName } = buildClashConfigYaml(info, {
+    proxyName: options.proxyName,
+  });
 
   const exists = await fileExists(outputPath);
   if (exists && !options.force) {

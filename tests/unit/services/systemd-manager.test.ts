@@ -24,7 +24,17 @@ describe('SystemdManager - Command Validation', () => {
         const { SystemdManager } = await import('../../../src/services/systemd-manager');
 
         const manager = new SystemdManager('xray');
-        const validActions = ['start', 'stop', 'restart', 'status', 'enable', 'disable', 'is-active', 'is-enabled', 'show'];
+        const validActions = [
+          'start',
+          'stop',
+          'restart',
+          'status',
+          'enable',
+          'disable',
+          'is-active',
+          'is-enabled',
+          'show',
+        ];
 
         // All valid actions should be accepted
         for (const action of validActions) {
@@ -96,7 +106,13 @@ describe('SystemdManager - Command Validation', () => {
       try {
         const { SystemdManager } = await import('../../../src/services/systemd-manager');
 
-        const invalidNames = ['', '../etc/passwd', 'service;rm -rf /', 'service && whoami', 'service`ls`'];
+        const invalidNames = [
+          '',
+          '../etc/passwd',
+          'service;rm -rf /',
+          'service && whoami',
+          'service`ls`',
+        ];
 
         for (const name of invalidNames) {
           expect(() => new SystemdManager(name)).toThrow();
@@ -111,7 +127,12 @@ describe('SystemdManager - Command Validation', () => {
       try {
         const { SystemdManager } = await import('../../../src/services/systemd-manager');
 
-        const traversalAttempts = ['../../../etc/passwd', '..\\..\\windows\\system32', './service', '/etc/shadow'];
+        const traversalAttempts = [
+          '../../../etc/passwd',
+          '..\\..\\windows\\system32',
+          './service',
+          '/etc/shadow',
+        ];
 
         for (const attempt of traversalAttempts) {
           expect(() => new SystemdManager(attempt)).toThrow();
@@ -311,7 +332,9 @@ describe('SystemdManager - Command Validation', () => {
         };
         (spawn as any).mockReturnValue(fakeChild);
 
-        await expect(manager.executeSystemctl('status')).rejects.toThrow(/ENOENT|command not found/i);
+        await expect(manager.executeSystemctl('status')).rejects.toThrow(
+          /ENOENT|command not found/i
+        );
       } catch (error) {
         // Expected to fail before implementation
         expect(error).toBeDefined();

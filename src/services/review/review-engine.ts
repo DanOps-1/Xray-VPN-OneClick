@@ -5,7 +5,13 @@
  */
 
 import { REVIEW_AREA_LABELS, type ReviewAreaId } from '../../constants/review';
-import type { AssessmentArea, Finding, Recommendation, ReviewReport, Summary } from '../../types/review';
+import type {
+  AssessmentArea,
+  Finding,
+  Recommendation,
+  ReviewReport,
+  Summary,
+} from '../../types/review';
 import { createReviewId, getIsoTimestamp } from '../../utils/review-id';
 import type { RepoScanResult } from '../../utils/repo-scan';
 import { runRepoScan } from './repo-scanner';

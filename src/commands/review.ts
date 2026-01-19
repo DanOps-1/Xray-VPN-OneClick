@@ -73,7 +73,9 @@ export function registerReviewCommand(program: Command): void {
           recommendationsOnly: Boolean(options.recommendations),
         };
 
-        const markdown = formats.includes('markdown') ? renderReportMarkdown(report, renderOptions) : undefined;
+        const markdown = formats.includes('markdown')
+          ? renderReportMarkdown(report, renderOptions)
+          : undefined;
         const json = formats.includes('json') ? renderReportJson(report, renderOptions) : undefined;
 
         await writeReportOutputs({

@@ -243,13 +243,15 @@ export class ConfigManager {
    *
    * @returns Array of backup info objects
    */
-  async listBackupsWithInfo(): Promise<Array<{ path: string; filename: string; createdAt: Date; size: number }>> {
+  async listBackupsWithInfo(): Promise<
+    Array<{ path: string; filename: string; createdAt: Date; size: number }>
+  > {
     const backupPaths = await this.listBackups();
     const backupsWithInfo = [];
 
     for (const backupPath of backupPaths) {
       try {
-        const stats = await import('fs/promises').then(fs => fs.stat(backupPath));
+        const stats = await import('fs/promises').then((fs) => fs.stat(backupPath));
         const filename = backupPath.split('/').pop() || '';
 
         // Extract timestamp from filename: config.2024-01-15T10-30-00-000Z.json

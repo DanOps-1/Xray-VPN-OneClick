@@ -12,7 +12,11 @@ function toRelativePath(repoPath: string, targetPath: string): string {
   return relative.length > 0 ? relative : '.';
 }
 
-export function fileEvidence(repoPath: string, targetPath: string, notes?: string): EvidenceReference {
+export function fileEvidence(
+  repoPath: string,
+  targetPath: string,
+  notes?: string
+): EvidenceReference {
   return {
     type: 'file',
     target: toRelativePath(repoPath, targetPath),
@@ -20,7 +24,11 @@ export function fileEvidence(repoPath: string, targetPath: string, notes?: strin
   };
 }
 
-export function pathEvidence(repoPath: string, targetPath: string, notes?: string): EvidenceReference {
+export function pathEvidence(
+  repoPath: string,
+  targetPath: string,
+  notes?: string
+): EvidenceReference {
   return {
     type: 'path',
     target: toRelativePath(repoPath, targetPath),

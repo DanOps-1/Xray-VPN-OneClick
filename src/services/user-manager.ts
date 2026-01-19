@@ -31,8 +31,8 @@ function generatePublicKeyFromPrivate(privateKeyBase64: string): string {
 
     // X25519 PKCS#8 DER header (for 32-byte raw key)
     const pkcs8Header = Buffer.from([
-      0x30, 0x2e, 0x02, 0x01, 0x00, 0x30, 0x05, 0x06, 0x03, 0x2b, 0x65, 0x6e,
-      0x04, 0x22, 0x04, 0x20,
+      0x30, 0x2e, 0x02, 0x01, 0x00, 0x30, 0x05, 0x06, 0x03, 0x2b, 0x65, 0x6e, 0x04, 0x22, 0x04,
+      0x20,
     ]);
 
     const privateKeyDer = Buffer.concat([pkcs8Header, privateKeyBuffer]);
@@ -268,15 +268,17 @@ export class UserManager {
     let user: User | undefined;
     let inboundPort: number | undefined;
     let inboundProtocol: string | undefined;
-    let streamSettings: {
-      network?: string;
-      security?: string;
-      realitySettings?: {
-        privateKey: string;
-        serverNames: string[];
-        shortIds: string[];
-      };
-    } | undefined;
+    let streamSettings:
+      | {
+          network?: string;
+          security?: string;
+          realitySettings?: {
+            privateKey: string;
+            serverNames: string[];
+            shortIds: string[];
+          };
+        }
+      | undefined;
 
     for (const inbound of config.inbounds || []) {
       if (inbound.settings?.clients) {

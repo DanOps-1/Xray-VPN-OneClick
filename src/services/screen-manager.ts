@@ -34,12 +34,12 @@ export class ScreenManager implements IScreenManager {
   private renderBreadcrumb(breadcrumb: string): void {
     // Minimalist breadcrumb: Just text with padding, no heavy lines
     // Add vertical padding
-    console.log(''); 
-    
+    console.log('');
+
     // Add horizontal padding (space) and color
     const padding = ' '.repeat(UI_CONSTANTS.PADDING);
     console.log(`${padding}${THEME.primary(breadcrumb)}`);
-    
+
     console.log('');
   }
 }

@@ -143,8 +143,14 @@ export async function scanRepository(repoPath: string): Promise<RepoScanResult> 
 
   const readmePath = await findFileInDirs(resolvedRepoPath, ['README.md', 'README']);
   const licensePath = await findFileInDirs(resolvedRepoPath, ['LICENSE', 'LICENSE.md', 'COPYING']);
-  const contributingPath = await findFileInDirs(resolvedRepoPath, ['CONTRIBUTING.md', 'CONTRIBUTING']);
-  const codeOfConductPath = await findFileInDirs(resolvedRepoPath, ['CODE_OF_CONDUCT.md', 'CODE_OF_CONDUCT']);
+  const contributingPath = await findFileInDirs(resolvedRepoPath, [
+    'CONTRIBUTING.md',
+    'CONTRIBUTING',
+  ]);
+  const codeOfConductPath = await findFileInDirs(resolvedRepoPath, [
+    'CODE_OF_CONDUCT.md',
+    'CODE_OF_CONDUCT',
+  ]);
   const securityPath = await findFileInDirs(resolvedRepoPath, ['SECURITY.md']);
   const changelogPath = await findFileInDirs(resolvedRepoPath, ['CHANGELOG.md', 'CHANGELOG']);
   const packageJsonPath = await findFileInDirs(resolvedRepoPath, ['package.json']);
@@ -152,14 +158,20 @@ export async function scanRepository(repoPath: string): Promise<RepoScanResult> 
   const roadmapPath = await findFileInDirs(resolvedRepoPath, ['ROADMAP.md', 'ROADMAP']);
 
   const docsDir = await directoryExists(resolvedRepoPath, 'docs');
-  const testsDir = (await directoryExists(resolvedRepoPath, 'tests')) || (await directoryExists(resolvedRepoPath, '__tests__'));
+  const testsDir =
+    (await directoryExists(resolvedRepoPath, 'tests')) ||
+    (await directoryExists(resolvedRepoPath, '__tests__'));
   const examplesDir = await directoryExists(resolvedRepoPath, 'examples');
   const githubDir = await directoryExists(resolvedRepoPath, '.github');
   const workflowsDir = githubDir ? await directoryExists(githubDir, 'workflows') : undefined;
-  const issueTemplatesDir = githubDir ? await directoryExists(githubDir, 'ISSUE_TEMPLATE') : undefined;
+  const issueTemplatesDir = githubDir
+    ? await directoryExists(githubDir, 'ISSUE_TEMPLATE')
+    : undefined;
   const pullRequestTemplate = await findPullRequestTemplate(resolvedRepoPath);
 
-  const hasGithubActions = workflowsDir ? await hasAnyFiles(workflowsDir, ['.yml', '.yaml']) : false;
+  const hasGithubActions = workflowsDir
+    ? await hasAnyFiles(workflowsDir, ['.yml', '.yaml'])
+    : false;
 
   const content = {
     readme: readmePath ? await safeReadFile(readmePath) : undefined,

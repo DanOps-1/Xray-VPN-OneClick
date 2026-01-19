@@ -28,7 +28,10 @@ function renderStringList(lines: string[], indent: number, values: string[]): vo
   });
 }
 
-export function buildClashConfigYaml(info: VlessLinkInfo, options: ClashConfigOptions = {}): ClashConfigResult {
+export function buildClashConfigYaml(
+  info: VlessLinkInfo,
+  options: ClashConfigOptions = {}
+): ClashConfigResult {
   const proxyName = options.proxyName || info.name || `${info.server}:${info.port}`;
   const proxyGroupName = options.proxyGroupName || 'PROXY';
 

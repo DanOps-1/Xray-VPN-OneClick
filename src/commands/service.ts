@@ -76,11 +76,9 @@ export async function displayServiceStatus(options: ServiceCommandOptions = {}):
 子状态: ${status.subState}
 已加载: ${status.loaded ? '是' : '否'}`;
 
-    const basicStatusSection = renderSection(
-      `${statusIcon} 基本状态`,
-      basicStatusContent,
-      { showBorder: false }
-    );
+    const basicStatusSection = renderSection(`${statusIcon} 基本状态`, basicStatusContent, {
+      showBorder: false,
+    });
     console.log(basicStatusSection);
 
     // Group 2: 进程信息 (if available)
@@ -98,22 +96,18 @@ export async function displayServiceStatus(options: ServiceCommandOptions = {}):
         processContent += `运行时长: ${status.uptime}`;
       }
 
-      const processSection = renderSection(
-        '[信息] 进程信息',
-        processContent.trim(),
-        { showBorder: false }
-      );
+      const processSection = renderSection('[信息] 进程信息', processContent.trim(), {
+        showBorder: false,
+      });
       console.log(processSection);
     }
 
     // Group 3: 其他信息 (if available)
     if (status.restarts !== undefined && status.restarts > 0) {
       logger.newline();
-      const otherSection = renderSection(
-        '[警告] 重启记录',
-        `重启次数: ${status.restarts}`,
-        { showBorder: false }
-      );
+      const otherSection = renderSection('[警告] 重启记录', `重启次数: ${status.restarts}`, {
+        showBorder: false,
+      });
       console.log(chalk.yellow(otherSection));
     }
 

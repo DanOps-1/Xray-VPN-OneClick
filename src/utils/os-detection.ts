@@ -4,15 +4,8 @@
  */
 
 import { existsSync, readFileSync } from 'fs';
-import {
-  OperatingSystem,
-  OsFamily,
-  PackageManager,
-} from '../types/platform.js';
-import {
-  getDistroConfig,
-  isDistroSupported,
-} from '../constants/supported-distros.js';
+import { OperatingSystem, OsFamily, PackageManager } from '../types/platform.js';
+import { getDistroConfig, isDistroSupported } from '../constants/supported-distros.js';
 
 interface OsReleaseInfo {
   ID?: string;

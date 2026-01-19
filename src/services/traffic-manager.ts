@@ -105,7 +105,12 @@ export class TrafficManager {
     const configPort = await this.detectApiPortFromConfig();
     const resolvedPort = configPort ?? quotaPort;
 
-    if (typeof resolvedPort === 'number' && Number.isInteger(resolvedPort) && resolvedPort >= 1 && resolvedPort <= 65535) {
+    if (
+      typeof resolvedPort === 'number' &&
+      Number.isInteger(resolvedPort) &&
+      resolvedPort >= 1 &&
+      resolvedPort <= 65535
+    ) {
       this.apiPort = resolvedPort;
     }
   }
@@ -169,7 +174,9 @@ export class TrafficManager {
   /**
    * 检查用户流量统计策略是否启用
    */
-  private async hasUserStatsPolicy(configPath: string = DEFAULT_XRAY_CONFIG_PATH): Promise<boolean> {
+  private async hasUserStatsPolicy(
+    configPath: string = DEFAULT_XRAY_CONFIG_PATH
+  ): Promise<boolean> {
     try {
       const content = await readFile(configPath, 'utf-8');
       const config = JSON.parse(content);
@@ -330,7 +337,9 @@ export class TrafficManager {
    * @param configPath - Xray 配置文件路径
    * @returns 检测结果
    */
-  async detectStatsConfig(configPath: string = DEFAULT_XRAY_CONFIG_PATH): Promise<StatsDetectionResult> {
+  async detectStatsConfig(
+    configPath: string = DEFAULT_XRAY_CONFIG_PATH
+  ): Promise<StatsDetectionResult> {
     const result: StatsDetectionResult = {
       available: false,
       configDetected: false,
@@ -372,8 +381,8 @@ export class TrafficManager {
       const levels = config.policy?.levels;
       const hasUserStatsPolicy = levels
         ? Object.values(
-          levels as Record<string, { statsUserUplink?: boolean; statsUserDownlink?: boolean }>
-        ).some((level) => level?.statsUserUplink === true && level?.statsUserDownlink === true)
+            levels as Record<string, { statsUserUplink?: boolean; statsUserDownlink?: boolean }>
+          ).some((level) => level?.statsUserUplink === true && level?.statsUserDownlink === true)
         : false;
       if (!hasUserStatsPolicy) {
         result.message = 'Xray 配置中未启用 policy 流量统计';

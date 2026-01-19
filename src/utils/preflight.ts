@@ -97,7 +97,9 @@ async function checkSystemd(): Promise<{ passed: boolean; error?: string }> {
 /**
  * Check if Xray binary exists and is executable
  */
-async function checkXray(path: string = DEFAULT_PATHS.XRAY_BINARY): Promise<{ passed: boolean; error?: string; warning?: string }> {
+async function checkXray(
+  path: string = DEFAULT_PATHS.XRAY_BINARY
+): Promise<{ passed: boolean; error?: string; warning?: string }> {
   try {
     // Check if file exists and is executable
     await access(path, fsConstants.F_OK | fsConstants.X_OK);
@@ -125,7 +127,9 @@ async function checkXray(path: string = DEFAULT_PATHS.XRAY_BINARY): Promise<{ pa
 /**
  * Check if config file exists and is readable
  */
-async function checkConfig(path: string = DEFAULT_PATHS.CONFIG_FILE): Promise<{ passed: boolean; error?: string; warning?: string }> {
+async function checkConfig(
+  path: string = DEFAULT_PATHS.CONFIG_FILE
+): Promise<{ passed: boolean; error?: string; warning?: string }> {
   try {
     // Check if file exists and is readable
     await access(path, fsConstants.F_OK | fsConstants.R_OK);
@@ -199,7 +203,9 @@ export async function preflightChecks(options: PreflightOptions = {}): Promise<P
       result.critical = true;
       if (systemdResult.error) {
         result.errors.push(systemdResult.error);
-        result.suggestions.push('确保在支持 systemd 的 Linux 发行版上运行 (Debian 10+, Ubuntu 20.04+, CentOS 8+)');
+        result.suggestions.push(
+          '确保在支持 systemd 的 Linux 发行版上运行 (Debian 10+, Ubuntu 20.04+, CentOS 8+)'
+        );
       }
     }
   }
@@ -214,7 +220,9 @@ export async function preflightChecks(options: PreflightOptions = {}): Promise<P
 
       if (xrayResult.error) {
         result.errors.push(xrayResult.error);
-        result.suggestions.push(`修复 Xray 二进制文件权限: sudo chmod +x ${DEFAULT_PATHS.XRAY_BINARY}`);
+        result.suggestions.push(
+          `修复 Xray 二进制文件权限: sudo chmod +x ${DEFAULT_PATHS.XRAY_BINARY}`
+        );
       } else if (xrayResult.warning) {
         result.warnings.push(xrayResult.warning);
         result.suggestions.push(`安装 Xray: https://github.com/XTLS/Xray-install`);

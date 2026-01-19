@@ -11,7 +11,13 @@ import { TrafficManager } from '../services/traffic-manager';
 import { UserManager } from '../services/user-manager';
 import { StatsConfigManager } from '../services/stats-config-manager';
 import { QuotaEnforcer } from '../services/quota-enforcer';
-import { parseTraffic, formatTraffic, formatUsageSummary, calculateUsagePercent, getAlertLevel } from '../utils/traffic-formatter';
+import {
+  parseTraffic,
+  formatTraffic,
+  formatUsageSummary,
+  calculateUsagePercent,
+  getAlertLevel,
+} from '../utils/traffic-formatter';
 import { PRESET_QUOTAS } from '../constants/quota';
 import logger from '../utils/logger';
 import chalk from 'chalk';
@@ -156,7 +162,11 @@ export async function promptQuotaInput(): Promise<number> {
       message: '请输入配额 (例如: 10GB, 500MB, 1TB):',
       validate: (value) => {
         const bytes = parseTraffic(value);
-        if (bytes === -1 && value.toLowerCase() !== '无限制' && value.toLowerCase() !== 'unlimited') {
+        if (
+          bytes === -1 &&
+          value.toLowerCase() !== '无限制' &&
+          value.toLowerCase() !== 'unlimited'
+        ) {
           return '无效的配额格式，请使用如 10GB, 500MB, 1TB 的格式';
         }
         return true;
@@ -198,7 +208,8 @@ export async function setQuota(options: QuotaCommandOptions = {}): Promise<void>
 
     // Get current quota
     const currentQuota = await quotaManager.getQuota(selectedEmail);
-    const currentDisplay = currentQuota.quotaBytes < 0 ? '无限制' : formatTraffic(currentQuota.quotaBytes).display;
+    const currentDisplay =
+      currentQuota.quotaBytes < 0 ? '无限制' : formatTraffic(currentQuota.quotaBytes).display;
 
     logger.newline();
     console.log(chalk.gray(`当前配额: ${currentDisplay}`));
@@ -276,7 +287,10 @@ export async function showQuota(options: QuotaCommandOptions = {}): Promise<void
 
     // User info
     console.log(chalk.cyan('  用户: ') + chalk.white(selectedEmail));
-    console.log(chalk.cyan('  状态: ') + (quota.status === 'active' ? chalk.green('活跃') : chalk.red('已禁用')));
+    console.log(
+      chalk.cyan('  状态: ') +
+        (quota.status === 'active' ? chalk.green('活跃') : chalk.red('已禁用'))
+    );
     logger.newline();
 
     // Quota info
@@ -401,7 +415,8 @@ export async function listQuotas(options: QuotaCommandOptions = {}): Promise<voi
     const trafficManager = new TrafficManager();
 
     let statsAvailable = await trafficManager.isUsageAvailable();
-    const shouldPromptStats = !options.json && !process.env.VITEST && process.env.NODE_ENV !== 'test';
+    const shouldPromptStats =
+      !options.json && !process.env.VITEST && process.env.NODE_ENV !== 'test';
     if (!statsAvailable && shouldPromptStats) {
       const configured = await promptStatsApiSetup(options);
       if (configured) {
@@ -440,13 +455,25 @@ export async function listQuotas(options: QuotaCommandOptions = {}): Promise<voi
     }
 
     // Build user list with quota info
-    const usersWithQuota: Array<User & { quotaDisplay: string; usageDisplay: string; alertLevel: 'normal' | 'warning' | 'exceeded' }> = [];
+    const usersWithQuota: Array<
+      User & {
+        quotaDisplay: string;
+        usageDisplay: string;
+        alertLevel: 'normal' | 'warning' | 'exceeded';
+      }
+    > = [];
 
     for (const user of users) {
-      const quota = quotas[user.email] || { quotaBytes: -1, quotaType: 'unlimited' as const, usedBytes: 0, lastReset: '', status: 'active' as const };
+      const quota = quotas[user.email] || {
+        quotaBytes: -1,
+        quotaType: 'unlimited' as const,
+        usedBytes: 0,
+        lastReset: '',
+        status: 'active' as const,
+      };
       const usage = statsAvailable ? usages.find((u) => u.email === user.email) : undefined;
 
-      const usedBytes = statsAvailable ? (usage?.total || 0) : 0;
+      const usedBytes = statsAvailable ? usage?.total || 0 : 0;
       const percent = statsAvailable ? calculateUsagePercent(usedBytes, quota.quotaBytes) : 0;
       const alertLevel = statsAvailable ? getAlertLevel(percent) : 'normal';
 
@@ -457,7 +484,9 @@ export async function listQuotas(options: QuotaCommandOptions = {}): Promise<voi
         usagePercent: percent,
         alertLevel,
         quotaDisplay: quota.quotaBytes < 0 ? '无限制' : formatTraffic(quota.quotaBytes).display,
-        usageDisplay: statsAvailable ? formatUsageSummary(usedBytes, quota.quotaBytes) : '统计未启用',
+        usageDisplay: statsAvailable
+          ? formatUsageSummary(usedBytes, quota.quotaBytes)
+          : '统计未启用',
       });
     }
 
@@ -558,11 +587,17 @@ export async function configureStatsApi(options: QuotaCommandOptions = {}): Prom
     logger.newline();
 
     // Show current status
-    console.log(chalk.cyan('  当前状态: ') + (detection.available ? chalk.green('已配置且可用') : chalk.yellow('未配置或不可用')));
+    console.log(
+      chalk.cyan('  当前状态: ') +
+        (detection.available ? chalk.green('已配置且可用') : chalk.yellow('未配置或不可用'))
+    );
 
     if (detection.available && detection.detectedPort) {
       console.log(chalk.cyan('  API 端口: ') + chalk.white(detection.detectedPort));
-      console.log(chalk.cyan('  服务状态: ') + (detection.serviceRunning ? chalk.green('运行中') : chalk.red('已停止')));
+      console.log(
+        chalk.cyan('  服务状态: ') +
+          (detection.serviceRunning ? chalk.green('运行中') : chalk.red('已停止'))
+      );
       logger.newline();
       try {
         const quotaManager = new QuotaManager();
@@ -584,7 +619,9 @@ export async function configureStatsApi(options: QuotaCommandOptions = {}): Prom
         'api-outbound': 'API 出站配置',
         'api-routing': 'API 路由规则',
       };
-      const missingNames = detection.missingComponents.map((c) => componentNames[c] || c).join('、');
+      const missingNames = detection.missingComponents
+        .map((c) => componentNames[c] || c)
+        .join('、');
       console.log(chalk.cyan('  缺失组件: ') + chalk.yellow(missingNames));
     }
 
@@ -696,7 +733,11 @@ export async function executeQuotaCheck(options: QuotaCommandOptions = {}): Prom
 
     // Exceeded users
     if (summary.exceededCount > 0) {
-      console.log(chalk.red(`  ✗ ${translations.quota.exceededUsers}: ${summary.exceededCount} (${translations.quota.disabledUsers})`));
+      console.log(
+        chalk.red(
+          `  ✗ ${translations.quota.exceededUsers}: ${summary.exceededCount} (${translations.quota.disabledUsers})`
+        )
+      );
     }
 
     // Newly disabled
@@ -729,7 +770,7 @@ export async function executeQuotaCheck(options: QuotaCommandOptions = {}): Prom
           try {
             // Find user by email to get UUID
             const users = await userManager.listUsers();
-            const user = users.find(u => u.email === detail.email);
+            const user = users.find((u) => u.email === detail.email);
             if (user) {
               await metadataManager.updateStatus(user.id, 'exceeded');
             }

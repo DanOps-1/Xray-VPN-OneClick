@@ -216,7 +216,8 @@ export function applyPadding(
   const contentWidth = width - padding.left - padding.right;
 
   for (const line of contentLines) {
-    const paddedLine = ' '.repeat(padding.left) + fitText(line, contentWidth, 'left') + ' '.repeat(padding.right);
+    const paddedLine =
+      ' '.repeat(padding.left) + fitText(line, contentWidth, 'left') + ' '.repeat(padding.right);
     lines.push(paddedLine);
   }
 
@@ -332,11 +333,7 @@ export function renderTable(
  * @param options - Render options
  * @returns Rendered section string
  */
-export function renderSection(
-  title: string,
-  content: string,
-  options?: RenderOptions
-): string {
+export function renderSection(title: string, content: string, options?: RenderOptions): string {
   const lines: string[] = [];
   const showBorder = options?.showBorder ?? false;
   const padding = options?.padding || { top: 0, right: 0, bottom: 0, left: 0 };

@@ -4,7 +4,12 @@
  */
 
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
-import { detectTerminalCapabilities, supportsUnicode, isWindows, mapPlatform } from '../../src/utils/terminal';
+import {
+  detectTerminalCapabilities,
+  supportsUnicode,
+  isWindows,
+  mapPlatform,
+} from '../../src/utils/terminal';
 import { Platform } from '../../src/types/terminal';
 
 describe('Terminal Capabilities', () => {

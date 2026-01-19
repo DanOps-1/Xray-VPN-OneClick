@@ -16,10 +16,9 @@ vi.mock('../../../src/services/systemd-manager', () => {
 
 vi.mock('../../../src/services/user-manager', () => {
   const UserManager = vi.fn();
-  UserManager.prototype.listUsers = vi.fn().mockResolvedValue([
-    { username: 'user1' },
-    { username: 'user2' },
-  ]);
+  UserManager.prototype.listUsers = vi
+    .fn()
+    .mockResolvedValue([{ username: 'user1' }, { username: 'user2' }]);
   return { UserManager };
 });
 

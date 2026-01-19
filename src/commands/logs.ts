@@ -386,7 +386,9 @@ export async function viewAccessLogs(options: LogsCommandOptions = {}): Promise<
     logger.newline();
     logger.separator();
     console.log(chalk.bold.cyan(`${menuIcons.LOGS} ${translations.logs.accessLog}`));
-    console.log(chalk.gray(`   ${translations.logs.showingLines.replace('{lines}', String(logs.length))}`));
+    console.log(
+      chalk.gray(`   ${translations.logs.showingLines.replace('{lines}', String(logs.length))}`)
+    );
     logger.separator();
     logger.newline();
 
@@ -432,7 +434,9 @@ export async function viewErrorLogs(options: LogsCommandOptions = {}): Promise<v
     logger.newline();
     logger.separator();
     console.log(chalk.bold.red(`${menuIcons.ERROR} ${translations.logs.errorLog}`));
-    console.log(chalk.gray(`   ${translations.logs.showingLines.replace('{lines}', String(logs.length))}`));
+    console.log(
+      chalk.gray(`   ${translations.logs.showingLines.replace('{lines}', String(logs.length))}`)
+    );
     logger.separator();
     logger.newline();
 

@@ -94,7 +94,12 @@ export function evaluateContribution(scan: RepoScanResult): AreaEvaluation {
     });
   }
 
-  const status = !scan.files.contributing && !scan.files.codeOfConduct ? 'missing' : recommendations.length > 0 ? 'needs-improvement' : 'good';
+  const status =
+    !scan.files.contributing && !scan.files.codeOfConduct
+      ? 'missing'
+      : recommendations.length > 0
+        ? 'needs-improvement'
+        : 'good';
 
   return {
     areaId: 'contribution',

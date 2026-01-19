@@ -13,7 +13,7 @@ export interface RecommendationFilters {
 
 export function filterRecommendations(
   recommendations: Recommendation[],
-  filters: RecommendationFilters = {},
+  filters: RecommendationFilters = {}
 ): Recommendation[] {
   return recommendations.filter((rec) => {
     if (filters.priority && rec.priority !== filters.priority) {

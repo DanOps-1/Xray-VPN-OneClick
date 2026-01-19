@@ -46,5 +46,5 @@ export const menuIcons = {
 } as const;
 
 // Type exports for TypeScript support
-export type StatusIcon = typeof statusIcons[keyof typeof statusIcons];
-export type MenuIcon = typeof menuIcons[keyof typeof menuIcons];
+export type StatusIcon = (typeof statusIcons)[keyof typeof statusIcons];
+export type MenuIcon = (typeof menuIcons)[keyof typeof menuIcons];

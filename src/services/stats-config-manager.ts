@@ -74,8 +74,8 @@ export class StatsConfigManager {
       const levels = config.policy?.levels;
       const hasUserStatsPolicy = levels
         ? Object.values(levels).some(
-          (level) => level?.statsUserUplink === true && level?.statsUserDownlink === true
-        )
+            (level) => level?.statsUserUplink === true && level?.statsUserDownlink === true
+          )
         : false;
       if (!hasUserStatsPolicy) {
         missing.push('policy');
@@ -244,9 +244,7 @@ export class StatsConfigManager {
       merged.policy = statsConfig.policy;
     } else {
       const hasLevels = !!merged.policy.levels && Object.keys(merged.policy.levels).length > 0;
-      const levels = hasLevels
-        ? { ...merged.policy.levels }
-        : { ...statsConfig.policy.levels };
+      const levels = hasLevels ? { ...merged.policy.levels } : { ...statsConfig.policy.levels };
 
       for (const levelKey of Object.keys(levels)) {
         levels[levelKey] = {
@@ -460,7 +458,9 @@ export class StatsConfigManager {
       const mergedConfig = this.mergeStatsConfig(config, statsConfig);
 
       // 5. 写入配置 (cast to unknown first to bypass strict type checking)
-      await this.configManager.writeConfig(mergedConfig as unknown as Parameters<typeof this.configManager.writeConfig>[0]);
+      await this.configManager.writeConfig(
+        mergedConfig as unknown as Parameters<typeof this.configManager.writeConfig>[0]
+      );
 
       // 6. 重启服务
       const serviceOk = await this.restartAndVerify();

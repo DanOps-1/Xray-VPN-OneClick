@@ -133,7 +133,7 @@ export function formatAppError(error: AppError, options?: FormatOptions): string
 export function formatErrorInfo(
   errorInfo: ErrorInfo,
   details?: string,
-  options?: FormatOptions,
+  options?: FormatOptions
 ): string {
   const opts = { ...DEFAULT_OPTIONS, ...options };
   const mode = getOutputMode();
@@ -209,7 +209,7 @@ export function formatErrorInfo(
 export function formatError(
   error: Error,
   fallbackInfo?: ErrorInfo,
-  options?: FormatOptions,
+  options?: FormatOptions
 ): string {
   // If it's an AppError, format it directly
   if (AppError.isAppError(error)) {
@@ -242,7 +242,7 @@ export function formatError(
 export function formatByCode(
   code: string,
   details?: string,
-  options?: FormatOptions,
+  options?: FormatOptions
 ): string | undefined {
   const errorInfo = findErrorByCode(code);
   if (!errorInfo) {

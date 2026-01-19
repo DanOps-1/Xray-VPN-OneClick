@@ -241,7 +241,9 @@ export function tableHeader(titleText: string): void {
 
   if (mode === OutputMode.RICH) {
     console.log(chalk.cyan(`╔${border}╗`));
-    console.log(chalk.cyan(`║${titleText.padStart((width + titleText.length) / 2).padEnd(width)}║`));
+    console.log(
+      chalk.cyan(`║${titleText.padStart((width + titleText.length) / 2).padEnd(width)}║`)
+    );
     console.log(chalk.cyan(`╚${border}╝`));
   } else {
     console.log(border);
@@ -343,7 +345,7 @@ export function formattedError(err: AppError, options?: FormatOptions): void {
 export function formattedErrorInfo(
   errorInfo: ErrorInfo,
   details?: string,
-  options?: FormatOptions,
+  options?: FormatOptions
 ): void {
   const formatted = formatErrorInfo(errorInfo, details, options);
   console.error(formatted);
@@ -358,7 +360,7 @@ export function formattedErrorInfo(
 export function formattedGenericError(
   err: Error,
   fallbackInfo?: ErrorInfo,
-  options?: FormatOptions,
+  options?: FormatOptions
 ): void {
   const formatted = formatErrorUtil(err, fallbackInfo, options);
   console.error(formatted);

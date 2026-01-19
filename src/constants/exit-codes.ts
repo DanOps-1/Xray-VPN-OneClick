@@ -100,7 +100,10 @@ export function getExitCodeForError(error: Error): ExitCodeType {
 /**
  * 优雅退出（清理资源后退出）
  */
-export async function gracefulExit(code: ExitCodeType, cleanup?: () => Promise<void>): Promise<never> {
+export async function gracefulExit(
+  code: ExitCodeType,
+  cleanup?: () => Promise<void>
+): Promise<never> {
   try {
     if (cleanup) {
       await cleanup();

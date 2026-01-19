@@ -229,9 +229,9 @@ describe('Service Lifecycle Integration', () => {
         const manager = new SystemdManager('xray');
 
         // Set a very short timeout to simulate timeout scenario
-        await expect(
-          manager.executeSystemctl('status', { timeout: 1 })
-        ).rejects.toThrow(/timeout/i);
+        await expect(manager.executeSystemctl('status', { timeout: 1 })).rejects.toThrow(
+          /timeout/i
+        );
       } catch (error) {
         // Expected to fail before implementation
         expect(error).toBeDefined();

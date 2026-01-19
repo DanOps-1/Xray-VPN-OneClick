@@ -13,15 +13,7 @@ import { OsFamily, PackageManager } from '../../src/types/platform.js';
 
 describe('Supported Distros', () => {
   it('should have all expected distributions', () => {
-    const expectedDistros = [
-      'ubuntu',
-      'debian',
-      'kali',
-      'centos',
-      'almalinux',
-      'rocky',
-      'fedora',
-    ];
+    const expectedDistros = ['ubuntu', 'debian', 'kali', 'centos', 'almalinux', 'rocky', 'fedora'];
     expectedDistros.forEach((distro) => {
       expect(SUPPORTED_DISTROS[distro]).toBeDefined();
     });

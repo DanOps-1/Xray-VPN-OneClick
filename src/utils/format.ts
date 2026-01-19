@@ -23,10 +23,7 @@ export interface MaskOptions {
  * @param options 脱敏选项
  * @returns 脱敏后的值
  */
-export function maskSensitiveValue(
-  value: string,
-  options: MaskOptions = {}
-): string {
+export function maskSensitiveValue(value: string, options: MaskOptions = {}): string {
   const { prefixLength = 4, suffixLength = 4, maskChar = '*' } = options;
 
   // Handle empty or very short strings
@@ -45,8 +42,9 @@ export function maskSensitiveValue(
   // Special handling for email addresses
   if (value.includes('@')) {
     const [localPart, domain] = value.split('@');
-    const maskedLocal = localPart.slice(0, Math.min(4, localPart.length)) +
-                       maskChar.repeat(Math.max(0, localPart.length - 4));
+    const maskedLocal =
+      localPart.slice(0, Math.min(4, localPart.length)) +
+      maskChar.repeat(Math.max(0, localPart.length - 4));
     return `${maskedLocal}@${domain}`;
   }
 
@@ -241,9 +239,7 @@ export function pad(
  * @returns 格式化后的行字符串
  */
 export function formatTableRow(columns: string[], widths: number[]): string {
-  return columns
-    .map((col, i) => pad(truncate(col, widths[i]), widths[i]))
-    .join(' │ ');
+  return columns.map((col, i) => pad(truncate(col, widths[i]), widths[i])).join(' │ ');
 }
 
 /**
@@ -253,11 +249,7 @@ export function formatTableRow(columns: string[], widths: number[]): string {
  * @param decimals 小数位数（默认 1）
  * @returns 格式化后的百分比字符串
  */
-export function formatPercentage(
-  value: number,
-  total?: number,
-  decimals: number = 1
-): string {
+export function formatPercentage(value: number, total?: number, decimals: number = 1): string {
   let percent: number;
 
   if (total !== undefined && total > 0) {

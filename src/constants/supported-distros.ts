@@ -57,11 +57,7 @@ export const SUPPORTED_DISTROS: Record<string, DistroConfig> = {
   },
 };
 
-export const PRIVATE_IP_RANGES = [
-  /^10\./,
-  /^172\.(1[6-9]|2[0-9]|3[01])\./,
-  /^192\.168\./,
-];
+export const PRIVATE_IP_RANGES = [/^10\./, /^172\.(1[6-9]|2[0-9]|3[01])\./, /^192\.168\./];
 
 export const SUPPORTED_DISTRO_IDS = Object.keys(SUPPORTED_DISTROS);
 

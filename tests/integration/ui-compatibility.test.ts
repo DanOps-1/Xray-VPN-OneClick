@@ -18,18 +18,18 @@ describe('UI Compatibility Integration Tests', () => {
     it('should detect TTY when running in interactive terminal', async () => {
       // This test requires the CLI to be built
       // It will be fully implemented after logger refactor is complete
-      expect(true).toBe(true);  // Placeholder
+      expect(true).toBe(true); // Placeholder
     }, 10000);
 
     it('should detect pipe mode when output is piped', async () => {
       // This test will spawn CLI with piped stdio and verify output format
       // Format should be: [timestamp] [LEVEL] message
-      expect(true).toBe(true);  // Placeholder
+      expect(true).toBe(true); // Placeholder
     }, 10000);
 
     it('should output ASCII indicators in pipe mode', async () => {
       // This test will verify no ANSI codes in piped output
-      expect(true).toBe(true);  // Placeholder
+      expect(true).toBe(true); // Placeholder
     }, 10000);
   });
 
@@ -178,8 +178,8 @@ describe('UI Compatibility Integration Tests', () => {
       });
 
       // Verify icons are distinct for easy identification
-      const allIcons = [...serviceOpsKeys, ...managementKeys, ...exitKeys].map((key) =>
-        getMenuIcon(key).text
+      const allIcons = [...serviceOpsKeys, ...managementKeys, ...exitKeys].map(
+        (key) => getMenuIcon(key).text
       );
       const uniqueIcons = new Set(allIcons);
       expect(uniqueIcons.size).toBe(allIcons.length); // All icons should be unique

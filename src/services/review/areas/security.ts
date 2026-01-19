@@ -53,7 +53,11 @@ export function evaluateSecurity(scan: RepoScanResult): AreaEvaluation {
     }
   }
 
-  const status = !scan.files.security ? 'missing' : recommendations.length > 0 ? 'needs-improvement' : 'good';
+  const status = !scan.files.security
+    ? 'missing'
+    : recommendations.length > 0
+      ? 'needs-improvement'
+      : 'good';
 
   return {
     areaId: 'security',

@@ -456,12 +456,14 @@ export class LogManager {
 
     try {
       const content = await readFile(logPath, 'utf-8');
-      const allLines = content.split('\n').filter(line => line.trim());
+      const allLines = content.split('\n').filter((line) => line.trim());
 
       // Get last N lines
       const lastLines = allLines.slice(-lines);
 
-      return lastLines.map((line, index) => this.parseFileLogEntry(line, allLines.length - lines + index + 1));
+      return lastLines.map((line, index) =>
+        this.parseFileLogEntry(line, allLines.length - lines + index + 1)
+      );
     } catch (error) {
       throw new Error(`读取日志文件失败: ${(error as Error).message}`);
     }

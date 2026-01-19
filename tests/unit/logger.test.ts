@@ -37,12 +37,12 @@ describe('Logger Status Indicators', () => {
   describe('Output Mode Detection', () => {
     it('should detect RICH mode when TTY with color support', () => {
       // This test will be implemented when getOutputMode() is added
-      expect(true).toBe(true);  // Placeholder
+      expect(true).toBe(true); // Placeholder
     });
 
     it('should detect PLAIN_TTY mode when TTY without color (--no-color)', () => {
       // This test will be implemented when getOutputMode() is added
-      expect(true).toBe(true);  // Placeholder
+      expect(true).toBe(true); // Placeholder
     });
 
     it('should detect PIPE mode when not TTY', () => {
@@ -61,32 +61,32 @@ describe('Logger Status Indicators', () => {
   describe('Status Indicator Output', () => {
     it('should output [OK] for success in ASCII mode', async () => {
       // This test will verify logger.success() outputs [OK] when Unicode not supported
-      expect(true).toBe(true);  // Placeholder - will implement after logger refactor
+      expect(true).toBe(true); // Placeholder - will implement after logger refactor
     });
 
     it('should output [ERROR] for error in ASCII mode', async () => {
       // This test will verify logger.error() outputs [ERROR] when Unicode not supported
-      expect(true).toBe(true);  // Placeholder
+      expect(true).toBe(true); // Placeholder
     });
 
     it('should output [WARN] for warning in ASCII mode', async () => {
       // This test will verify logger.warn() outputs [WARN] when Unicode not supported
-      expect(true).toBe(true);  // Placeholder
+      expect(true).toBe(true); // Placeholder
     });
 
     it('should output [INFO] for info in ASCII mode', async () => {
       // This test will verify logger.info() outputs [INFO] indicator
-      expect(true).toBe(true);  // Placeholder
+      expect(true).toBe(true); // Placeholder
     });
 
     it('should output [DEBUG] for debug in ASCII mode', async () => {
       // This test will verify logger.debug() outputs [DEBUG] when Unicode not supported
-      expect(true).toBe(true);  // Placeholder
+      expect(true).toBe(true); // Placeholder
     });
 
     it('should output Unicode symbols in RICH mode', async () => {
       // This test will verify logger uses ✓, ✗, ! when Unicode supported
-      expect(true).toBe(true);  // Placeholder
+      expect(true).toBe(true); // Placeholder
     });
   });
 

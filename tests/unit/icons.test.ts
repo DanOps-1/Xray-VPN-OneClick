@@ -4,7 +4,12 @@
  */
 
 import { describe, it, expect } from 'vitest';
-import { resolveIcon, getStatusIndicator, getMenuIcon, resolveSpecialIcon } from '../../src/utils/icons';
+import {
+  resolveIcon,
+  getStatusIndicator,
+  getMenuIcon,
+  resolveSpecialIcon,
+} from '../../src/utils/icons';
 import { LogLevel } from '../../src/utils/logger';
 import { Platform, TerminalCapabilities } from '../../src/types/terminal';
 
@@ -123,7 +128,7 @@ describe('Icon Resolver', () => {
 
       keys.forEach((key) => {
         const icon = getMenuIcon(key);
-        expect(icon.text).toMatch(/^\[.+\]$/);  // Must be wrapped in brackets
+        expect(icon.text).toMatch(/^\[.+\]$/); // Must be wrapped in brackets
       });
     });
 

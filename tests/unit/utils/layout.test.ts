@@ -324,22 +324,18 @@ describe('Layout Utilities', () => {
     });
 
     it('should render table with double border style', () => {
-      const result = renderTable(
-        [{ header: 'Test', key: 'test' }],
-        [{ test: 'value' }],
-        { borderStyle: 'double' }
-      );
+      const result = renderTable([{ header: 'Test', key: 'test' }], [{ test: 'value' }], {
+        borderStyle: 'double',
+      });
 
       expect(result).toBeDefined();
       expect(result).toContain('Test');
     });
 
     it('should render table with compact border style', () => {
-      const result = renderTable(
-        [{ header: 'Test', key: 'test' }],
-        [{ test: 'value' }],
-        { borderStyle: 'compact' }
-      );
+      const result = renderTable([{ header: 'Test', key: 'test' }], [{ test: 'value' }], {
+        borderStyle: 'compact',
+      });
 
       expect(result).toBeDefined();
       expect(result).toContain('Test');
@@ -373,10 +369,7 @@ describe('Layout Utilities', () => {
     });
 
     it('should handle empty data', () => {
-      const result = renderTable(
-        [{ header: 'Empty', key: 'empty' }],
-        []
-      );
+      const result = renderTable([{ header: 'Empty', key: 'empty' }], []);
 
       expect(result).toBeDefined();
       expect(result).toContain('Empty');
@@ -385,11 +378,7 @@ describe('Layout Utilities', () => {
 
   describe('renderSection', () => {
     it('should render section with title and content', () => {
-      const result = renderSection(
-        'Section Title',
-        'Section content here',
-        { showBorder: true }
-      );
+      const result = renderSection('Section Title', 'Section content here', { showBorder: true });
 
       expect(result).toBeDefined();
       expect(result).toContain('Section Title');
@@ -397,11 +386,7 @@ describe('Layout Utilities', () => {
     });
 
     it('should render section without border', () => {
-      const result = renderSection(
-        'Title',
-        'Content',
-        { showBorder: false }
-      );
+      const result = renderSection('Title', 'Content', { showBorder: false });
 
       expect(result).toBeDefined();
       expect(result).toContain('Title');
@@ -409,11 +394,7 @@ describe('Layout Utilities', () => {
     });
 
     it('should render section with multi-line content', () => {
-      const result = renderSection(
-        'Multi-line',
-        'Line 1\nLine 2\nLine 3',
-        { showBorder: true }
-      );
+      const result = renderSection('Multi-line', 'Line 1\nLine 2\nLine 3', { showBorder: true });
 
       expect(result).toContain('Multi-line');
       expect(result).toContain('Line 1');
@@ -422,14 +403,10 @@ describe('Layout Utilities', () => {
     });
 
     it('should apply padding to section', () => {
-      const result = renderSection(
-        'Padded',
-        'Content',
-        {
-          showBorder: false,
-          padding: { top: 1, right: 2, bottom: 1, left: 2 },
-        }
-      );
+      const result = renderSection('Padded', 'Content', {
+        showBorder: false,
+        padding: { top: 1, right: 2, bottom: 1, left: 2 },
+      });
 
       expect(result).toBeDefined();
       const lines = result.split('\n');
@@ -437,11 +414,7 @@ describe('Layout Utilities', () => {
     });
 
     it('should handle Chinese characters in section', () => {
-      const result = renderSection(
-        '服务状态',
-        '运行中',
-        { showBorder: true }
-      );
+      const result = renderSection('服务状态', '运行中', { showBorder: true });
 
       expect(result).toContain('服务状态');
       expect(result).toContain('运行中');
@@ -528,10 +501,7 @@ describe('Layout Utilities', () => {
     });
 
     it('should handle columns with different heights', () => {
-      const columns = [
-        ['Short'],
-        ['Line 1', 'Line 2', 'Line 3'],
-      ];
+      const columns = [['Short'], ['Line 1', 'Line 2', 'Line 3']];
 
       const result = renderColumns(columns, 80, 2);
 
@@ -541,11 +511,7 @@ describe('Layout Utilities', () => {
     });
 
     it('should handle empty columns', () => {
-      const columns = [
-        ['Content'],
-        [],
-        ['More content'],
-      ];
+      const columns = [['Content'], [], ['More content']];
 
       const result = renderColumns(columns, 120, 2);
 

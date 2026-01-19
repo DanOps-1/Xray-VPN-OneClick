@@ -102,8 +102,11 @@ describe('Interactive Menu Display', () => {
 
         // Expected menu items based on contracts/01-interactive-menu.md
         const expectedItems = ['服务管理', '用户管理', '配置管理', '日志', '退出'];
-        const hasAnyMenuItem = expectedItems.some((item) =>
-          stdout.includes(item) || stdout.toLowerCase().includes('service') || stdout.toLowerCase().includes('menu')
+        const hasAnyMenuItem = expectedItems.some(
+          (item) =>
+            stdout.includes(item) ||
+            stdout.toLowerCase().includes('service') ||
+            stdout.toLowerCase().includes('menu')
         );
 
         if (stdout.length > 0) {

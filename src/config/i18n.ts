@@ -267,7 +267,7 @@ const enTranslations: Translations = {
     selectUser: 'Select a user',
     selectPreset: 'Select a preset quota',
     enterCustom: 'Enter custom quota',
-    confirmReset: 'Are you sure you want to reset this user\'s traffic?',
+    confirmReset: "Are you sure you want to reset this user's traffic?",
     confirmReenable: 'Are you sure you want to re-enable this user?',
     executeCheck: 'Execute Quota Check',
     checkComplete: 'Quota check complete',
