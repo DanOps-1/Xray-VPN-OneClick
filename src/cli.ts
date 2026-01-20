@@ -22,21 +22,27 @@ import { showSplash } from './utils/splash';
 // Read package.json for version
 const packageJson = require('../package.json');
 
-// Check for updates
-updateNotifier({
-  pkg: packageJson,
-  updateCheckInterval: 1000 * 60 * 60 * 24, // Check once per day
-}).notify({
-  isGlobal: true,
-  defer: false,
-});
-
 /**
  * Main CLI function
  */
 async function main(): Promise<void> {
   // Show splash screen animation
   await showSplash(packageJson.version);
+
+  // Check for updates (after splash to avoid being cleared)
+  const notifier = updateNotifier({
+    pkg: packageJson,
+    updateCheckInterval: 1000 * 60 * 60 * 24, // Check once per day
+  });
+
+  if (notifier.update) {
+    logger.newline();
+    notifier.notify({
+      isGlobal: true,
+      defer: false,
+    });
+    logger.newline();
+  }
 
   // Create Commander program
   const program = new Command();
