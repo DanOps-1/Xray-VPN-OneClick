@@ -20,6 +20,8 @@
     "test:ui": "vitest --ui",
     "lint": "eslint src tests --ext .ts",
     "format": "prettier --write \"src/**/*.ts\" \"tests/**/*.ts\"",
+    "audit": "npm audit --audit-level=moderate",
+    "audit:fix": "npm audit fix",
     "prepublishOnly": "npm run build"
   },
   "keywords": [

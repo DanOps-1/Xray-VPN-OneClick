@@ -12,6 +12,51 @@ on:
       - develop
 
 jobs:
+  security:
+    name: Security Audit
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run npm audit
+        run: npm audit --audit-level=moderate
+        continue-on-error: true
+
+      - name: Check for known vulnerabilities
+        run: |
+          echo "Checking for security vulnerabilities..."
+          npm audit --json > audit-report.json || true
+
+          # Count vulnerabilities by severity
+          HIGH=$(cat audit-report.json | jq '.metadata.vulnerabilities.high // 0')
+          CRITICAL=$(cat audit-report.json | jq '.metadata.vulnerabilities.critical // 0')
+
+          echo "Critical vulnerabilities: $CRITICAL"
+          echo "High vulnerabilities: $HIGH"
+
+          # Fail if critical vulnerabilities found
+          if [ "$CRITICAL" -gt 0 ]; then
+            echo "❌ Critical vulnerabilities found!"
+            exit 1
+          fi
+
+          # Warn about high vulnerabilities but don't fail
+          if [ "$HIGH" -gt 0 ]; then
+            echo "⚠️  High severity vulnerabilities found. Please review."
+          fi
+
+          echo "✅ Security audit passed"
+
   lint:
     name: Lint Code
     runs-on: ubuntu-latest
