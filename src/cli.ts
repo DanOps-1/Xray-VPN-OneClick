@@ -17,6 +17,7 @@ import { preflightChecks } from './utils/preflight';
 import { startInteractiveMenu } from './commands/interactive';
 import { registerReviewCommand } from './commands/review';
 import { registerClashCommand } from './commands/clash';
+import { showSplash } from './utils/splash';
 
 // Read package.json for version
 const packageJson = require('../package.json');
@@ -34,6 +35,9 @@ updateNotifier({
  * Main CLI function
  */
 async function main(): Promise<void> {
+  // Show splash screen animation
+  await showSplash(packageJson.version);
+
   // Create Commander program
   const program = new Command();
 
