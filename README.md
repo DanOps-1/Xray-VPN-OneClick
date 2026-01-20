@@ -307,6 +307,40 @@ sudo bash install.sh
 | **Android** | v2rayNG | [GitHub Releases](https://github.com/2dust/v2rayNG/releases) |
 | **iOS** | Shadowrocket / Quantumult X | App Store（需美区账号）|
 
+### 🎯 Clash 客户端支持
+
+本项目完全适配 **[Clash Verge Rev](https://github.com/clash-verge-rev/clash-verge-rev)** - 一款现代化的跨平台 Clash 客户端！
+
+**为什么选择 Clash Verge Rev？**
+- ✅ 跨平台支持（Windows、macOS、Linux）
+- ✅ 现代化的图形界面，易于使用
+- ✅ 完整支持 VLESS + Reality 协议
+- ✅ 内置规则管理和订阅功能
+- ✅ 开源免费，持续更新维护
+
+**使用方法：**
+
+1. **下载安装 Clash Verge Rev**
+   - 访问 [GitHub Releases](https://github.com/clash-verge-rev/clash-verge-rev/releases) 下载对应平台版本
+
+2. **生成 Clash 配置文件**
+   ```bash
+   # 使用 CLI 工具生成
+   xray-manager
+   # 选择 "用户管理" -> "生成 Clash 配置"
+
+   # 或使用命令行直接生成
+   xray-manager clash --link <你的VLESS链接>
+   ```
+
+3. **导入配置到 Clash Verge Rev**
+   - 打开 Clash Verge Rev
+   - 点击 "配置" -> "导入"
+   - 选择生成的 `clash-config.yaml` 文件
+   - 启用配置并连接
+
+> 💡 **提示**: 生成的 Clash 配置文件完全兼容 Clash Meta 内核，支持所有 Reality 特性。
+
 ### 快速导入配置
 
 **方式一：使用分享链接（推荐）**
@@ -316,7 +350,13 @@ sudo bash install.sh
 3. 选择"从剪贴板导入"或"扫描二维码"
 4. 连接并开始使用
 
-**方式二：手动配置**
+**方式二：使用 Clash 配置文件**
+
+1. 使用 CLI 工具生成 Clash 配置
+2. 导入到 Clash Verge Rev 或其他 Clash 客户端
+3. 启用配置并连接
+
+**方式三：手动配置**
 
 查看详细教程：[客户端配置指南](docs/client-setup.md)
 
