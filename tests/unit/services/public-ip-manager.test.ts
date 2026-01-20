@@ -419,5 +419,4 @@ describe('PublicIpManager', () => {
       expect(callCount).toBeGreaterThan(3); // Should have tried multiple times
     });
   });
-
 });

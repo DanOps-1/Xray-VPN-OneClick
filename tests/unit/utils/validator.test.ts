@@ -326,21 +326,13 @@ describe('Validator Utilities', () => {
 
   describe('allValid', () => {
     it('should return true when all results are valid', () => {
-      const results = [
-        { valid: true },
-        { valid: true },
-        { valid: true },
-      ];
+      const results = [{ valid: true }, { valid: true }, { valid: true }];
 
       expect(allValid(results)).toBe(true);
     });
 
     it('should return false when any result is invalid', () => {
-      const results = [
-        { valid: true },
-        { valid: false, error: 'Error' },
-        { valid: true },
-      ];
+      const results = [{ valid: true }, { valid: false, error: 'Error' }, { valid: true }];
 
       expect(allValid(results)).toBe(false);
     });
@@ -367,10 +359,7 @@ describe('Validator Utilities', () => {
     });
 
     it('should handle results without error messages', () => {
-      const results = [
-        { valid: false },
-        { valid: false, error: undefined },
-      ];
+      const results = [{ valid: false }, { valid: false, error: undefined }];
 
       const errors = getErrors(results);
 
@@ -379,10 +368,7 @@ describe('Validator Utilities', () => {
     });
 
     it('should return empty array when all valid', () => {
-      const results = [
-        { valid: true },
-        { valid: true },
-      ];
+      const results = [{ valid: true }, { valid: true }];
 
       const errors = getErrors(results);
 
