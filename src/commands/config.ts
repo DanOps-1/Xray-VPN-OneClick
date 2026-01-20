@@ -277,10 +277,14 @@ export async function modifyConfig(options: ConfigCommandOptions = {}): Promise<
     // Get current value
     const currentConfig = await manager.readConfig();
     const parts = path.split('.');
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    let currentValue: any = currentConfig;
+    let currentValue: unknown = currentConfig;
     for (const part of parts) {
-      currentValue = currentValue?.[part];
+      if (currentValue && typeof currentValue === 'object' && part in currentValue) {
+        currentValue = (currentValue as Record<string, unknown>)[part];
+      } else {
+        currentValue = undefined;
+        break;
+      }
     }
 
     console.log(chalk.gray(`  当前值: ${currentValue !== undefined ? currentValue : '(未设置)'}`));
@@ -292,10 +296,9 @@ export async function modifyConfig(options: ConfigCommandOptions = {}): Promise<
     });
 
     // Try to parse as JSON for non-string values
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    let newValue: any = newValueStr;
+    let newValue: string | number | boolean | object = newValueStr;
     try {
-      newValue = JSON.parse(newValueStr);
+      newValue = JSON.parse(newValueStr) as string | number | boolean | object;
     } catch {
       // Keep as string
     }

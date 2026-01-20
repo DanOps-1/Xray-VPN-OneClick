@@ -48,6 +48,21 @@ export interface MenuOptions {
   verbose?: boolean;
 }
 
+/**
+ * Menu choice item
+ */
+export interface MenuChoice {
+  /** Display name */
+  name: string;
+  /** Value to return when selected */
+  value: string;
+}
+
+/**
+ * Menu choice type (can be a choice or separator)
+ */
+export type MenuChoiceItem = MenuChoice | Separator;
+
 // Global instances
 const screenManager = new ScreenManager();
 const navigationManager = new NavigationManager();
@@ -56,8 +71,7 @@ let dashboardWidget: DashboardWidget;
 /**
  * Get main menu options
  */
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export function getMainMenuOptions(): any[] {
+export function getMainMenuOptions(): MenuChoiceItem[] {
   const trans = t();
 
   // Unified color theme: Icons use accents, text uses neutral/primary
@@ -113,8 +127,7 @@ export function getMainMenuOptions(): any[] {
 /**
  * Show a menu and get user selection
  */
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export async function showMenu(options: any[], message?: string): Promise<string> {
+export async function showMenu(options: MenuChoiceItem[], message?: string): Promise<string> {
   const trans = t();
   const answer = await select({
     message: message || trans.actions.selectAction,

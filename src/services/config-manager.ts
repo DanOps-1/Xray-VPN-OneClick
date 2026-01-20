@@ -210,14 +210,13 @@ export class ConfigManager {
 
     // Split path and navigate to parent object
     const parts = path.split('.');
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    let current: any = config;
+    let current: Record<string, unknown> = config as unknown as Record<string, unknown>;
 
     for (let i = 0; i < parts.length - 1; i++) {
       if (!current[parts[i]]) {
         current[parts[i]] = {};
       }
-      current = current[parts[i]];
+      current = current[parts[i]] as Record<string, unknown>;
     }
 
     // Set value
