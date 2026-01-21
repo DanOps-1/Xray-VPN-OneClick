@@ -107,7 +107,18 @@ error.log
 
 # Development tools
 .claude/
+.codex/
 .gemini/
 .specify/
 .serena/
 .npmrc
+
+# Internal documentation (not for open source)
+CLAUDE.md
+AGENTS.md
+PUBLISHING.md
+specs/
+
+# Temporary files
+temp.png
+*.tmp.png
