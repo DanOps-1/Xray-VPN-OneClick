@@ -32,7 +32,7 @@ async function main(): Promise<void> {
   // Check for updates (after splash to avoid being cleared)
   const notifier = updateNotifier({
     pkg: packageJson,
-    updateCheckInterval: 1000 * 60 * 60 * 24, // Check once per day
+    updateCheckInterval: 0, // Check every time
   });
 
   if (notifier.update) {
