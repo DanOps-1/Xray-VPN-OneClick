@@ -1,6 +1,6 @@
 {
   "name": "xray-manager",
-  "version": "1.8.3",
+  "version": "1.8.4",
   "description": "Xray 企业级管理平台 - 一键部署 + 流量配额管理 + 用户管理 | Enterprise-grade Xray management platform with one-click deployment, traffic quota, and user management",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
