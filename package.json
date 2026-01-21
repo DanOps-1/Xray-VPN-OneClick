@@ -61,10 +61,12 @@
     "clipboardy": "^4.0.0",
     "commander": "^12.1.0",
     "ora": "^5.4.1",
+    "qrcode-terminal": "^0.12.0",
     "update-notifier": "^7.3.1"
   },
   "devDependencies": {
     "@types/node": "^25.0.3",
+    "@types/qrcode-terminal": "^0.12.2",
     "@types/update-notifier": "^6.0.8",
     "@typescript-eslint/eslint-plugin": "^8.52.0",
     "@typescript-eslint/parser": "^8.52.0",

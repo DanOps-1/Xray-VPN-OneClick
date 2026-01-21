@@ -27,6 +27,7 @@ import { menuIcons } from '../constants/ui-symbols';
 import { renderHeader } from '../utils/layout';
 import layoutManager from '../services/layout-manager';
 import { AppError } from '../utils/errors';
+import qrcode from 'qrcode-terminal';
 
 /**
  * User command options
@@ -343,6 +344,14 @@ export async function showUserShare(options: UserCommandOptions = {}): Promise<v
 
     console.log(chalk.cyan('  VLESS 链接:'));
     console.log(chalk.white(`  ${shareInfo.shareLink}`));
+    logger.newline();
+
+    // Display QR code
+    console.log(chalk.cyan('  二维码 (手机客户端扫描导入):'));
+    logger.newline();
+    qrcode.generate(shareInfo.shareLink, { small: true }, (qr) => {
+      console.log(qr);
+    });
     logger.newline();
 
     // Try to copy to clipboard
