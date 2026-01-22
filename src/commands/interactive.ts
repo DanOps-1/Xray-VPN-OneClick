@@ -503,6 +503,11 @@ export async function startInteractiveMenu(options: MenuOptions): Promise<void> 
     }
 
     logger.success(trans.messages.thankYou || '感谢使用 Xray Manager!');
+    logger.newline();
+    logger.info('⭐ 觉得好用？请给个 Star 支持一下！');
+    logger.info('   https://github.com/DanOps-1/Xray-VPN-OneClick');
+    logger.info('   开源不易，你的支持是我最大的动力 🙏');
+    logger.newline();
   } finally {
     process.removeListener('SIGINT', sigintHandler);
   }

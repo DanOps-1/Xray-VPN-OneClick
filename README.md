@@ -14,6 +14,24 @@
   <em>自建梯子 · 科学上网 · 翻墙工具 · VPN替代方案 · 访问ChatGPT/Claude</em>
 </p>
 
+---
+
+### ⭐ 如果这个项目对你有帮助，请给个 Star 支持一下！
+
+<p align="center">
+  <strong>你的 Star 是我持续更新的最大动力 🙏</strong><br>
+  <em>开源不易，维护更难。一个 Star，一份鼓励！</em>
+</p>
+
+<p align="center">
+  <a href="https://github.com/DanOps-1/Xray-VPN-OneClick">
+    <img src="https://img.shields.io/github/stars/DanOps-1/Xray-VPN-OneClick?style=social" alt="GitHub stars">
+  </a>
+  <a href="https://github.com/DanOps-1/Xray-VPN-OneClick/fork">
+    <img src="https://img.shields.io/github/forks/DanOps-1/Xray-VPN-OneClick?style=social" alt="GitHub forks">
+  </a>
+</p>
+
 <!-- 核心徽章 -->
 [![npm version](https://img.shields.io/npm/v/xray-manager?style=for-the-badge&logo=npm&color=red)](https://www.npmjs.com/package/xray-manager)
 [![npm downloads](https://img.shields.io/npm/dm/xray-manager?style=for-the-badge&logo=npm&color=orange)](https://www.npmjs.com/package/xray-manager)
@@ -38,6 +56,15 @@
 
 [**中文**](README.md) | [**English**](docs/README-en.md)
 
+</div>
+
+---
+
+## 📸 界面预览
+
+<div align="center">
+  <img src="interface.png" alt="Xray Manager 交互式界面" width="100%">
+  <p><em>现代化的交互式管理界面，支持服务管理、用户管理、流量配额等功能</em></p>
 </div>
 
 ---

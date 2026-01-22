@@ -29,6 +29,13 @@ async function main(): Promise<void> {
   // Show splash screen animation
   await showSplash(packageJson.version);
 
+  // Show star request message
+  logger.newline();
+  logger.info('⭐ 如果这个项目对你有帮助，请给个 Star 支持一下！');
+  logger.info('   https://github.com/DanOps-1/Xray-VPN-OneClick');
+  logger.info('   你的 Star 是我持续更新的最大动力 🙏');
+  logger.newline();
+
   // Check for updates (after splash to avoid being cleared)
   const notifier = updateNotifier({
     pkg: packageJson,
