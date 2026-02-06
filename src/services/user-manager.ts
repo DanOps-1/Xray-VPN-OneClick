@@ -264,38 +264,78 @@ export class UserManager {
     const config = await this.configManager.readConfig();
     const metadata = await this.metadataManager.getMetadata(userId);
 
-    // Find user and inbound settings
+    // Find user in all inbounds and collect inbound info
     let user: User | undefined;
-    let inboundPort: number | undefined;
-    let inboundProtocol: string | undefined;
-    let streamSettings:
-      | {
-          network?: string;
-          security?: string;
-          realitySettings?: {
-            privateKey: string;
-            serverNames: string[];
-            shortIds: string[];
-          };
-        }
-      | undefined;
+    let primaryInbound: {
+      port: number;
+      protocol: string;
+      streamSettings?: {
+        network?: string;
+        security?: string;
+        realitySettings?: {
+          privateKey: string;
+          serverNames: string[];
+          shortIds: string[];
+        };
+        wsSettings?: {
+          path: string;
+          headers?: Record<string, string>;
+        };
+      };
+    } | undefined;
+    let wsInbound: {
+      port: number;
+      protocol: string;
+      streamSettings?: {
+        network?: string;
+        security?: string;
+        wsSettings?: {
+          path: string;
+          headers?: Record<string, string>;
+        };
+      };
+    } | undefined;
 
+    // Search through all inbounds
     for (const inbound of config.inbounds || []) {
       if (inbound.settings?.clients) {
         const client = inbound.settings.clients.find((c) => c.id === userId);
         if (client) {
-          user = {
-            id: client.id,
-            email: client.email || '',
-            level: client.level || 0,
-            flow: client.flow,
-            createdAt: metadata?.createdAt || new Date().toISOString(),
-            status: metadata?.status || 'active',
-          };
-          inboundPort = inbound.port;
-          inboundProtocol = inbound.protocol;
-          streamSettings = inbound.streamSettings;
-          break;
+          if (!user) {
+            user = {
+              id: client.id,
+              email: client.email || '',
+              level: client.level || 0,
+              flow: client.flow,
+              createdAt: metadata?.createdAt || new Date().toISOString(),
+              status: metadata?.status || 'active',
+            };
+          }
+
+          const network = inbound.streamSettings?.network || 'tcp';
+          const security = inbound.streamSettings?.security || 'none';
+
+          // Categorize inbound: WebSocket vs Primary (REALITY/TLS)
+          if (network === 'ws') {
+            wsInbound = {
+              port: inbound.port,
+              protocol: inbound.protocol,
+              streamSettings: inbound.streamSettings,
+            };
+          } else if (security === 'reality' || security === 'tls') {
+            primaryInbound = {
+              port: inbound.port,
+              protocol: inbound.protocol,
+              streamSettings: inbound.streamSettings,
+            };
+          } else if (!primaryInbound) {
+            // Fallback to first found inbound
+            primaryInbound = {
+              port: inbound.port,
+              protocol: inbound.protocol,
+              streamSettings: inbound.streamSettings,
+            };
+          }
         }
       }
     }
@@ -309,15 +349,18 @@ export class UserManager {
     try {
       serverAddress = await this.publicIpManager.getPublicIp();
     } catch {
-      // If detection fails, throw error - caller should handle manual input
       throw new NetworkError(NetworkErrors.PUBLIC_IP_FAILED);
     }
 
-    // Build VLESS link based on security type
-    const port = inboundPort || 443;
-    const encryption = 'none';
-    const security = streamSettings?.security || 'tls';
-    const network = streamSettings?.network || 'tcp';
+    // Use primary inbound for main link, fallback to ws if no primary
+    const mainInbound = primaryInbound || wsInbound;
+    if (!mainInbound) {
+      throw new UserError(UserErrors.USER_NOT_FOUND, userId);
+    }
+
+    const port = mainInbound.port || 443;
+    const security = mainInbound.streamSettings?.security || 'tls';
+    const network = mainInbound.streamSettings?.network || 'tcp';
     const flow = user.flow || 'xtls-rprx-vision';
     const name = encodeURIComponent(user.email);
 
@@ -326,46 +369,104 @@ export class UserManager {
     let shortId: string | undefined;
     let serverName: string | undefined;
 
-    if (security === 'reality' && streamSettings?.realitySettings) {
-      const reality = streamSettings.realitySettings;
+    if (security === 'reality' && primaryInbound?.streamSettings?.realitySettings) {
+      const reality = primaryInbound.streamSettings.realitySettings;
 
       // Generate public key from private key
       publicKey = generatePublicKeyFromPrivate(reality.privateKey);
       serverName = reality.serverNames[0] || 'www.microsoft.com';
       shortId = reality.shortIds[0] || '';
 
-      // Build REALITY link
-      // Format: vless://UUID@server:port?encryption=none&security=reality&type=tcp&flow=xtls-rprx-vision&pbk=PUBLIC_KEY&fp=chrome&sni=SNI&sid=SHORT_ID#name
-      const params = new URLSearchParams({
-        encryption,
-        security: 'reality',
-        type: network,
-        flow,
-        pbk: publicKey,
-        fp: 'chrome',
-        sni: serverName,
-        sid: shortId,
-        spx: '/',
-      });
+      const params = new URLSearchParams();
+      params.set('encryption', 'none');
+      params.set('security', 'reality');
+      params.set('type', network);
+      params.set('flow', flow);
+      params.set('pbk', publicKey);
+      params.set('fp', 'chrome');
+      params.set('sni', serverName);
+      params.set('sid', shortId);
+      params.set('spx', '/');
 
       vlessLink = `vless://${user.id}@${serverAddress}:${port}?${params.toString()}#${name}`;
     } else {
-      // Build standard TLS link
-      vlessLink = `vless://${user.id}@${serverAddress}:${port}?encryption=${encryption}&security=${security}&type=${network}&flow=${flow}#${name}`;
+      vlessLink = `vless://${user.id}@${serverAddress}:${port}?encryption=none&security=${security}&type=${network}&flow=${flow}#${name}`;
+    }
+
+    // Build CDN (WebSocket) link if ws inbound exists
+    let cdnShareLink: string | undefined;
+    let wsPath: string | undefined;
+
+    if (wsInbound?.streamSettings?.wsSettings) {
+      wsPath = wsInbound.streamSettings.wsSettings.path;
+      const wsHost = wsInbound.streamSettings.wsSettings.headers?.Host || serverAddress;
+      const wsSecurity = wsInbound.streamSettings.security || 'none';
+      const wsPort = wsInbound.port || 443;
+
+      const wsParams = new URLSearchParams({
+        encryption: 'none',
+        security: wsSecurity === 'tls' ? 'tls' : 'tls', // CDN always uses TLS on client side
+        type: 'ws',
+        host: wsHost,
+        path: wsPath,
+        sni: wsHost,
+      });
+
+      // CDN link uses domain as server address (user should replace with their CDN domain)
+      cdnShareLink = `vless://${user.id}@${wsHost}:${wsPort}?${wsParams.toString()}#${encodeURIComponent(user.email + '-CDN')}`;
     }
 
     return {
       user,
       shareLink: vlessLink,
+      cdnShareLink,
       serverAddress,
       serverPort: port,
-      protocol: inboundProtocol || 'vless',
+      protocol: mainInbound.protocol || 'vless',
       security,
+      network,
       serverName,
       publicKey,
       shortId,
+      wsPath,
       qrCode: vlessLink,
     };
+  }
+
+  /**
+   * Get CDN share link for a user with custom domain
+   *
+   * @param userId - User ID (UUID)
+   * @param cdnDomain - CDN domain (e.g., "example.com")
+   * @param cdnPort - CDN port (default: 443)
+   * @returns CDN share link string or null if no WebSocket inbound
+   */
+  async getCdnShareLink(userId: string, cdnDomain: string, cdnPort: number = 443): Promise<string | null> {
+    const config = await this.configManager.readConfig();
+
+    // Find WebSocket inbound with this user
+    for (const inbound of config.inbounds || []) {
+      if (inbound.settings?.clients) {
+        const client = inbound.settings.clients.find((c) => c.id === userId);
+        if (client && inbound.streamSettings?.network === 'ws') {
+          const wsPath = inbound.streamSettings.wsSettings?.path || '/ws';
+
+          const params = new URLSearchParams({
+            encryption: 'none',
+            security: 'tls',
+            type: 'ws',
+            host: cdnDomain,
+            path: wsPath,
+            sni: cdnDomain,
+          });
+
+          const name = encodeURIComponent((client.email || 'user') + '-CDN');
+          return `vless://${client.id}@${cdnDomain}:${cdnPort}?${params.toString()}#${name}`;
+        }
+      }
+    }
+
+    return null;
   }
 
   /**

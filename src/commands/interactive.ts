@@ -11,7 +11,7 @@ import chalk from 'chalk';
 import logger from '../utils/logger';
 import { ExitCode } from '../constants/exit-codes';
 import { displayServiceStatus, startService, stopService, restartService } from './service';
-import { listUsers, addUser, deleteUser, showUserShare, generateClashConfig } from './user';
+import { listUsers, addUser, deleteUser, showUserShare, generateClashConfig, showCdnShare } from './user';
 import {
   setQuota,
   showQuota,
@@ -252,6 +252,10 @@ async function handleUserManagementMenu(options: MenuOptions): Promise<boolean> 
         value: 'user-share',
       },
       {
+        name: `${THEME.secondary('[CDN]')} ${THEME.neutral('生成 CDN 链接')}`,
+        value: 'user-cdn',
+      },
+      {
         name: `${THEME.primary('[Clash]')} ${THEME.neutral('生成 Clash 配置')}`,
         value: 'user-clash',
       },
@@ -291,6 +295,13 @@ async function handleUserManagementMenu(options: MenuOptions): Promise<boolean> 
       case 'user-share':
         navigationManager.push('Share Link');
         await showUserShare(options);
+        await promptContinue();
+        navigationManager.pop();
+        break;
+
+      case 'user-cdn':
+        navigationManager.push('CDN Link');
+        await showCdnShare(options);
         await promptContinue();
         navigationManager.pop();
         break;

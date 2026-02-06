@@ -1,11 +1,107 @@
 /**
- * VLESS link parser utilities
+ * VLESS link parser and generator utilities
  * @module utils/vless-link
  */
 
 import { isValidPort, isValidUuid } from './validator';
 import { ProtocolError } from './errors';
 import { ProtocolErrors } from '../constants/error-codes';
+
+/**
+ * Parameters for generating VLESS REALITY link
+ */
+export interface VlessRealityParams {
+  uuid: string;
+  server: string;
+  port: number;
+  publicKey: string;
+  shortId: string;
+  sni?: string;
+  flow?: string;
+  fingerprint?: string;
+  remark?: string;
+}
+
+/**
+ * Parameters for generating VLESS WebSocket (CDN) link
+ */
+export interface VlessWebSocketParams {
+  uuid: string;
+  server: string;
+  port: number;
+  path: string;
+  host?: string;
+  sni?: string;
+  tls?: boolean;
+  remark?: string;
+}
+
+/**
+ * Generate VLESS REALITY share link
+ *
+ * @param params - REALITY link parameters
+ * @returns VLESS share link string
+ */
+export function generateVlessRealityLink(params: VlessRealityParams): string {
+  const {
+    uuid,
+    server,
+    port,
+    publicKey,
+    shortId,
+    sni = 'www.microsoft.com',
+    flow = 'xtls-rprx-vision',
+    fingerprint = 'chrome',
+    remark = 'Xray-Reality',
+  } = params;
+
+  const searchParams = new URLSearchParams({
+    encryption: 'none',
+    flow,
+    security: 'reality',
+    sni,
+    fp: fingerprint,
+    pbk: publicKey,
+    sid: shortId,
+    type: 'tcp',
+    headerType: 'none',
+  });
+
+  return `vless://${uuid}@${server}:${port}?${searchParams.toString()}#${encodeURIComponent(remark)}`;
+}
+
+/**
+ * Generate VLESS WebSocket (CDN) share link
+ *
+ * @param params - WebSocket link parameters
+ * @returns VLESS share link string
+ */
+export function generateVlessWebSocketLink(params: VlessWebSocketParams): string {
+  const {
+    uuid,
+    server,
+    port,
+    path,
+    host,
+    sni,
+    tls = true,
+    remark = 'Xray-CDN',
+  } = params;
+
+  const searchParams = new URLSearchParams({
+    encryption: 'none',
+    security: tls ? 'tls' : 'none',
+    type: 'ws',
+    host: host || server,
+    path,
+  });
+
+  if (tls && sni) {
+    searchParams.set('sni', sni);
+  }
+
+  return `vless://${uuid}@${server}:${port}?${searchParams.toString()}#${encodeURIComponent(remark)}`;
+}
 
 export interface VlessLinkInfo {
   uuid: string;
