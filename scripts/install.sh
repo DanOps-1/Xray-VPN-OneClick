@@ -350,17 +350,22 @@ KEYS=$(/usr/local/bin/xray x25519)
 
 # 兼容新旧版本 xray x25519 输出格式
 # 旧版: "Private key: xxx" / "Public key: xxx"
-# 新版 v26+: "PrivateKey: xxx" / "Password: xxx" (Password 即 PublicKey)
+# 新版 v25+: "PrivateKey: xxx" / "PublicKey: xxx"
+# 新版 v26+: "PrivateKey: xxx" / "Password (PublicKey): xxx"
 PRIVATE_KEY=$(echo "$KEYS" | grep -iE "^Private\s*key:" | cut -d':' -f2 | tr -d ' ')
 PUBLIC_KEY=$(echo "$KEYS" | grep -iE "^Public\s*key:" | cut -d':' -f2 | tr -d ' ')
 
-# 如果旧格式解析失败，尝试新格式 (v26+)
+# 如果旧格式解析失败，尝试新格式
 if [[ -z "$PRIVATE_KEY" ]]; then
     PRIVATE_KEY=$(echo "$KEYS" | grep -E "^PrivateKey:" | cut -d':' -f2 | tr -d ' ')
 fi
 if [[ -z "$PUBLIC_KEY" ]]; then
-    # v26+ 使用 Password 字段作为 PublicKey
-    PUBLIC_KEY=$(echo "$KEYS" | grep -E "^Password:" | cut -d':' -f2 | tr -d ' ')
+    # v25+ 使用 PublicKey 字段
+    PUBLIC_KEY=$(echo "$KEYS" | grep -E "^PublicKey:" | cut -d':' -f2 | tr -d ' ')
+fi
+if [[ -z "$PUBLIC_KEY" ]]; then
+    # v26+ 使用 "Password (PublicKey): xxx" 格式
+    PUBLIC_KEY=$(echo "$KEYS" | grep -E "^Password" | awk -F': ' '{print $NF}' | tr -d ' ')
 fi
 SHORT_ID=$(openssl rand -hex 8)
 
