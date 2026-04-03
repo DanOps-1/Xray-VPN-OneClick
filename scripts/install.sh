@@ -360,8 +360,8 @@ if [[ -z "$PRIVATE_KEY" ]]; then
 fi
 if [[ -z "$PUBLIC_KEY" ]]; then
     # v26+ 使用 Password 字段作为 PublicKey
-    PUBLIC_KEY=$(echo "$KEYS" | grep -E "^Password:" | cut -d':' -f2 | tr -d ' ')
-fi
+    # 注意：新版格式是 "Password (PublicKey): xxx"，需要提取冒号后的所有内容
+    PUBLIC_KEY=$(echo "$KEYS" | grep -E "^Password" | sed 's/^Password[^:]*:[[:space:]]*//' | tr -d ' ')
 SHORT_ID=$(openssl rand -hex 8)
 
 # 验证密钥生成成功
@@ -430,6 +430,11 @@ cat > /usr/local/etc/xray/config.json <<EOF
             "$SHORT_ID",
             ""
           ]
+        },
+        "sockopt": {
+          "tcpFastOpen": true,
+          "tcpNoDelay": true,
+          "tcpKeepAliveInterval": 30
         }
       },
       "sniffing": {
@@ -444,7 +449,13 @@ cat > /usr/local/etc/xray/config.json <<EOF
   "outbounds": [
     {
       "protocol": "freedom",
-      "tag": "direct"
+      "tag": "direct",
+      "streamSettings": {
+        "sockopt": {
+          "tcpFastOpen": true,
+          "tcpNoDelay": true
+        }
+      }
     },
     {
       "protocol": "blackhole",
