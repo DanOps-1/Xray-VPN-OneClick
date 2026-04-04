@@ -342,9 +342,17 @@ export async function showUserShare(options: UserCommandOptions = {}): Promise<v
     console.log(chalk.cyan('  UUID: ') + chalk.white(shareInfo.user.id));
     logger.newline();
 
-    console.log(chalk.cyan('  VLESS 链接:'));
+    // Display REALITY/Direct link
+    console.log(chalk.cyan('  VLESS 链接 (直连):'));
     console.log(chalk.white(`  ${shareInfo.shareLink}`));
     logger.newline();
+
+    // Display CDN link if available
+    if (shareInfo.cdnShareLink) {
+      console.log(chalk.cyan('  CDN 链接 (WebSocket):'));
+      console.log(chalk.white(`  ${shareInfo.cdnShareLink}`));
+      logger.newline();
+    }
 
     // Display QR code
     console.log(chalk.cyan('  二维码 (手机客户端扫描导入):'));
@@ -361,6 +369,138 @@ export async function showUserShare(options: UserCommandOptions = {}): Promise<v
     } else {
       logger.hint('可以手动复制上方链接');
     }
+
+    // Ask if user wants to generate CDN link with custom domain
+    if (shareInfo.wsPath) {
+      logger.newline();
+      const generateCdn = await confirm({
+        message: '是否生成自定义 CDN 域名链接？',
+        default: false,
+      });
+
+      if (generateCdn) {
+        await showCdnShareForUser(manager, targetId, shareInfo.user.email);
+      }
+    }
+  } catch (error) {
+    if (AppError.isAppError(error)) {
+      logger.formattedError(error);
+    } else {
+      logger.error((error as Error).message);
+    }
+    process.exit(1);
+  }
+}
+
+/**
+ * Generate CDN share link with custom domain for a specific user
+ *
+ * @param manager - UserManager instance
+ * @param userId - User ID
+ * @param userEmail - User email for display
+ */
+async function showCdnShareForUser(
+  manager: UserManager,
+  userId: string,
+  userEmail: string
+): Promise<void> {
+  const cdnDomain = await input({
+    message: '请输入 CDN 域名 (例如: example.com):',
+    validate: (value) => {
+      if (!value || value.length < 3) {
+        return '请输入有效的域名';
+      }
+      return true;
+    },
+  });
+
+  const portStr = await input({
+    message: '请输入 CDN 端口 (默认 443):',
+    default: '443',
+  });
+  const cdnPort = parseInt(portStr, 10) || 443;
+
+  const cdnLink = await manager.getCdnShareLink(userId, cdnDomain, cdnPort);
+
+  if (!cdnLink) {
+    logger.warn('未找到 WebSocket 入站配置，无法生成 CDN 链接');
+    return;
+  }
+
+  logger.newline();
+  logger.separator();
+  console.log(chalk.bold.cyan('🌐 CDN 分享链接'));
+  logger.separator();
+  logger.newline();
+
+  console.log(chalk.cyan('  用户: ') + chalk.white(userEmail));
+  console.log(chalk.cyan('  CDN 域名: ') + chalk.white(cdnDomain));
+  console.log(chalk.cyan('  端口: ') + chalk.white(cdnPort.toString()));
+  logger.newline();
+
+  console.log(chalk.cyan('  CDN 链接:'));
+  console.log(chalk.white(`  ${cdnLink}`));
+  logger.newline();
+
+  // Display QR code for CDN link
+  console.log(chalk.cyan('  二维码:'));
+  logger.newline();
+  qrcode.generate(cdnLink, { small: true }, (qr) => {
+    console.log(qr);
+  });
+  logger.newline();
+
+  // Try to copy to clipboard
+  const copied = await copyToClipboard(cdnLink);
+  if (copied) {
+    logger.success('CDN 链接已复制到剪贴板');
+  } else {
+    logger.hint('可以手动复制上方链接');
+  }
+}
+
+/**
+ * Show CDN share link (standalone command)
+ *
+ * @param options - Command options
+ */
+export async function showCdnShare(options: UserCommandOptions = {}): Promise<void> {
+  try {
+    const manager = new UserManager(options.configPath, options.serviceName);
+
+    // List users first
+    const users = await manager.listUsers();
+
+    if (users.length === 0) {
+      logger.warn('暂无用户');
+      return;
+    }
+
+    logger.newline();
+    console.log(chalk.bold('📋 现有用户:'));
+    users.forEach((u, i) => {
+      console.log(`  ${i + 1}. ${u.email}`);
+    });
+    logger.newline();
+
+    // Prompt for user ID
+    const userId = await input({
+      message: '请输入要生成 CDN 链接的用户 UUID (或输入序号):',
+    });
+
+    // Check if input is a number (index)
+    let targetId = userId;
+    let targetEmail = '';
+    const index = parseInt(userId, 10) - 1;
+    if (!isNaN(index) && index >= 0 && index < users.length) {
+      targetId = users[index].id;
+      targetEmail = users[index].email;
+    } else {
+      const user = users.find((u) => u.id === targetId);
+      targetEmail = user?.email || 'user';
+    }
+
+    await showCdnShareForUser(manager, targetId, targetEmail);
   } catch (error) {
     if (AppError.isAppError(error)) {
       logger.formattedError(error);

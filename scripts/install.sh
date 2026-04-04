@@ -398,6 +398,18 @@ echo "[4/5] 创建配置文件..."
 mkdir -p /usr/local/etc/xray
 mkdir -p /var/log/xray
 
+# 检测内核版本，判断是否支持 TCP Fast Open
+KERNEL_VERSION=$(uname -r | cut -d. -f1-2)
+ENABLE_TCP_OPTIMIZATIONS=false
+
+# TCP Fast Open 需要内核 >= 3.7
+if printf '%s\n%s' "3.7" "$KERNEL_VERSION" | sort -C -V 2>/dev/null; then
+    ENABLE_TCP_OPTIMIZATIONS=true
+    echo "✓ 检测到内核版本 $KERNEL_VERSION，启用 TCP 性能优化"
+else
+    echo "⚠️  内核版本 $KERNEL_VERSION < 3.7，跳过 TCP Fast Open 优化"
+fi
+
 cat > /usr/local/etc/xray/config.json <<EOF
 {
   "log": {
@@ -470,6 +482,30 @@ cat > /usr/local/etc/xray/config.json <<EOF
   }
 }
 EOF
+
+# 根据内核版本添加 TCP 性能优化
+if [ "$ENABLE_TCP_OPTIMIZATIONS" = true ]; then
+    echo "✓ 添加 TCP 性能优化参数到配置文件..."
+
+    # 使用 jq 添加 sockopt 到 inbound streamSettings
+    jq '.inbounds[0].streamSettings.sockopt = {
+        "tcpFastOpen": true,
+        "tcpNoDelay": true,
+        "tcpKeepAliveInterval": 30
+    }' /usr/local/etc/xray/config.json > /tmp/xray-config-tmp.json && \
+    mv /tmp/xray-config-tmp.json /usr/local/etc/xray/config.json
+
+    # 使用 jq 添加 sockopt 到 outbound streamSettings
+    jq '.outbounds[0].streamSettings = {
+        "sockopt": {
+            "tcpFastOpen": true,
+            "tcpNoDelay": true
+        }
+    }' /usr/local/etc/xray/config.json > /tmp/xray-config-tmp.json && \
+    mv /tmp/xray-config-tmp.json /usr/local/etc/xray/config.json
+
+    echo "✓ TCP 性能优化已启用 (TCP Fast Open, TCP NoDelay, TCP KeepAlive)"
+fi
 
 # 确保日志目录和文件存在，并设置正确的权限
 mkdir -p /var/log/xray

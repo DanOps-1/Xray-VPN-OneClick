@@ -96,6 +96,9 @@ export interface UserShareInfo {
   /** VLESS/VMESS 分享链接 */
   shareLink: string;
 
+  /** CDN (WebSocket) 分享链接（可选） */
+  cdnShareLink?: string;
+
   /** 服务器地址 */
   serverAddress: string;
 
@@ -108,6 +111,9 @@ export interface UserShareInfo {
   /** TLS/Reality 配置 */
   security: string;
 
+  /** 传输类型 (tcp, ws, grpc 等) */
+  network?: string;
+
   /** 服务器名称（SNI） */
   serverName?: string;
 
@@ -116,6 +122,12 @@ export interface UserShareInfo {
 
   /** Short ID (Reality) */
   shortId?: string;
+
+  /** WebSocket 路径（CDN 模式） */
+  wsPath?: string;
+
+  /** CDN 域名（可选） */
+  cdnHost?: string;
 
   /** 二维码 ASCII 艺术（可选） */
   qrCode?: string;
