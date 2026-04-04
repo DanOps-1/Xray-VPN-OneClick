@@ -23,7 +23,8 @@ export default [
         NodeJS: 'readonly',
         setTimeout: 'readonly',
         clearTimeout: 'readonly',
-        URL: 'readonly'
+        URL: 'readonly',
+        URLSearchParams: 'readonly'
       }
     },
     plugins: {
