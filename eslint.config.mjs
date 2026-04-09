@@ -24,7 +24,11 @@ export default [
         setTimeout: 'readonly',
         clearTimeout: 'readonly',
         URL: 'readonly',
-        URLSearchParams: 'readonly'
+        URLSearchParams: 'readonly',
+        setInterval: 'readonly',
+        clearInterval: 'readonly',
+        setImmediate: 'readonly',
+        clearImmediate: 'readonly'
       }
     },
     plugins: {

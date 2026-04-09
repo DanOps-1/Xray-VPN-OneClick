@@ -9,7 +9,7 @@ import { describe, it, expect, afterEach } from 'vitest';
 import { spawn, ChildProcess } from 'child_process';
 import { join } from 'path';
 
-const CLI_PATH = join(__dirname, '../../dist/cli.js');
+const CLI_PATH = join(__dirname, '../../dist/cli.mjs');
 
 describe('Interactive Menu Display', () => {
   let childProcess: ChildProcess | null = null;

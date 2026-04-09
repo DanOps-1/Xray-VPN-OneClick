@@ -176,7 +176,7 @@ function checkPermissions(): { passed: boolean; warning?: string } {
   // Check if sudo is available
   return {
     passed: true,
-    warning: '当前用户不是 root - 某些操作可能需要 sudo 权限',
+    warning: 'Not running as root - some operations may require sudo',
   };
 }
 

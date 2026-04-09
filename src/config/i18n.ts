@@ -30,6 +30,19 @@ export interface Translations {
     viewLogs: string;
     switchLanguage: string;
     exit: string;
+    onlineUsers: string;
+    subscriptions: string;
+  };
+
+  // Menu hints (shown next to menu items)
+  hints: {
+    viewDetails: string;
+    liveConnections: string;
+    addDeleteShare: string;
+    limitsUsage: string;
+    subLinkServer: string;
+    backupRestore: string;
+    accessError: string;
   };
 
   // Status labels
@@ -39,6 +52,59 @@ export interface Translations {
     active: string;
     inactive: string;
     unknown: string;
+    running: string;
+    stopped: string;
+    loading: string;
+    error: string;
+  };
+
+  // UI common
+  ui: {
+    navigate: string;
+    select: string;
+    search: string;
+    quit: string;
+    back: string;
+    add: string;
+    delete_: string;
+    share: string;
+    details: string;
+    refresh: string;
+    follow: string;
+    scroll: string;
+    switchLog: string;
+    setQuota: string;
+    resetUsage: string;
+    reenable: string;
+    start: string;
+    stop: string;
+    entries: string;
+    users: string;
+    noData: string;
+    processing: string;
+    autoRefresh: string;
+    never: string;
+    expired: string;
+    daysLeft: string;
+    unlimited: string;
+    createBackup: string;
+    existing: string;
+    custom: string;
+    confirmStop: string;
+    confirmRestart: string;
+    userCreated: string;
+    email: string;
+    uuid: string;
+    expiry: string;
+    expiryDaysPrompt: string;
+    emailPrompt: string;
+    selectUser: string;
+    selectQuota: string;
+    noUsers: string;
+    noConnections: string;
+    noEntries: string;
+    noQuotas: string;
+    pressEscBack: string;
   };
 
   // Quota labels
@@ -133,16 +199,27 @@ export interface Translations {
 /** Chinese translations */
 const zhTranslations: Translations = {
   menu: {
-    viewStatus: '查看服务状态',
+    viewStatus: '服务状态',
     startService: '启动服务',
     stopService: '停止服务',
     restartService: '重启服务',
     userManagement: '用户管理',
-    quotaManagement: '流量配额管理',
+    quotaManagement: '流量配额',
     configManagement: '配置管理',
     viewLogs: '查看日志',
-    switchLanguage: '切换语言 (Switch to English)',
+    switchLanguage: '切换语言',
     exit: '退出',
+    onlineUsers: '在线用户',
+    subscriptions: '订阅链接',
+  },
+  hints: {
+    viewDetails: '查看详情',
+    liveConnections: '实时连接',
+    addDeleteShare: '增 / 删 / 分享',
+    limitsUsage: '限额与用量',
+    subLinkServer: '订阅服务',
+    backupRestore: '备份 / 恢复',
+    accessError: '访问与错误',
   },
   status: {
     serviceStatus: '服务状态',
@@ -150,6 +227,57 @@ const zhTranslations: Translations = {
     active: '运行中',
     inactive: '已停止',
     unknown: '未知',
+    running: '运行中',
+    stopped: '已停止',
+    loading: '加载中',
+    error: '错误',
+  },
+  ui: {
+    navigate: '导航',
+    select: '选择',
+    search: '搜索',
+    quit: '退出',
+    back: '返回',
+    add: '添加',
+    delete_: '删除',
+    share: '分享',
+    details: '详情',
+    refresh: '刷新',
+    follow: '跟随',
+    scroll: '滚动',
+    switchLog: '切换日志',
+    setQuota: '设置配额',
+    resetUsage: '重置用量',
+    reenable: '重新启用',
+    start: '启动',
+    stop: '停止',
+    entries: '条记录',
+    users: '用户',
+    noData: '暂无数据',
+    processing: '处理中...',
+    autoRefresh: '自动刷新',
+    never: '永不',
+    expired: '已过期',
+    daysLeft: '天后到期',
+    unlimited: '无限制',
+    createBackup: '创建备份',
+    existing: '个已有',
+    custom: '自定义...',
+    confirmStop: '停止服务？活跃连接将断开。',
+    confirmRestart: '重启服务？活跃连接将断开。',
+    userCreated: '用户已创建',
+    email: '邮箱',
+    uuid: 'UUID',
+    expiry: '到期',
+    expiryDaysPrompt: '到期天数 (留空=永不):',
+    emailPrompt: '邮箱:',
+    selectUser: '选择用户:',
+    selectQuota: '选择配额:',
+    noUsers: '暂无用户',
+    noConnections: '无活跃连接',
+    noEntries: '暂无记录',
+    noQuotas: '暂无配额配置',
+    pressEscBack: '按 esc 返回',
   },
   quota: {
     title: '流量配额管理',
@@ -232,16 +360,27 @@ const zhTranslations: Translations = {
 /** English translations */
 const enTranslations: Translations = {
   menu: {
-    viewStatus: 'View Service Status',
+    viewStatus: 'Service Status',
     startService: 'Start Service',
     stopService: 'Stop Service',
     restartService: 'Restart Service',
     userManagement: 'User Management',
-    quotaManagement: 'Traffic Quota Management',
-    configManagement: 'Config Management',
+    quotaManagement: 'Traffic & Quotas',
+    configManagement: 'Configuration',
     viewLogs: 'View Logs',
-    switchLanguage: 'Switch Language (切换为中文)',
+    switchLanguage: 'Switch Language',
     exit: 'Exit',
+    onlineUsers: 'Online Users',
+    subscriptions: 'Subscriptions',
+  },
+  hints: {
+    viewDetails: 'view details',
+    liveConnections: 'live connections',
+    addDeleteShare: 'add / delete / share',
+    limitsUsage: 'limits & usage',
+    subLinkServer: 'sub link server',
+    backupRestore: 'backup / restore',
+    accessError: 'access & error',
   },
   status: {
     serviceStatus: 'Service Status',
@@ -249,6 +388,57 @@ const enTranslations: Translations = {
     active: 'Active',
     inactive: 'Inactive',
     unknown: 'Unknown',
+    running: 'Running',
+    stopped: 'Stopped',
+    loading: 'Loading',
+    error: 'Error',
+  },
+  ui: {
+    navigate: 'navigate',
+    select: 'select',
+    search: 'search',
+    quit: 'quit',
+    back: 'back',
+    add: 'add',
+    delete_: 'delete',
+    share: 'share',
+    details: 'details',
+    refresh: 'refresh',
+    follow: 'follow',
+    scroll: 'scroll',
+    switchLog: 'switch log',
+    setQuota: 'set quota',
+    resetUsage: 'reset usage',
+    reenable: 're-enable',
+    start: 'start',
+    stop: 'stop',
+    entries: 'entries',
+    users: 'users',
+    noData: 'No data',
+    processing: 'Processing...',
+    autoRefresh: 'Auto-refresh',
+    never: 'Never',
+    expired: 'Expired',
+    daysLeft: 'd left',
+    unlimited: 'Unlimited',
+    createBackup: 'Create Backup',
+    existing: 'existing',
+    custom: 'Custom...',
+    confirmStop: 'Stop service? Active connections will be dropped.',
+    confirmRestart: 'Restart service? Active connections will be dropped.',
+    userCreated: 'User created',
+    email: 'Email',
+    uuid: 'UUID',
+    expiry: 'Expiry',
+    expiryDaysPrompt: 'Expiry (days, empty=never):',
+    emailPrompt: 'Email:',
+    selectUser: 'Select user:',
+    selectQuota: 'Select quota:',
+    noUsers: 'No users configured',
+    noConnections: 'No active connections',
+    noEntries: 'No entries',
+    noQuotas: 'No quotas configured',
+    pressEscBack: 'press esc to go back',
   },
   quota: {
     title: 'Traffic Quota Management',
@@ -334,8 +524,8 @@ const translations: Record<Language, Translations> = {
   en: enTranslations,
 };
 
-/** Current language (default: Chinese) */
-let currentLanguage: Language = 'zh';
+/** Current language (default: English) */
+let currentLanguage: Language = 'en';
 
 /**
  * Load language preference from file
@@ -352,7 +542,7 @@ export function loadLanguagePreference(): Language {
   } catch {
     // Ignore errors, use default
   }
-  return 'zh'; // Default to Chinese
+  return 'en'; // Default to English
 }
 
 /**

@@ -77,16 +77,7 @@ export function generateVlessRealityLink(params: VlessRealityParams): string {
  * @returns VLESS share link string
  */
 export function generateVlessWebSocketLink(params: VlessWebSocketParams): string {
-  const {
-    uuid,
-    server,
-    port,
-    path,
-    host,
-    sni,
-    tls = true,
-    remark = 'Xray-CDN',
-  } = params;
+  const { uuid, server, port, path, host, sni, tls = true, remark = 'Xray-CDN' } = params;
 
   const searchParams = new URLSearchParams({
     encryption: 'none',

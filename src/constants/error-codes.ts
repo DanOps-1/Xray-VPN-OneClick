@@ -56,7 +56,11 @@ export const ConfigErrors = {
     code: 'E103',
     title: '配置文件无写入权限',
     causes: ['当前用户权限不足', '文件系统只读', '磁盘空间不足'],
-    solutions: ["使用 sudo 运行: 'sudo xray-manager' 或 'sudo xm'", "检查磁盘空间: 'df -h'", '检查文件系统状态'],
+    solutions: [
+      "使用 sudo 运行: 'sudo xray-manager' 或 'sudo xm'",
+      "检查磁盘空间: 'df -h'",
+      '检查文件系统状态',
+    ],
   },
   CONFIG_INVALID_JSON: {
     code: 'E104',

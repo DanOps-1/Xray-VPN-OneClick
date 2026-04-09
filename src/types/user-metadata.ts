@@ -23,6 +23,18 @@ export interface UserMeta {
 
   /** Last status change timestamp (ISO8601) */
   statusChangedAt?: string;
+
+  /** Expiry date (ISO8601), undefined = never expires */
+  expiryDate?: string;
+
+  /** Maximum concurrent connections, undefined = unlimited */
+  maxConnections?: number;
+
+  /** Total data limit in bytes, undefined = unlimited */
+  dataLimit?: number;
+
+  /** Subscription token for this user */
+  subscriptionToken?: string;
 }
 
 /**

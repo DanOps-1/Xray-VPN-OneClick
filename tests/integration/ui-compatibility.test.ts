@@ -12,7 +12,7 @@ import { Platform } from '../../src/types/terminal';
 
 describe('UI Compatibility Integration Tests', () => {
   // CLI_PATH could be used for future subprocess tests
-  const _CLI_PATH = resolve(__dirname, '../../dist/cli.js');
+  const _CLI_PATH = resolve(__dirname, '../../dist/cli.mjs');
 
   describe('TTY Detection', () => {
     it('should detect TTY when running in interactive terminal', async () => {

@@ -41,6 +41,18 @@ export interface User {
 
   /** 警告级别 */
   alertLevel?: AlertLevel;
+
+  /** 到期日期 (ISO 8601)，undefined = 永不过期 */
+  expiryDate?: string;
+
+  /** 最大并发连接数，undefined = 不限制 */
+  maxConnections?: number;
+
+  /** 总流量上限（字节），undefined = 不限制 */
+  dataLimit?: number;
+
+  /** 订阅 token */
+  subscriptionToken?: string;
 }
 
 /**
@@ -67,6 +79,18 @@ export interface CreateUserParams {
 
   /** 协议级别（可选，默认 0） */
   level?: number;
+
+  /** 到期天数（便捷设置，与 expiryDate 二选一） */
+  expiryDays?: number;
+
+  /** 精确到期日期 (ISO 8601) */
+  expiryDate?: string;
+
+  /** 总流量上限（字节） */
+  dataLimit?: number;
+
+  /** 最大并发连接数 */
+  maxConnections?: number;
 }
 
 /**

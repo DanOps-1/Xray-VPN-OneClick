@@ -9,13 +9,14 @@ import { detectFirewall } from '../utils/firewall.js';
 import { detectNetwork } from '../utils/network.js';
 import { ContainerType, SelinuxStatus } from '../types/platform.js';
 import { execSync } from 'child_process';
+import { existsSync, readFileSync } from 'fs';
 
 /**
  * Detect container environment
  */
 function detectContainer(): { type: ContainerType; isContainer: boolean } {
   try {
-    const fs = require('fs');
+    const fs = { existsSync, readFileSync };
     // Check for Docker
     if (fs.existsSync('/.dockerenv')) {
       return { type: ContainerType.DOCKER, isContainer: true };

@@ -11,13 +11,13 @@ import chalk from 'chalk';
 
 // 颜色方案：青色主题
 const C = {
-  bright: chalk.cyanBright,    // 高亮面
-  main: chalk.cyan,            // 主色
-  dark: chalk.blueBright,      // 阴影面
-  shadow: chalk.blue,          // 深阴影
+  bright: chalk.cyanBright, // 高亮面
+  main: chalk.cyan, // 主色
+  dark: chalk.blueBright, // 阴影面
+  shadow: chalk.blue, // 深阴影
   accent: chalk.magentaBright, // 强调色
-  text: chalk.white,           // 文字
-  dim: chalk.gray,             // 暗色
+  text: chalk.white, // 文字
+  dim: chalk.gray, // 暗色
 };
 
 /**
@@ -55,13 +55,13 @@ function buildFrame(frameNum: number): string[] {
     [C.dark, C.main, C.bright],
     [C.main, C.dark, C.main],
     [C.bright, C.main, C.dark],
-    [C.accent, C.bright, C.main],  // 闪烁
+    [C.accent, C.bright, C.main], // 闪烁
     [C.bright, C.main, C.dark],
     [C.main, C.bright, C.main],
     [C.dark, C.main, C.bright],
     [C.main, C.dark, C.main],
     [C.bright, C.main, C.dark],
-    [C.main, C.accent, C.bright],  // 闪烁
+    [C.main, C.accent, C.bright], // 闪烁
   ];
   const colors = colorPatterns[f];
 

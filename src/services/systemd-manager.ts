@@ -600,7 +600,7 @@ export class SystemdManager {
       return undefined;
     }
 
-    return '当前用户不是 root - 某些操作可能需要 sudo 权限';
+    return 'Not running as root - some operations may require sudo';
   }
 
   /**

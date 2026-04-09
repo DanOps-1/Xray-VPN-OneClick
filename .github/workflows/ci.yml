@@ -152,8 +152,8 @@ jobs:
             echo "❌ dist directory not created"
             exit 1
           fi
-          if [ ! -f "dist/cli.js" ]; then
-            echo "❌ dist/cli.js not found"
+          if [ ! -f "dist/cli.mjs" ]; then
+            echo "❌ dist/cli.mjs not found"
             exit 1
           fi
           echo "✅ Build artifacts created successfully"

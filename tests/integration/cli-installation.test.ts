@@ -10,7 +10,7 @@ import { spawn, execSync } from 'child_process';
 import { join } from 'path';
 import { existsSync } from 'fs';
 
-const CLI_PATH = join(__dirname, '../../dist/cli.js');
+const CLI_PATH = join(__dirname, '../../dist/cli.mjs');
 
 describe('CLI Installation', () => {
   beforeAll(() => {
@@ -34,8 +34,8 @@ describe('CLI Installation', () => {
       const packageJson = await import('../../package.json');
 
       expect(packageJson.bin).toBeDefined();
-      expect(packageJson.bin['xray-manager']).toBe('./dist/cli.js');
-      expect(packageJson.bin['xm']).toBe('./dist/cli.js');
+      expect(packageJson.bin['xray-manager']).toBe('./dist/cli.mjs');
+      expect(packageJson.bin['xm']).toBe('./dist/cli.mjs');
     });
 
     it('should have correct package name and version', async () => {

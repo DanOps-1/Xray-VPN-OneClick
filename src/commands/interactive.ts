@@ -11,7 +11,14 @@ import chalk from 'chalk';
 import logger from '../utils/logger';
 import { ExitCode } from '../constants/exit-codes';
 import { displayServiceStatus, startService, stopService, restartService } from './service';
-import { listUsers, addUser, deleteUser, showUserShare, generateClashConfig, showCdnShare } from './user';
+import {
+  listUsers,
+  addUser,
+  deleteUser,
+  showUserShare,
+  generateClashConfig,
+  showCdnShare,
+} from './user';
 import {
   setQuota,
   showQuota,

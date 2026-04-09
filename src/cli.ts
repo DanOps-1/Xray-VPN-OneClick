@@ -1,54 +1,42 @@
-#!/usr/bin/env node
-
 /**
  * Xray Manager CLI Entry Point
  *
- * This is the main entry point for the CLI tool.
- * It performs preflight checks and launches the interactive menu.
+ * Renders the React+Ink based terminal UI.
  *
  * @module cli
  */
 
 import { Command } from 'commander';
 import updateNotifier from 'update-notifier';
-import logger from './utils/logger';
-import { ExitCode, gracefulExit } from './constants/exit-codes';
-import { preflightChecks } from './utils/preflight';
-import { startInteractiveMenu } from './commands/interactive';
-import { registerReviewCommand } from './commands/review';
-import { registerClashCommand } from './commands/clash';
-import { showSplash } from './utils/splash';
+import React from 'react';
+import { render } from 'ink';
+import logger from './utils/logger.js';
+import { ExitCode, gracefulExit } from './constants/exit-codes.js';
+import { preflightChecks } from './utils/preflight.js';
+import { registerReviewCommand } from './commands/review.js';
+import { registerClashCommand } from './commands/clash.js';
+import { App } from './app/App.js';
+import { readFileSync } from 'fs';
+import { fileURLToPath } from 'url';
+import { dirname, join } from 'path';
 
 // Read package.json for version
-const packageJson = require('../package.json');
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+const packageJson = JSON.parse(readFileSync(join(__dirname, '..', 'package.json'), 'utf-8'));
 
 /**
  * Main CLI function
  */
 async function main(): Promise<void> {
-  // Show splash screen animation
-  await showSplash(packageJson.version);
-
-  // Show star request message
-  logger.newline();
-  logger.info('⭐ 如果这个项目对你有帮助，请给个 Star 支持一下！');
-  logger.info('   https://github.com/DanOps-1/Xray-VPN-OneClick');
-  logger.info('   你的 Star 是我持续更新的最大动力 🙏');
-  logger.newline();
-
-  // Check for updates (after splash to avoid being cleared)
+  // Check for updates
   const notifier = updateNotifier({
     pkg: packageJson,
-    updateCheckInterval: 0, // Check every time
+    updateCheckInterval: 1000 * 60 * 60 * 24, // Daily
   });
 
   if (notifier.update) {
-    logger.newline();
-    notifier.notify({
-      isGlobal: true,
-      defer: false,
-    });
-    logger.newline();
+    notifier.notify({ isGlobal: true, defer: false });
   }
 
   // Create Commander program
@@ -56,26 +44,25 @@ async function main(): Promise<void> {
 
   program
     .name('xray-manager')
-    .description('Xray VPN 服务管理 CLI 工具')
-    .version(packageJson.version, '-v, --version', '显示版本号')
-    .helpOption('-h, --help', '显示帮助信息');
+    .description('Xray VPN Service Manager')
+    .version(packageJson.version, '-v, --version', 'Show version')
+    .helpOption('-h, --help', 'Show help');
 
   // Global options
   program
-    .option('--config <path>', '指定配置文件路径')
-    .option('--service <name>', '指定服务名称', 'xray')
-    .option('--json', '以 JSON 格式输出')
-    .option('--no-color', '禁用彩色输出')
-    .option('--verbose', '详细输出模式');
+    .option('--config <path>', 'Specify config file path')
+    .option('--service <name>', 'Specify service name', 'xray')
+    .option('--json', 'JSON output mode')
+    .option('--no-color', 'Disable colored output')
+    .option('--verbose', 'Verbose output mode');
 
   registerReviewCommand(program);
   registerClashCommand(program);
 
-  // Default action: start interactive menu when no command provided
+  // Default action: start interactive Ink UI
   program.action(async () => {
     const options = program.opts();
 
-    // Configure logger based on options
     if (options.noColor) {
       logger.configure({ color: false });
     }
@@ -89,39 +76,40 @@ async function main(): Promise<void> {
       });
 
       if (!preflightResult.passed && preflightResult.critical) {
-        logger.error('预检查失败 - 无法启动菜单');
-        preflightResult.errors.forEach((error) => logger.error(`  • ${error}`));
+        logger.error('Preflight check failed');
+        preflightResult.errors.forEach((error) => logger.error(`  \u2022 ${error}`));
 
         if (preflightResult.suggestions.length > 0) {
-          logger.hint('建议解决方案:');
-          preflightResult.suggestions.forEach((suggestion) => logger.info(`  • ${suggestion}`));
+          logger.hint('Suggestions:');
+          preflightResult.suggestions.forEach((s) => logger.info(`  \u2022 ${s}`));
         }
 
         await gracefulExit(ExitCode.SERVICE_ERROR);
       }
 
-      // Show warnings but continue
       if (preflightResult.warnings.length > 0) {
-        preflightResult.warnings.forEach((warning) => logger.warn(warning));
-        logger.newline();
+        preflightResult.warnings.forEach((w) => logger.warn(w));
       }
 
-      // Start interactive menu
-      await startInteractiveMenu({
-        configPath: options.config,
-        serviceName: options.service,
-        jsonOutput: options.json,
-        verbose: options.verbose,
-      });
+      // Render the Ink app
+      const { waitUntilExit } = render(
+        React.createElement(App, {
+          options: {
+            configPath: options.config,
+            serviceName: options.service,
+          },
+          version: packageJson.version,
+        })
+      );
 
+      await waitUntilExit();
       await gracefulExit(ExitCode.SUCCESS);
     } catch (error) {
-      logger.error('启动菜单时出错:');
+      logger.error('Error starting application:');
       logger.error((error as Error).message);
 
       if (options.verbose && error instanceof Error) {
-        logger.error('Stack trace:');
-        logger.error(error.stack || 'No stack trace available');
+        logger.error(error.stack || 'No stack trace');
       }
 
       await gracefulExit(ExitCode.GENERAL_ERROR);
@@ -132,29 +120,19 @@ async function main(): Promise<void> {
   await program.parseAsync(process.argv);
 }
 
-// Handle SIGINT (Ctrl+C)
-process.on('SIGINT', async () => {
-  logger.newline();
-  logger.info('[退出] 程序已中断');
-  await gracefulExit(ExitCode.SIGINT);
-});
-
 // Handle uncaught errors
 process.on('uncaughtException', async (error) => {
-  logger.error('未捕获的异常:');
-  logger.error(error.message);
+  logger.error(`Uncaught exception: ${error.message}`);
   await gracefulExit(ExitCode.GENERAL_ERROR);
 });
 
 process.on('unhandledRejection', async (reason) => {
-  logger.error('未处理的 Promise 拒绝:');
-  logger.error(String(reason));
+  logger.error(`Unhandled rejection: ${String(reason)}`);
   await gracefulExit(ExitCode.GENERAL_ERROR);
 });
 
-// Run main function
+// Run
 main().catch(async (error) => {
-  logger.error('Fatal error:');
-  logger.error(error.message);
+  logger.error(`Fatal: ${error.message}`);
   await gracefulExit(ExitCode.GENERAL_ERROR);
 });

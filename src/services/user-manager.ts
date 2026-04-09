@@ -121,6 +121,10 @@ export class UserManager {
             flow: client.flow,
             createdAt: metadata?.createdAt || new Date().toISOString(),
             status: metadata?.status || 'active',
+            expiryDate: metadata?.expiryDate,
+            dataLimit: metadata?.dataLimit,
+            maxConnections: metadata?.maxConnections,
+            subscriptionToken: metadata?.subscriptionToken,
           });
         }
       }
@@ -153,6 +157,16 @@ export class UserManager {
     const id = this.generateUuid();
     const now = new Date().toISOString();
 
+    // Calculate expiry date
+    let expiryDate: string | undefined;
+    if (params.expiryDate) {
+      expiryDate = params.expiryDate;
+    } else if (params.expiryDays && params.expiryDays > 0) {
+      const expiry = new Date();
+      expiry.setDate(expiry.getDate() + params.expiryDays);
+      expiryDate = expiry.toISOString();
+    }
+
     // Create user object
     const newUser: User = {
       id,
@@ -161,6 +175,9 @@ export class UserManager {
       flow: params.flow,
       createdAt: now,
       status: 'active',
+      expiryDate,
+      dataLimit: params.dataLimit,
+      maxConnections: params.maxConnections,
     };
 
     // Read config
@@ -206,8 +223,15 @@ export class UserManager {
     // Write config
     await this.configManager.writeConfig(config);
 
-    // Create user metadata
+    // Create user metadata with expiry and limits
     await this.metadataManager.createUser(id);
+    if (expiryDate || params.dataLimit || params.maxConnections) {
+      await this.metadataManager.setMetadata(id, {
+        ...(expiryDate ? { expiryDate } : {}),
+        ...(params.dataLimit ? { dataLimit: params.dataLimit } : {}),
+        ...(params.maxConnections ? { maxConnections: params.maxConnections } : {}),
+      });
+    }
 
     // Restart service
     await this.systemdManager.restart();
@@ -266,35 +290,39 @@ export class UserManager {
 
     // Find user in all inbounds and collect inbound info
     let user: User | undefined;
-    let primaryInbound: {
-      port: number;
-      protocol: string;
-      streamSettings?: {
-        network?: string;
-        security?: string;
-        realitySettings?: {
-          privateKey: string;
-          serverNames: string[];
-          shortIds: string[];
-        };
-        wsSettings?: {
-          path: string;
-          headers?: Record<string, string>;
-        };
-      };
-    } | undefined;
-    let wsInbound: {
-      port: number;
-      protocol: string;
-      streamSettings?: {
-        network?: string;
-        security?: string;
-        wsSettings?: {
-          path: string;
-          headers?: Record<string, string>;
-        };
-      };
-    } | undefined;
+    let primaryInbound:
+      | {
+          port: number;
+          protocol: string;
+          streamSettings?: {
+            network?: string;
+            security?: string;
+            realitySettings?: {
+              privateKey: string;
+              serverNames: string[];
+              shortIds: string[];
+            };
+            wsSettings?: {
+              path: string;
+              headers?: Record<string, string>;
+            };
+          };
+        }
+      | undefined;
+    let wsInbound:
+      | {
+          port: number;
+          protocol: string;
+          streamSettings?: {
+            network?: string;
+            security?: string;
+            wsSettings?: {
+              path: string;
+              headers?: Record<string, string>;
+            };
+          };
+        }
+      | undefined;
 
     // Search through all inbounds
     for (const inbound of config.inbounds || []) {
@@ -441,7 +469,11 @@ export class UserManager {
    * @param cdnPort - CDN port (default: 443)
    * @returns CDN share link string or null if no WebSocket inbound
    */
-  async getCdnShareLink(userId: string, cdnDomain: string, cdnPort: number = 443): Promise<string | null> {
+  async getCdnShareLink(
+    userId: string,
+    cdnDomain: string,
+    cdnPort: number = 443
+  ): Promise<string | null> {
     const config = await this.configManager.readConfig();
 
     // Find WebSocket inbound with this user
