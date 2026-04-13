@@ -82,7 +82,7 @@
     "eslint": "^9.39.2",
     "ink-testing-library": "^4.0.0",
     "prettier": "^3.7.4",
-    "react-devtools-core": "^4.28.5",
+    "react-devtools-core": "^7.0.1",
     "typescript": "^5.9.3",
     "vitest": "^4.0.16"
   }
