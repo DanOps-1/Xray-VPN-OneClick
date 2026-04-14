@@ -42,6 +42,30 @@
 
 ---
 
+## ⚡ Quick Install (30 seconds)
+
+```bash
+# One-click install Xray + VLESS + Reality (just copy & paste)
+wget https://raw.githubusercontent.com/DanOps-1/Xray-VPN-OneClick/main/scripts/install.sh -O xray-install.sh && sudo bash xray-install.sh
+```
+
+<details>
+<summary>📦 Alternative install methods (npm / git clone)</summary>
+
+```bash
+# npm global install (requires Node.js 18+)
+npm install -g xray-manager && sudo xm install
+
+# Clone and install
+git clone https://github.com/DanOps-1/Xray-VPN-OneClick.git && cd Xray-VPN-OneClick/scripts && sudo bash install.sh
+```
+
+</details>
+
+> **Requirements:** Linux (Ubuntu 22.04+ / Debian 11+ / CentOS 9+), 512MB RAM, public IP
+
+---
+
 ## 📑 Table of Contents
 
 - [✨ Introduction](#-introduction)

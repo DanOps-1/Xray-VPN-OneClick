@@ -60,6 +60,33 @@
 
 ---
 
+## ⚡ 30秒快速安装
+
+```bash
+# 一键安装 Xray + VLESS + Reality（复制粘贴即可）
+wget https://raw.githubusercontent.com/DanOps-1/Xray-VPN-OneClick/main/scripts/install.sh -O xray-install.sh && sudo bash xray-install.sh
+```
+
+<details>
+<summary>📦 其他安装方式（npm / 国内加速 / git clone）</summary>
+
+```bash
+# npm 全局安装（需要 Node.js 18+）
+npm install -g xray-manager && sudo xm install
+
+# 国内服务器加速
+wget https://ghproxy.com/https://raw.githubusercontent.com/DanOps-1/Xray-VPN-OneClick/main/scripts/install.sh -O xray-install.sh && sudo bash xray-install.sh
+
+# 克隆仓库安装
+git clone https://github.com/DanOps-1/Xray-VPN-OneClick.git && cd Xray-VPN-OneClick/scripts && sudo bash install.sh
+```
+
+</details>
+
+> **系统要求：** Linux (Ubuntu 22.04+ / Debian 11+ / CentOS 9+)，512MB RAM，公网 IP
+
+---
+
 ## 📸 界面预览
 
 <div align="center">
